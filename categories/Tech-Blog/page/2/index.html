@@ -62,7 +62,9 @@
     
 
 
-<meta name="generator" content="Hexo 5.4.0"></head>
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 <body>
     
 <nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
@@ -121,6 +123,217 @@
 </section>
 <section class="section">
     <div class="container">
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/2021/04/zh/stat-ml-mle-1/" itemprop="url">深入形象地理解极大似然估计(MLE) 1: 引入问题</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2021-04-04T10:45:01.000Z" itemprop="datePublished">4月 4 2021</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            19 分钟 读完 (约 2816 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>导读：极大似然估计(MLE) 是统计机器学习中最基本的概念，但是能真正全面深入地理解它的性质和背后和其他基本理论的关系不是件容易的事情。极大似然估计和以下概念都有着紧密的联系：随机变量，无偏性质（unbiasedness），一致估计（consistent），asymptotic normality，最优化（optimization），Fisher Information，MAP（最大后验估计），KL-Divergence，sufficient statistics等。在众多阐述 MLE 的文章或者课程中，总体来说都比较抽象，注重公式推导。本系列文章受3blue1brown 可视化教学的启发，坚持从第一性原理出发，通过数学原理结合模拟和动画，深入浅出地让读者理解极大似然估计。</p>
+<p>相关链接</p>
+<h2 id="抛硬币问题"><a href="#抛硬币问题" class="headerlink" title="抛硬币问题"></a>抛硬币问题</h2><p>我们来思考这个老套问题，考虑手上有一枚硬币，旋转（抛）硬币得到正反面的概率固定（令正面概率为$\theta^{\star}$）但未知，我们如何能通过实验推测出 $\theta^{\star}$</p>
+<figure>
+  <img src="toss.gif">
+  <figcaption></figcaption>
+</figure>
+
+
+<p>朴素的想法是，不断尝试抛硬币，随着次数 n 的增多，正面的比例会趋近于 $\theta^{\star}$</p>
+<p>对应到数学形式上，令我们对于 $\theta^{\star}$ 的估计为 $\hat{\theta}_{n}$，则希望<br>$$<br>\hat{\theta}<em>n = {n</em>{head} \over n} \to \theta^{\star} \text{  as n } \to \infty<br>$$</p>
+<h2 id="模拟试验代码"><a href="#模拟试验代码" class="headerlink" title="模拟试验代码"></a>模拟试验代码</h2><p>假设我们尝试了n次，每次的结果为 $x_i$，$x_i$为1（正面） 或 0（反面）。比如试了三次的结果是 [1, 0, 1]，则 $x_1=1, x_2=0, x_3=1$。一般，我们将观察到的数据写成向量形式</p>
+<p>$$X=[x_1, x_2, x_3]^T=[1, 0, 1]^{T}$$</p>
+<p>我们知道硬币的正反结果符合伯努利分布，也就是<br>$$<br>\begin{align*}<br>P_{ber}(x;\theta) =<br>\left\lbrace<br>  \begin{array}{r@{}l}<br>   \theta &amp;\text{  if x=1} \<br>   1-\theta &amp;\text{  if x=0}<br>\end{array}<br>\right.<br>\end{align*}<br>$$</p>
+<p>因为 x 只有0，1两种取值，因此上式也可以写成等价如下的不含条件分支的形式<br>$$<br>P_{ber} = \theta^x \cdot (1-\theta)^x<br>$$</p>
+<p>假设 $\theta^{\star} = 0.7$，如果做 n=10 次试验，结果应该比较接近7个1，3个0。</p>
+<p>下面我们来模拟一下 n=10，看看结果如何。</p>
+<p>下面代码的实现上我们直接使用了pytorch 内置的 bernoulli 函数生成 n 个随机变量实例</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_coins</span>(<span class="hljs-params">theta, n=<span class="hljs-number">1</span></span>):</span></span><br><span class="line">    <span class="hljs-keyword">import</span> torch</span><br><span class="line">    theta_vec = torch.tensor(n*[theta])</span><br><span class="line">    random_values = torch.bernoulli(theta_vec)</span><br><span class="line">    <span class="hljs-keyword">return</span> random_values</span><br></pre></td></tr></tbody></table></figure>
+
+<p>让我们来做三次 n=10 的试验</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):</span><br><span class="line">    coins = gen_coins(theta=<span class="hljs-number">0.7</span>, n=<span class="hljs-number">10</span>)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">f'trial <span class="hljs-subst">{i}</span>'</span>)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">f'head #: <span class="hljs-subst">{<span class="hljs-built_in">sum</span>(coins)}</span>'</span>)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">f'tail #: <span class="hljs-subst">{<span class="hljs-built_in">sum</span>(<span class="hljs-number">1</span>-coins)}</span>'</span>)</span><br><span class="line">    <span class="hljs-built_in">print</span>()</span><br></pre></td></tr></tbody></table></figure>
+
+<p>能发现 7个1，3个0 确实是比较可能的结果。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">trial 0</span><br><span class="line">head <span class="hljs-comment">#: 7.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 3.0</span></span><br><span class="line"></span><br><span class="line">trial 1</span><br><span class="line">head <span class="hljs-comment">#: 9.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 1.0</span></span><br><span class="line"></span><br><span class="line">trial 2</span><br><span class="line">head <span class="hljs-comment">#: 7.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 3.0</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="生成概率"><a href="#生成概率" class="headerlink" title="生成概率"></a>生成概率</h2><p>直觉告诉我们，当 $\theta^{\star}=0.7$ 时，根据 $P_{ber}(x;\theta) $，7个1，3个0 出现的概率应该是最大，6个1，4个0 或者 8个1，2个0 这两种情况出现概率稍小，其他的情况概率更小。通过基本概率和伯努利公式，重复 n 次试验 1和0出现的概率可以由下面公式算出。（注：7个1，3个0不是单一事件，需要乘以组合数算出实际概率）</p>
+<p>$$<br>P_{X} = \theta^{heads} \cdot (1-\theta)^{tails} \cdot {n \choose heads}<br>$$</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>P(X)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>head=0</td>
+<td>0.000006</td>
+</tr>
+<tr>
+<td>head=1</td>
+<td>0.000138</td>
+</tr>
+<tr>
+<td>head=2</td>
+<td>0.000032</td>
+</tr>
+<tr>
+<td>head=3</td>
+<td>0.001447</td>
+</tr>
+<tr>
+<td>head=4</td>
+<td>0.036757</td>
+</tr>
+<tr>
+<td>head=5</td>
+<td>0.102919</td>
+</tr>
+<tr>
+<td>head=6</td>
+<td>0.200121</td>
+</tr>
+<tr>
+<td>head=7</td>
+<td>0.266828</td>
+</tr>
+<tr>
+<td>head=8</td>
+<td>0.233474</td>
+</tr>
+<tr>
+<td>head=9</td>
+<td>0.121061</td>
+</tr>
+<tr>
+<td>head=10</td>
+<td>0.028248</td>
+</tr>
+</tbody></table>
+<p>画出图看的很明显，1出现7次的概率确实最大。</p>
+<figure>
+  <img src="joint_prob.png">
+  <figcaption></figcaption>
+</figure>
+
+
+<p>回到我们的问题，我们先假定 $\theta^{\star} = 0.7$ 的硬币做 n=10 次试验的结果就是 7个1，3个0，或者具体序列为 [1, 0, 0, 1, 0, 1, 1, 1, 1, 1]。那么我们希望按照某种方法推测的估计值 $\hat\theta$ 也为 0.7。</p>
+<p>若将这个方法也记做 $\hat\theta$，它是$X$ 的函数，即 $\hat\theta(X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1]^T)=0.7$ </p>
+<p>我们如何构建这个方法呢？很显然，$X$ 中 1 的个数就可以胜任，$\hat\theta=\bar X$。这个方式确实是正确的，后面的文章我们也会证明它是MLE在伯努利分布参数估计时的计算方法。</p>
+<p>但是伯努利分布参数估计的问题中是最简单的情况，背后对应的更一般的问题是：假设我们知道某个过程或者实验生成了某种分布 P，但是不知道它的参数 $\theta$，如何能通过反复的试验来推断 $\theta$，同时，我们希望随着试验次数的增多，$\hat\theta$ 能逼近 $\theta$。</p>
+<p>由于过程是有随机性，试验结果 $X$ 并不能确定一定是从 $\hat\theta$ 生成的，因此我们需要对所有 $\theta$ 打分。对于抛硬币试验来说，我们穷举所有在 [0, 1] 范围内的 $\theta$，定义它的打分函数 $f(\theta)$，并且希望我们定义的 $f(\theta;X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1]^T)$  在 $\theta=0.7$ 时得分最高。推广到一般场景，有如下性质<br>$$<br>f(\theta^\star;X) &gt;= f(\theta;X)<br>$$</p>
+<p>如此，我们将推测参数问题转换成了优化问题<br>$$<br>\hat\theta = \theta^{\star} = \operatorname{argmax}_{\theta} f(\theta; X) = 0.7<br>$$</p>
+<h2 id="朴素方法"><a href="#朴素方法" class="headerlink" title="朴素方法"></a>朴素方法</h2><p>一种朴素的想法是，由于 $\theta^\star=0.7$，因此我们每次的结果应该稍微偏向 1，如果出现了 1，就记0.7分，出现了0，记0.3分，那么我们可以用10个结果的总分来定义总得分，即最大化函数 </p>
+<p>$$<br>\begin{equation*}<br>\begin{aligned}<br>&amp;\operatorname{argmax}<em>{\theta} f(\theta) \<br>=&amp; \operatorname{argmax}</em>{\theta} P(x_1) + P(x_2) + … + P(x_n) \<br>=&amp; \operatorname{argmax}<em>{\theta} P(x_1|\theta) + P(x_2|\theta) + … + P(x_n|\theta) \<br>=&amp; \operatorname{argmax}</em>{\theta} \sum P(x_i|\theta) \<br>\end{aligned}<br>\end{equation*}<br>$$</p>
+<p>很可惜，我们定义的 f 并不符合 $\theta=0.7$ 时取到最大的原则。下面画出了 $\theta$ 在 [0, 1] 范围内 f 值，X 固定为 [1, 0, 0, 1, 0, 1, 1, 1, 1, 1]。显然，极值在 0.5 左右。</p>
+<figure>
+  <img src="sum-likelihood_w.gif">
+  <figcaption></figcaption>
+</figure>
+
+
+
+
+<p>这种对于观察到的变量实例在整个参数空间打分的方法是最大似然方法的雏形。我们将每次试验结果对于不同 $\theta$ 的打分就是似然函数的概念。 </p>
+<h2 id="伯努利似然函数（Likelihood"><a href="#伯努利似然函数（Likelihood" class="headerlink" title="伯努利似然函数（Likelihood)"></a>伯努利似然函数（Likelihood)</h2><p>伯努利单个结果的似然函数 $l(\theta)$ 视为 $\theta$ 的函数，x视为给定值，它等价于概率质量函数 PMF</p>
+<p>$$<br>l(\theta|x) = \theta^x \cdot (1-\theta)^x<br>$$</p>
+<h2 id="极大似然估计-MLE"><a href="#极大似然估计-MLE" class="headerlink" title="极大似然估计(MLE)"></a>极大似然估计(MLE)</h2><p>有了单个结果的似然函数，我们如何定义 $f(\theta)$ 呢？我们定义的 $f(\theta)$ 需要满足，在  $\theta^\star=0.7$ ，$n=10$ 的情况下，试验最有可能的结果是 7 个1，3个0，此时 f 需要在 $\theta=0.7$ 时取到最大值。</p>
+<p>极大似然估计(MLE) 为我们定义了合理的 $f(\theta)$ ，和朴素的想法类似，但是这次用单个结果的似然函数连乘而非连加<br>$$<br>L(\theta|X) = l(\theta|x_1) \cdot l(\theta|x_2) \cdot …l(\theta|x_n) = \prod l(\theta|x_i)<br>$$</p>
+<p>我们再来看一下当 $X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1] $ 时  $L$ 在 $\theta$ 空间的取值情况，果然，MLE 能在 0.7时取到最大值。</p>
+<figure>
+  <img src="prod_likelihood_w.gif">
+  <figcaption></figcaption>
+</figure>
+
+
+
+
+
+
+<h2 id="对数似然函数"><a href="#对数似然函数" class="headerlink" title="对数似然函数"></a>对数似然函数</h2><p>最大似然函数 $\operatorname{argmax}_{\theta} L(\theta) $ 能让我们找到最可能的 $\theta$，但现实中，我们一般采用最大其 log 的形式。</p>
+<p>$$<br>\begin{equation*}<br>\begin{aligned}<br>&amp;\operatorname{argmax}<em>{\theta} \log L(\theta|X) \<br>=&amp; \operatorname{argmax}</em>{\theta} \log [l(\theta|x_1) \cdot l(\theta|x_2) \cdot … \cdot l(\theta|x_n)]   \<br>=&amp; \operatorname{argmax}_{\theta} \log l(\theta|x_1) + \log l(\theta|x_2) \cdot … + \log l(\theta|x_n)<br>\end{aligned}<br>\end{equation*}<br>$$</p>
+<p>理论能证明，最大对数似然函数得到的极值等价于最大似然函数。但这么做有什么额外好处呢？</p>
+<p>我们先将对数似然函数画出来</p>
+<figure>
+  <img src="prod_log_likelihood_w.gif">
+  <figcaption></figcaption>
+</figure>
+
+
+<p>它的极大值也在 0.7，但是我们发现对数似然函数是个 concave 函数。在优化领域，最大化 concave 函数或者最小化 convex 函数可以有非常高效的解法。再仔细看之前的似然函数，它并不是一个 concave 函数。另一个非常重要的好处是，随着 n 的增大，连乘会导致浮点数 underflow，而单个点的对数似然函数的和的形式就不会有这个问题。</p>
+<h2 id="Pytorch-MLE-代码"><a href="#Pytorch-MLE-代码" class="headerlink" title="Pytorch MLE 代码"></a>Pytorch MLE 代码</h2><p>就让我们来实践一下，通过 pytorch 梯度上升来找到极值点。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> stats.coin <span class="hljs-keyword">import</span> gen_coins</span><br><span class="line"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> deque</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">num_head: <span class="hljs-built_in">int</span>, num_tail: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">float</span>:</span></span><br><span class="line">    <span class="hljs-keyword">import</span> torch</span><br><span class="line">    theta = torch.tensor(<span class="hljs-number">0.5</span>, requires_grad=<span class="hljs-literal">True</span>)</span><br><span class="line"></span><br><span class="line">    recent = deque(<span class="hljs-number">3</span>*[<span class="hljs-number">100</span>], maxlen=<span class="hljs-number">3</span>)</span><br><span class="line"></span><br><span class="line">    lr = <span class="hljs-number">0.00001</span></span><br><span class="line">    <span class="hljs-keyword">for</span> <span class="hljs-built_in">iter</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2000</span>):</span><br><span class="line">        loss = -(num_head * torch.log(theta) + num_tail * torch.log(<span class="hljs-number">1</span> - theta))</span><br><span class="line">        loss.backward()</span><br><span class="line">        <span class="hljs-keyword">with</span> torch.no_grad():</span><br><span class="line">            theta -= lr * theta.grad</span><br><span class="line">            <span class="hljs-comment"># print(f'{iter}: {theta}, {theta.grad}')</span></span><br><span class="line">            recent.append(theta.grad.item())</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-built_in">all</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">abs</span>(x) &lt; <span class="hljs-number">1</span>, recent)):</span><br><span class="line">                <span class="hljs-keyword">break</span></span><br><span class="line">        theta.grad.zero_()</span><br><span class="line">    <span class="hljs-keyword">return</span> theta.item()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">    data = gen_coins(<span class="hljs-number">0.6</span>, n=<span class="hljs-number">200</span>)</span><br><span class="line"></span><br><span class="line">    num_head = (data.detach() == <span class="hljs-number">1</span>).<span class="hljs-built_in">sum</span>().item()</span><br><span class="line">    num_tail = (data.detach() == <span class="hljs-number">0</span>).<span class="hljs-built_in">sum</span>().item()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-built_in">print</span>(num_head, num_tail)</span><br><span class="line">    <span class="hljs-built_in">print</span>(train(num_head, num_tail))</span><br></pre></td></tr></tbody></table></figure>
+
+<p>一点需要说明的是，在迭代过程中，我们保存最后三个导数的值，当最新的三个导数都很小时就退出迭代。</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if all(map(lambda x: abs(x) &lt; 1, recent))</span><br></pre></td></tr></tbody></table></figure>
+
+<p>运行代码，能发现最大化对数似然函数能很稳定的找到 $\theta$。</p>
+<p>现在大家对于伯努利MLE有了一定了解，接着，我们来思考一下最大化似然函数方法是否随着观察次数的增多能不断逼近真实的 $\theta^\star$呢？</p>
+<h2 id="MLE-theta-估计的收敛性"><a href="#MLE-theta-估计的收敛性" class="headerlink" title="MLE $\theta$ 估计的收敛性"></a>MLE $\theta$ 估计的收敛性</h2><p> $\theta^\star=0.7$  的情况下，我们来这样做试验，第一次做 n=1生成观察数据 $X_{1}$，第二次做 n=2生成观察数据 $X_{2}$<br>$$<br>X_1,X_2, X_3, …, X_N<br>$$<br>对于每个数据集 $X_i$ 通过最大似然方法求得估计的 $\hat\theta$<br>$$<br>\hat\theta_1=MLE(X_1), \hat\theta_2=MLE(X_2), …, \hat\theta_N=MLE(X_N)<br>$$<br>将这些 $\hat\theta_i$ 画出来，可以看到，随着 $n \to \infty$，$\hat\theta_i \to \theta^\star=0.7$  </p>
+<figure>
+  <img src="bias_w.gif">
+  <figcaption></figcaption>
+</figure>
+
+
+<p>换一个角度来看一下，我们将 $\hat\theta_i$ 数列按照顺序，离散化后再归一化比例，如下图画出来，红色的柱代表了最新的值 $\hat\theta$。可以发现，初始时候，$\hat\theta$ 在较远离 0.7 的地方出现，随着 n 的增大，出现的位置比较接近 0.7。</p>
+<figure>
+  <img src="converge_w.gif">
+  <figcaption></figcaption>
+</figure>
+
+
+
+<h2 id="MLE-theta-估计的偏差和方差"><a href="#MLE-theta-估计的偏差和方差" class="headerlink" title="MLE $\theta$ 估计的偏差和方差"></a>MLE $\theta$ 估计的偏差和方差</h2><p>我们已经知道 MLE 方法可以通过观察数据推测出最有可能的 $\hat\theta$，由于观察数据 $X$ 是伯努利过程产生的，具有随机性，那么 $\hat\theta$ 可以看成是 $\theta^\star$ 的随机变量。我们已经通过上面的试验知道随着试验次数的增大，我们的估计会越来越逼近真实值，现在的问题是对于<strong>固定的n</strong>，$\hat\theta$ 的方差是多少，它的均值是否是无偏的呢？</p>
+<p>带着这样的疑问，我们现在做如下试验：</p>
+<p>固定 n=10，重复做实验，画出随着次数增多 $\hat\theta$ 的分布，见图中绿色部分。同样的，红色是 n=80 不断试验的分布变换。</p>
+<figure>
+  <img src="theta_variance_w.gif">
+  <figcaption></figcaption>
+</figure>
+看的出来，随着试验次数的增多
+- $\hat\theta_{10}, \hat\theta_{80}$ 都趋近于正态分布
+
+<ul>
+<li><p>$\hat\theta_{10}$ 的分散度比 $ \hat\theta_{80}$ 要大，即方差要大</p>
+</li>
+<li><p>$\hat\theta_{10}, \hat\theta_{80}$ 的均值都在 0.7</p>
+</li>
+</ul>
+</body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
     
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
@@ -1698,185 +1911,6 @@ $$
 <figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_prob_greedy</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    <span class="hljs-keyword">import</span> random</span><br><span class="line">    N = <span class="hljs-built_in">len</span>(initial)</span><br><span class="line">    max_route = []</span><br><span class="line">    max_prop = <span class="hljs-number">0.0</span></span><br><span class="line">    vertices = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]</span><br><span class="line">    prob = initial[:]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, L):</span><br><span class="line">        v_lst = random.choices(vertices, prob)</span><br><span class="line">        v = v_lst[<span class="hljs-number">0</span>]</span><br><span class="line">        max_route.append(v)</span><br><span class="line">        max_prop = prob[v]</span><br><span class="line">        prob = [prob[v] * transition[v][v_target] <span class="hljs-keyword">for</span> v_target <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> max_prop, max_route</span><br></pre></td></tr></tbody></table></figure>
 
 
-</body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/2020/11/zh/distribution-discrete-generator/" itemprop="url">从零构建统计随机变量生成器之离散基础篇</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2020-11-14T10:45:01.000Z" itemprop="datePublished">11月 14 2020</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            12 分钟 读完 (约 1778 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><p>在本系列中，我们会从第一性原理出发，从零开始构建统计学中的常见分布的随机变量生成器，包括二项分布，泊松分布，高斯分布等。在实现这些基础常见分布的过程中，会展示如何使用统计模拟的通用技术，包括 inverse CDF，Box-Muller，分布转换等。本期通过伯努利试验串联起来基础离散分布并通过代码来实现这些分布的生成函数，从零开始构建的原则是随机变量生成器实现只依赖 random() 产生 [0, 1.0] 之间的浮点数，不依赖于其他第三方API来完成。</p>
-<ul>
-<li><strong><a href="/2020/11/zh/distribution-discrete-generator/">从零构建统计随机变量生成器之 离散基础篇</a></strong></li>
-<li><a href="/2021/01/zh/distribution-inverse-transformation-method/">从零构建统计随机变量生成器之 用逆变换采样方法构建随机变量生成器</a></li>
-<li><a href="/2021/05/zh/leetcode-470-rand10/">深入 LeetCode 470 拒绝采样，状态转移图求期望和一道经典统计求期望题目</a></li>
-<li><a href="/2021/07/zh/distribution-normal/">从零构建统计随机变量生成器之 正态分布 Box-Muller方法</a></li>
-</ul>
-<h2 id="均匀分布（离散）"><a href="#均匀分布（离散）" class="headerlink" title="均匀分布（离散）"></a>均匀分布（离散）</h2><p>离散均匀分布（Discrete Uniform Distribution）的随机变量是最为基本的，图中为 [0, 6] 七个整数的离散均匀分布。算法实现为，使用 [0, 1] 之间的随机数 u，再将 u 等比例扩展到指定的整数上下界。</p>
-<figure>
-  <img src="distrib_uniform.png">
-  <figcaption></figcaption>
-</figure>
-
-<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> floor</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">uniform</span>(<span class="hljs-params">a: <span class="hljs-built_in">int</span>, b: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">assert</span> a &lt;= b</span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> a + floor((b - a + <span class="hljs-number">1</span>) * u)</span><br></pre></td></tr></tbody></table></figure>
-
-<p>Github 代码地址：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_uniform.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_uniform.py</a></p>
-<h2 id="伯努利分布"><a href="#伯努利分布" class="headerlink" title="伯努利分布"></a>伯努利分布</h2><p>伯努利分布（Bernoulli Distribution）是support为0或者1的离散分布，0和1可以看成失败和成功两种可能。伯努利分布指定了成功的概率p，例如，下图是 p=0.4 的伯努利分布。</p>
-<figure>
-  <img src="distrib_ber.png">
-  <figcaption></figcaption>
-</figure>
-
-<p>伯努利分布随机数实现也很直接，将随机值 u 根据 p 决定成功或者失败。</p>
-<h3 id="实现代码-1"><a href="#实现代码-1" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bernoulli</span>(<span class="hljs-params">p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">assert</span> <span class="hljs-number">0</span> &lt;= p &lt;= <span class="hljs-number">1</span></span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> u &lt;= p <span class="hljs-keyword">else</span> <span class="hljs-number">0</span></span><br></pre></td></tr></tbody></table></figure>
-
-
-
-<p>Github 代码地址：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_bernoulli.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_bernoulli.py</a></p>
-<h2 id="类别分布"><a href="#类别分布" class="headerlink" title="类别分布"></a>类别分布</h2><p>类别分布（Categorical Distribution）是在伯努利分布的基础上扩展到了多个点，每个点同样由参数指定了其概率，因此，其参数从 p 扩展到了向量 $\vec p$，如图所示为 $\vec p =  [0.2, 0.3, 0.1, 0.4] $ 时的类别分布。</p>
-<figure>
-  <img src="distrib_category.png">
-  <figcaption></figcaption>
-</figure>
-
-<h3 id="实现代码-2"><a href="#实现代码-2" class="headerlink" title="实现代码"></a>实现代码</h3><p>类别分布生成函数也扩展了伯努利分布的实现算法，将随机数 u 和累计概率向量作比较。在这个例子中， $\vec p =  [0.2, 0.3, 0.1, 0.4] $ 转换成 $\vec c =  [0.2, 0.5, 0.6, 1] $，再将 u 和 $\vec c$数组匹配，返回结果为第一个大于 u 的元素 index。实现上，我们可以以线性复杂度遍历数组，更好一点的方法是，用 python bisect函数通过二分法找到index，将时间复杂度降到 $O(log(n))$。</p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> bisect</span><br><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">categorical</span>(<span class="hljs-params">probs: <span class="hljs-type">List</span>[<span class="hljs-built_in">float</span>]</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">assert</span> <span class="hljs-built_in">abs</span>(<span class="hljs-built_in">sum</span>(probs) - <span class="hljs-number">1.0</span>) &lt; <span class="hljs-number">0.001</span></span><br><span class="line">    cum = probs.copy()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(cum)):</span><br><span class="line">        cum[i] = cum[i-<span class="hljs-number">1</span>] + probs[i]</span><br><span class="line"></span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> bisect.bisect(cum, u)</span><br></pre></td></tr></tbody></table></figure>
-
-<p>Github 代码地址：<br><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_categorical.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_categorical.py</a></p>
-<h2 id="二项分布"><a href="#二项分布" class="headerlink" title="二项分布"></a>二项分布</h2><p>二项分布（Binomial Distribution）有两个参数 n 和 p，表示伯努利实验做n次后成功的次数。图中为 n=6，p=0.5的二项分布。</p>
-<figure>
-  <img src="distrib_binomial.png">
-  <figcaption></figcaption>
-</figure>
-
-
-<h3 id="实现代码-3"><a href="#实现代码-3" class="headerlink" title="实现代码"></a>实现代码</h3><p>二项分布生成算法可以通过伯努利试验的故事来实现，即调用 n 次伯努利分布生成函数，返回总的成功次数。</p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">binomial</span>(<span class="hljs-params">n: <span class="hljs-built_in">int</span>, p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-built_in">sum</span>(bernoulli(p) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n))</span><br></pre></td></tr></tbody></table></figure>
-
-<p>Github 代码地址：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_binomial.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_binomial.py</a></p>
-<h3 id="概率质量函数（PMF）"><a href="#概率质量函数（PMF）" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><div>
-$$
-\operatorname{Pr}_\text{Binomial}(X=k)=\left(\begin{array}{c}n \\ k\end{array}\right)p^{k}(1- p)^{n-k}
-$$
-</div>
-
-
-<h2 id="几何分布"><a href="#几何分布" class="headerlink" title="几何分布"></a>几何分布</h2><p>几何分布（Geometric Distribution）和伯努利实验的关系是：几何分布是反复伯努利实验直至第一次成功时的失败次数。如图，当成功概率 p=0.4时的几何分布。</p>
-<figure>
-  <img src="distrib_geometric.png">
-  <figcaption></figcaption>
-</figure>
-
-<h3 id="实现代码-4"><a href="#实现代码-4" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> discrete_bernoulli <span class="hljs-keyword">import</span> bernoulli</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">geometric</span>(<span class="hljs-params">p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    fail_num = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> bernoulli(p):</span><br><span class="line">        fail_num += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> fail_num</span><br></pre></td></tr></tbody></table></figure>
-
-<p>Github 代码地址：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_geometric.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_geometric.py</a></p>
-<h3 id="概率质量函数（PMF）-1"><a href="#概率质量函数（PMF）-1" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><p>$$<br>\operatorname{Pr}_\text{Geometric}(X=k)=(1-p)^{k-1} p<br>$$</p>
-<h2 id="负二项分布"><a href="#负二项分布" class="headerlink" title="负二项分布"></a>负二项分布</h2><p>负二项分布（Negative Binomial Distribution）是尝试伯努利试验直至成功 r 次的失败次数。</p>
-<figure>
-  <img src="distrib_negbinomial.png">
-  <figcaption></figcaption>
-</figure>
-
-<h3 id="实现代码-5"><a href="#实现代码-5" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> discrete_bernoulli <span class="hljs-keyword">import</span> bernoulli</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">negative_binomial</span>(<span class="hljs-params">r: <span class="hljs-built_in">int</span>, p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    failures = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> r:</span><br><span class="line">        success = bernoulli(p)</span><br><span class="line">        <span class="hljs-keyword">if</span> success:</span><br><span class="line">            r -= <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            failures += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> failures</span><br></pre></td></tr></tbody></table></figure>
-
-<p>Github 代码地址：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_nagative_binomial.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_nagative_binomial.py</a></p>
-<h3 id="概率质量函数（PMF）-2"><a href="#概率质量函数（PMF）-2" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><div>
-$$
-\operatorname{Pr}_\text{NegBinomial}(X=k)=\left(\begin{array}{c}k+r-1 \\ r-1\end{array}\right)(1-p)^{k} p^{r}
-$$
-</div>
-
-
-<h2 id="超几何分布"><a href="#超几何分布" class="headerlink" title="超几何分布"></a>超几何分布</h2><p>超几何分布（HyperGeometric Distribution）的意义是从总数为N的集合抽取n次后成功的次数。具体来说，集合由K个表示成功的元素和N-K个表示失败的元素组成，并且抽取时没有替换（without replacement）情况下的成功次数。注意，超几何分布和二项分布的区别仅在于有无替换。</p>
-<figure>
-  <img src="distrib_hypergeo.png">
-  <figcaption></figcaption>
-</figure>
-
-<h3 id="实现代码-6"><a href="#实现代码-6" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> discrete_bernoulli <span class="hljs-keyword">import</span> bernoulli</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hypergeometric</span>(<span class="hljs-params">N: <span class="hljs-built_in">int</span>, K_succ_num: <span class="hljs-built_in">int</span>, n_trial_num: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    x = N - K_succ_num</span><br><span class="line">    n_hit = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> n_trial_num:</span><br><span class="line">        hit = bernoulli(K_succ_num / (K_succ_num + x))</span><br><span class="line">        n_hit += hit</span><br><span class="line">        <span class="hljs-keyword">if</span> hit:</span><br><span class="line">            K_succ_num -= <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            x -= <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">if</span> K_succ_num == <span class="hljs-number">0</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> n_hit</span><br><span class="line">        n_trial_num -= <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> n_hit</span><br></pre></td></tr></tbody></table></figure>
-
-
-<p>Github 代码地址：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_hypergeometric.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_hypergeometric.py</a></p>
-<h3 id="概率质量函数（PMF）-3"><a href="#概率质量函数（PMF）-3" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><div>
-$$
-\operatorname{Pr}_\text{Hypergeo}(X=k)=\frac{\left(\begin{array}{c}K \\ k\end{array}\right)\left(\begin{array}{c}N-k \\ n-k\end{array}\right)}{\left(\begin{array}{l}N \\ n\end{array}\right)}
-$$
-</div>
-
-
-<h2 id="负超几何分布"><a href="#负超几何分布" class="headerlink" title="负超几何分布"></a>负超几何分布</h2><p>负超几何分布（Negative Hypergeometric Distribution）的意义是从总数为N的集合中，无替换下抽取直至 r 次失败时，成功的次数。</p>
-<figure>
-  <img src="distrib_neg_hypergeometric.png">
-  <figcaption></figcaption>
-</figure>
-
-<h3 id="实现代码-7"><a href="#实现代码-7" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> discrete_bernoulli <span class="hljs-keyword">import</span> bernoulli</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">negative_hypergeometric</span>(<span class="hljs-params">N: <span class="hljs-built_in">int</span>, K_success_num: <span class="hljs-built_in">int</span>, r_fail_times: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    fail_num = N - K_success_num</span><br><span class="line">    succ_trials = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> r_fail_times:</span><br><span class="line">        success = bernoulli(K_success_num / (K_success_num + fail_num))</span><br><span class="line">        <span class="hljs-keyword">if</span> success:</span><br><span class="line">            K_success_num -= <span class="hljs-number">1</span></span><br><span class="line">            succ_trials += <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">if</span> K_success_num == <span class="hljs-number">0</span>: <span class="hljs-comment"># no more success elements</span></span><br><span class="line">                <span class="hljs-keyword">return</span> succ_trials</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            fail_num -= <span class="hljs-number">1</span></span><br><span class="line">            r_fail_times -= <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> succ_trials</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p>Github 代码地址：<br><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_negative_hypergeometric.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_negative_hypergeometric.py</a></p>
-<h3 id="概率质量函数（PMF）-4"><a href="#概率质量函数（PMF）-4" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><div>
-$$
-\operatorname{Pr}_\text{NegHypergeo}(X=k)=\frac{\left(\begin{array}{c}k+r-1 \\ k\end{array}\right)\left(\begin{array}{c}N-r-k \\ K-k\end{array}\right)}{\left(\begin{array}{l}N \\ K\end{array}\right)} \quad \text{for } k=0,1,2, \ldots, K
-$$
-</div>
-
-
-<h2 id="伯努利试验总结"><a href="#伯努利试验总结" class="headerlink" title="伯努利试验总结"></a>伯努利试验总结</h2><p>下表总结了上面四种和伯努利试验有关的离散分布的具体区别。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>有替换</th>
-<th>无替换</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>固定尝试次数</td>
-<td>二项 Binomial</td>
-<td>超几何 Hypergeometric</td>
-</tr>
-<tr>
-<td>固定成功次数</td>
-<td>负二项 Negative Binomial</td>
-<td>负超几何 Negative Hypergeometric</td>
-</tr>
-</tbody></table>
 </body></html>
     
     </div>

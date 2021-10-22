@@ -62,7 +62,9 @@
     
 
 
-<meta name="generator" content="Hexo 5.4.0"></head>
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 <body>
     
 <nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
@@ -114,6 +116,185 @@
 
     <section class="section">
     <div class="container">
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/2020/11/zh/distribution-discrete-generator/" itemprop="url">从零构建统计随机变量生成器之离散基础篇</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-11-14T10:45:01.000Z" itemprop="datePublished">11月 14 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            12 分钟 读完 (约 1778 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>在本系列中，我们会从第一性原理出发，从零开始构建统计学中的常见分布的随机变量生成器，包括二项分布，泊松分布，高斯分布等。在实现这些基础常见分布的过程中，会展示如何使用统计模拟的通用技术，包括 inverse CDF，Box-Muller，分布转换等。本期通过伯努利试验串联起来基础离散分布并通过代码来实现这些分布的生成函数，从零开始构建的原则是随机变量生成器实现只依赖 random() 产生 [0, 1.0] 之间的浮点数，不依赖于其他第三方API来完成。</p>
+<ul>
+<li><strong><a href="/2020/11/zh/distribution-discrete-generator/">从零构建统计随机变量生成器之 离散基础篇</a></strong></li>
+<li><a href="/2021/01/zh/distribution-inverse-transformation-method/">从零构建统计随机变量生成器之 用逆变换采样方法构建随机变量生成器</a></li>
+<li><a href="/2021/05/zh/leetcode-470-rand10/">深入 LeetCode 470 拒绝采样，状态转移图求期望和一道经典统计求期望题目</a></li>
+<li><a href="/2021/07/zh/distribution-normal/">从零构建统计随机变量生成器之 正态分布 Box-Muller方法</a></li>
+</ul>
+<h2 id="均匀分布（离散）"><a href="#均匀分布（离散）" class="headerlink" title="均匀分布（离散）"></a>均匀分布（离散）</h2><p>离散均匀分布（Discrete Uniform Distribution）的随机变量是最为基本的，图中为 [0, 6] 七个整数的离散均匀分布。算法实现为，使用 [0, 1] 之间的随机数 u，再将 u 等比例扩展到指定的整数上下界。</p>
+<figure>
+  <img src="distrib_uniform.png">
+  <figcaption></figcaption>
+</figure>
+
+<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> floor</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">uniform</span>(<span class="hljs-params">a: <span class="hljs-built_in">int</span>, b: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">assert</span> a &lt;= b</span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> a + floor((b - a + <span class="hljs-number">1</span>) * u)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Github 代码地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_uniform.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_uniform.py</a></p>
+<h2 id="伯努利分布"><a href="#伯努利分布" class="headerlink" title="伯努利分布"></a>伯努利分布</h2><p>伯努利分布（Bernoulli Distribution）是support为0或者1的离散分布，0和1可以看成失败和成功两种可能。伯努利分布指定了成功的概率p，例如，下图是 p=0.4 的伯努利分布。</p>
+<figure>
+  <img src="distrib_ber.png">
+  <figcaption></figcaption>
+</figure>
+
+<p>伯努利分布随机数实现也很直接，将随机值 u 根据 p 决定成功或者失败。</p>
+<h3 id="实现代码-1"><a href="#实现代码-1" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bernoulli</span>(<span class="hljs-params">p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">assert</span> <span class="hljs-number">0</span> &lt;= p &lt;= <span class="hljs-number">1</span></span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> u &lt;= p <span class="hljs-keyword">else</span> <span class="hljs-number">0</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p>Github 代码地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_bernoulli.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_bernoulli.py</a></p>
+<h2 id="类别分布"><a href="#类别分布" class="headerlink" title="类别分布"></a>类别分布</h2><p>类别分布（Categorical Distribution）是在伯努利分布的基础上扩展到了多个点，每个点同样由参数指定了其概率，因此，其参数从 p 扩展到了向量 $\vec p$，如图所示为 $\vec p =  [0.2, 0.3, 0.1, 0.4] $ 时的类别分布。</p>
+<figure>
+  <img src="distrib_category.png">
+  <figcaption></figcaption>
+</figure>
+
+<h3 id="实现代码-2"><a href="#实现代码-2" class="headerlink" title="实现代码"></a>实现代码</h3><p>类别分布生成函数也扩展了伯努利分布的实现算法，将随机数 u 和累计概率向量作比较。在这个例子中， $\vec p =  [0.2, 0.3, 0.1, 0.4] $ 转换成 $\vec c =  [0.2, 0.5, 0.6, 1] $，再将 u 和 $\vec c$数组匹配，返回结果为第一个大于 u 的元素 index。实现上，我们可以以线性复杂度遍历数组，更好一点的方法是，用 python bisect函数通过二分法找到index，将时间复杂度降到 $O(log(n))$。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> bisect</span><br><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">categorical</span>(<span class="hljs-params">probs: <span class="hljs-type">List</span>[<span class="hljs-built_in">float</span>]</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">assert</span> <span class="hljs-built_in">abs</span>(<span class="hljs-built_in">sum</span>(probs) - <span class="hljs-number">1.0</span>) &lt; <span class="hljs-number">0.001</span></span><br><span class="line">    cum = probs.copy()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(cum)):</span><br><span class="line">        cum[i] = cum[i-<span class="hljs-number">1</span>] + probs[i]</span><br><span class="line"></span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> bisect.bisect(cum, u)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Github 代码地址：<br><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_categorical.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_categorical.py</a></p>
+<h2 id="二项分布"><a href="#二项分布" class="headerlink" title="二项分布"></a>二项分布</h2><p>二项分布（Binomial Distribution）有两个参数 n 和 p，表示伯努利实验做n次后成功的次数。图中为 n=6，p=0.5的二项分布。</p>
+<figure>
+  <img src="distrib_binomial.png">
+  <figcaption></figcaption>
+</figure>
+
+
+<h3 id="实现代码-3"><a href="#实现代码-3" class="headerlink" title="实现代码"></a>实现代码</h3><p>二项分布生成算法可以通过伯努利试验的故事来实现，即调用 n 次伯努利分布生成函数，返回总的成功次数。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">binomial</span>(<span class="hljs-params">n: <span class="hljs-built_in">int</span>, p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-built_in">sum</span>(bernoulli(p) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n))</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Github 代码地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_binomial.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_binomial.py</a></p>
+<h3 id="概率质量函数（PMF）"><a href="#概率质量函数（PMF）" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><div>
+$$
+\operatorname{Pr}_\text{Binomial}(X=k)=\left(\begin{array}{c}n \\ k\end{array}\right)p^{k}(1- p)^{n-k}
+$$
+</div>
+
+
+<h2 id="几何分布"><a href="#几何分布" class="headerlink" title="几何分布"></a>几何分布</h2><p>几何分布（Geometric Distribution）和伯努利实验的关系是：几何分布是反复伯努利实验直至第一次成功时的失败次数。如图，当成功概率 p=0.4时的几何分布。</p>
+<figure>
+  <img src="distrib_geometric.png">
+  <figcaption></figcaption>
+</figure>
+
+<h3 id="实现代码-4"><a href="#实现代码-4" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> discrete_bernoulli <span class="hljs-keyword">import</span> bernoulli</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">geometric</span>(<span class="hljs-params">p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    fail_num = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> bernoulli(p):</span><br><span class="line">        fail_num += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> fail_num</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Github 代码地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_geometric.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_geometric.py</a></p>
+<h3 id="概率质量函数（PMF）-1"><a href="#概率质量函数（PMF）-1" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><p>$$<br>\operatorname{Pr}_\text{Geometric}(X=k)=(1-p)^{k-1} p<br>$$</p>
+<h2 id="负二项分布"><a href="#负二项分布" class="headerlink" title="负二项分布"></a>负二项分布</h2><p>负二项分布（Negative Binomial Distribution）是尝试伯努利试验直至成功 r 次的失败次数。</p>
+<figure>
+  <img src="distrib_negbinomial.png">
+  <figcaption></figcaption>
+</figure>
+
+<h3 id="实现代码-5"><a href="#实现代码-5" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> discrete_bernoulli <span class="hljs-keyword">import</span> bernoulli</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">negative_binomial</span>(<span class="hljs-params">r: <span class="hljs-built_in">int</span>, p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    failures = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> r:</span><br><span class="line">        success = bernoulli(p)</span><br><span class="line">        <span class="hljs-keyword">if</span> success:</span><br><span class="line">            r -= <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            failures += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> failures</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Github 代码地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_nagative_binomial.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_nagative_binomial.py</a></p>
+<h3 id="概率质量函数（PMF）-2"><a href="#概率质量函数（PMF）-2" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><div>
+$$
+\operatorname{Pr}_\text{NegBinomial}(X=k)=\left(\begin{array}{c}k+r-1 \\ r-1\end{array}\right)(1-p)^{k} p^{r}
+$$
+</div>
+
+
+<h2 id="超几何分布"><a href="#超几何分布" class="headerlink" title="超几何分布"></a>超几何分布</h2><p>超几何分布（HyperGeometric Distribution）的意义是从总数为N的集合抽取n次后成功的次数。具体来说，集合由K个表示成功的元素和N-K个表示失败的元素组成，并且抽取时没有替换（without replacement）情况下的成功次数。注意，超几何分布和二项分布的区别仅在于有无替换。</p>
+<figure>
+  <img src="distrib_hypergeo.png">
+  <figcaption></figcaption>
+</figure>
+
+<h3 id="实现代码-6"><a href="#实现代码-6" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> discrete_bernoulli <span class="hljs-keyword">import</span> bernoulli</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hypergeometric</span>(<span class="hljs-params">N: <span class="hljs-built_in">int</span>, K_succ_num: <span class="hljs-built_in">int</span>, n_trial_num: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    x = N - K_succ_num</span><br><span class="line">    n_hit = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> n_trial_num:</span><br><span class="line">        hit = bernoulli(K_succ_num / (K_succ_num + x))</span><br><span class="line">        n_hit += hit</span><br><span class="line">        <span class="hljs-keyword">if</span> hit:</span><br><span class="line">            K_succ_num -= <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            x -= <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">if</span> K_succ_num == <span class="hljs-number">0</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> n_hit</span><br><span class="line">        n_trial_num -= <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> n_hit</span><br></pre></td></tr></tbody></table></figure>
+
+
+<p>Github 代码地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_hypergeometric.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_hypergeometric.py</a></p>
+<h3 id="概率质量函数（PMF）-3"><a href="#概率质量函数（PMF）-3" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><div>
+$$
+\operatorname{Pr}_\text{Hypergeo}(X=k)=\frac{\left(\begin{array}{c}K \\ k\end{array}\right)\left(\begin{array}{c}N-k \\ n-k\end{array}\right)}{\left(\begin{array}{l}N \\ n\end{array}\right)}
+$$
+</div>
+
+
+<h2 id="负超几何分布"><a href="#负超几何分布" class="headerlink" title="负超几何分布"></a>负超几何分布</h2><p>负超几何分布（Negative Hypergeometric Distribution）的意义是从总数为N的集合中，无替换下抽取直至 r 次失败时，成功的次数。</p>
+<figure>
+  <img src="distrib_neg_hypergeometric.png">
+  <figcaption></figcaption>
+</figure>
+
+<h3 id="实现代码-7"><a href="#实现代码-7" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> discrete_bernoulli <span class="hljs-keyword">import</span> bernoulli</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">negative_hypergeometric</span>(<span class="hljs-params">N: <span class="hljs-built_in">int</span>, K_success_num: <span class="hljs-built_in">int</span>, r_fail_times: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    fail_num = N - K_success_num</span><br><span class="line">    succ_trials = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> r_fail_times:</span><br><span class="line">        success = bernoulli(K_success_num / (K_success_num + fail_num))</span><br><span class="line">        <span class="hljs-keyword">if</span> success:</span><br><span class="line">            K_success_num -= <span class="hljs-number">1</span></span><br><span class="line">            succ_trials += <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">if</span> K_success_num == <span class="hljs-number">0</span>: <span class="hljs-comment"># no more success elements</span></span><br><span class="line">                <span class="hljs-keyword">return</span> succ_trials</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            fail_num -= <span class="hljs-number">1</span></span><br><span class="line">            r_fail_times -= <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> succ_trials</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>Github 代码地址：<br><a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_negative_hypergeometric.py">https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_negative_hypergeometric.py</a></p>
+<h3 id="概率质量函数（PMF）-4"><a href="#概率质量函数（PMF）-4" class="headerlink" title="概率质量函数（PMF）"></a>概率质量函数（PMF）</h3><div>
+$$
+\operatorname{Pr}_\text{NegHypergeo}(X=k)=\frac{\left(\begin{array}{c}k+r-1 \\ k\end{array}\right)\left(\begin{array}{c}N-r-k \\ K-k\end{array}\right)}{\left(\begin{array}{l}N \\ K\end{array}\right)} \quad \text{for } k=0,1,2, \ldots, K
+$$
+</div>
+
+
+<h2 id="伯努利试验总结"><a href="#伯努利试验总结" class="headerlink" title="伯努利试验总结"></a>伯努利试验总结</h2><p>下表总结了上面四种和伯努利试验有关的离散分布的具体区别。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>有替换</th>
+<th>无替换</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>固定尝试次数</td>
+<td>二项 Binomial</td>
+<td>超几何 Hypergeometric</td>
+</tr>
+<tr>
+<td>固定成功次数</td>
+<td>负二项 Negative Binomial</td>
+<td>负超几何 Negative Hypergeometric</td>
+</tr>
+</tbody></table>
+</body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
     
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
@@ -1538,209 +1719,6 @@ $$
 <p>有了描述状态依赖的映射 dict 后，代码也比较简洁，changed_state_set 变量保存了这轮必须计算的状态集合。新的一轮迭代时，将下一轮需要计算的状态保存到 changed_state_set_ 中，本轮结束后，changed_state_set 更新成changed_state_set_，开始下一轮循环直至没有状态需要更新。</p>
 <figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">value_iteration_async</span>(<span class="hljs-params">env:GridWorldEnv, gamma=<span class="hljs-number">1.0</span>, theta=<span class="hljs-number">0.0001</span></span>) -&gt; <span class="hljs-type">Tuple</span>[Policy, StateValue]:</span></span><br><span class="line">    mapping = build_reverse_mapping(env)</span><br><span class="line"></span><br><span class="line">    V = np.zeros(env.nS)</span><br><span class="line">    changed_state_set = <span class="hljs-built_in">set</span>(s <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(env.nS))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-built_in">iter</span> = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-built_in">len</span>(changed_state_set) &gt; <span class="hljs-number">0</span>:</span><br><span class="line">        changed_state_set_ = <span class="hljs-built_in">set</span>()</span><br><span class="line">        <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> changed_state_set:</span><br><span class="line">            action_values = action_value(env, s, V, gamma=gamma)</span><br><span class="line">            best_action_value = np.<span class="hljs-built_in">max</span>(action_values)</span><br><span class="line">            v_diff = np.<span class="hljs-built_in">abs</span>(best_action_value - V[s])</span><br><span class="line">            <span class="hljs-keyword">if</span> v_diff &gt; theta:</span><br><span class="line">                changed_state_set_.update(mapping[s])</span><br><span class="line">                V[s] = best_action_value</span><br><span class="line">        changed_state_set = changed_state_set_</span><br><span class="line">        <span class="hljs-built_in">iter</span> += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">    policy = np.zeros([env.nS, env.nA])</span><br><span class="line">    <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(env.nS):</span><br><span class="line">        action_values = action_value(env, s, V, gamma=gamma)</span><br><span class="line">        best_action = np.argmax(action_values)</span><br><span class="line">        policy[s, best_action] = <span class="hljs-number">1.0</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> policy, V</span><br></pre></td></tr></tbody></table></figure>
 <p>比较值迭代和异步值迭代方法后发现，值迭代用了4次循环，每次涉及所有状态，总计算状态数为 4 x 16 = 64。异步值迭代也用了4次循环，但是总计更新了54个状态。由于Grid World 的状态数很少，异步值迭代优势并不明显，但是对于状态数众多并且迭代最终集中在少部分状态的环境下，节省的计算量还是很可观的。</p>
-</body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/2020/09/zh/leetcode-679-24-game/" itemprop="url">Leetcode 679 24 Game 的 Python 函数式实现</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2020-09-10T10:45:01.000Z" itemprop="datePublished">9月 10 2020</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            17 分钟 读完 (约 2542 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><h2 id="Leetcode-679-24-Game-Hard"><a href="#Leetcode-679-24-Game-Hard" class="headerlink" title="Leetcode 679 24 Game (Hard)"></a>Leetcode 679 24 Game (Hard)</h2><p>先来介绍一下24点游戏题目，大家一定都玩过，就是给定4个牌面数字，用加减乘除计算24点。</p>
-<p>本篇会用两种偏函数式的 Python 3解法来AC 24 Game。</p>
-<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/24-game/">Leetcode 679 24 Game (Hard)</a> </p>
-<blockquote>
-<p>You have 4 cards each containing a number from 1 to 9. You need to judge whether they could operated through *, /, +, -, (, ) to get the value of 24.</p>
-</blockquote>
-<blockquote>
-<p>Example 1:</p>
-<p>Input: [4, 1, 8, 7]</p>
-<p>Output: True</p>
-<p>Explanation: (8-4) * (7-1) = 24</p>
-</blockquote>
-<blockquote>
-<p>Example 2:</p>
-<p>Input: [1, 2, 1, 2]</p>
-<p>Output: False</p>
-</blockquote>
-<h2 id="itertools-permutations"><a href="#itertools-permutations" class="headerlink" title="itertools.permutations"></a>itertools.permutations</h2><p>先来介绍一下Python itertools.permutations 的用法，正好用Leetcode 中的Permutation问题来示例。Permutations 的输入可以是List，返回是 generator 实例，用于生成所有排列。简而言之，python 的 generator 可以和List一样，用 for 语句来全部遍历产生的值。和List不同的是，generator 的所有值并不必须全部初始化，一般按需产生从而大量减少内存占用。下面在介绍 yield 时我们会看到如何合理构造 generator。</p>
-<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/permutations/">Leetcode 46 Permutations (Medium) </a></p>
-<blockquote>
-<p>Given a collection of distinct integers, return all possible permutations.</p>
-</blockquote>
-<blockquote>
-<p>Example:</p>
-<p>Input: [1,2,3]</p>
-<p>Output:<br>[<br>  [1,2,3],<br>  [1,3,2],<br>  [2,1,3],<br>  [2,3,1],<br>  [3,1,2],<br>  [3,2,1]<br>]</p>
-</blockquote>
-<p>用 permutations 很直白，代码只有一行。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 36 ms, faster than 91.78% of Python3 online submissions for Permutations.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.9 MB, less than 66.52% of Python3 online submissions for Permutations.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> permutations</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">permute</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> [p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> permutations(nums)]</span><br></pre></td></tr></tbody></table></figure>
-
-
-
-<h2 id="itertools-combinations"><a href="#itertools-combinations" class="headerlink" title="itertools.combinations"></a>itertools.combinations</h2><p>有了排列就少不了组合，itertools.combinations 可以产生给定List的k个元素组合  $\binom{n}{k}$，用一道算法题来举例，同样也是一句语句就可以AC。</p>
-<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/combinations/">Leetcode 77 Combinations (Medium)</a> </p>
-<blockquote>
-<p>Given two integers n and k, return all possible combinations of k numbers out of 1 … n.<br>You may return the answer in any order.</p>
-<p>Example 1:</p>
-<p>Input: n = 4, k = 2</p>
-<p>Output:<br>[<br>  [2,4],<br>  [3,4],<br>  [2,3],<br>  [1,2],<br>  [1,3],<br>  [1,4],<br>]</p>
-</blockquote>
-<blockquote>
-<p>Example 2:</p>
-<p>Input: n = 1, k = 1</p>
-<p>Output: [[1]]</p>
-</blockquote>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 84 ms, faster than 95.43% of Python3 online submissions for Combinations.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 15.2 MB, less than 68.98% of Python3 online submissions for Combinations.</span></span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> combinations</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">combine</span>(<span class="hljs-params">self, n: <span class="hljs-built_in">int</span>, k: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> [c <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> combinations(<span class="hljs-built_in">list</span>(<span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n + <span class="hljs-number">1</span>)), k)]</span><br></pre></td></tr></tbody></table></figure>
-
-
-
-<h2 id="itertools-product"><a href="#itertools-product" class="headerlink" title="itertools.product"></a>itertools.product</h2><p>当有多维度的对象需要迭代笛卡尔积时，可以用 product(iter1, iter2, …)来生成generator，等价于多重 for 循环。</p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[lst <span class="hljs-keyword">for</span> lst <span class="hljs-keyword">in</span> product([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>])]</span><br><span class="line">[(i, s) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>] <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> [<span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>]]</span><br></pre></td></tr></tbody></table></figure>
-<p>这两种方式都生成了如下结果</p>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[(1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')]</span><br></pre></td></tr></tbody></table></figure>
-
-<p>再举一个Leetcode的例子来实战product generator。</p>
-<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/letter-combinations-of-a-phone-number/">Leetcode 17. Letter Combinations of a Phone Number (Medium)</a></p>
-<blockquote>
-<p>Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. A mapping of digit to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.</p>
-</blockquote>
-<figure>
-  <img src="lc-17.png">
-  <figcaption></figcaption>
-</figure>
-
-<blockquote>
-<p>Example:</p>
-<p>Input: “23”</p>
-<p>Output: [“ad”, “ae”, “af”, “bd”, “be”, “bf”, “cd”, “ce”, “cf”].</p>
-</blockquote>
-<p>举例来说，下面的代码当输入 digits 是 ‘352’ 时，iter_dims 的值是 [‘def’, ‘jkl’, ‘abc’]，再输入给 product 后会产生 ‘dja’, ‘djb’, ‘djc’, ‘eja’, 共 3 x 3 x 3 = 27个组合的值。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 24 ms, faster than 94.50% of Python3 online submissions for Letter Combinations of a Phone Number.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.7 MB, less than 83.64% of Python3 online submissions for Letter Combinations of a Phone Number.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> product</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">letterCombinations</span>(<span class="hljs-params">self, digits: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> digits == <span class="hljs-string">""</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> []</span><br><span class="line">        mapping = {<span class="hljs-string">'2'</span>:<span class="hljs-string">'abc'</span>, <span class="hljs-string">'3'</span>:<span class="hljs-string">'def'</span>, <span class="hljs-string">'4'</span>:<span class="hljs-string">'ghi'</span>, <span class="hljs-string">'5'</span>:<span class="hljs-string">'jkl'</span>, <span class="hljs-string">'6'</span>:<span class="hljs-string">'mno'</span>, <span class="hljs-string">'7'</span>:<span class="hljs-string">'pqrs'</span>, <span class="hljs-string">'8'</span>:<span class="hljs-string">'tuv'</span>, <span class="hljs-string">'9'</span>:<span class="hljs-string">'wxyz'</span>}</span><br><span class="line">        iter_dims = [mapping[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> digits]</span><br><span class="line"></span><br><span class="line">        result = []</span><br><span class="line">        <span class="hljs-keyword">for</span> lst <span class="hljs-keyword">in</span> product(*iter_dims):</span><br><span class="line">            result.append(<span class="hljs-string">''</span>.join(lst))</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> result</span><br></pre></td></tr></tbody></table></figure>
-
-
-
-<h2 id="yield-示例"><a href="#yield-示例" class="headerlink" title="yield 示例"></a>yield 示例</h2><p>Python具有独特的itertools generator，可以花式AC代码，接下来讲解如何进一步构造 generator。Python 定义只要函数中使用了yield关键字，这个函数就是 generator。Generator 在计算机领域的标准名称是 coroutine，即协程，是一种特殊的函数：当返回上层调用时自身能够保存调用栈状态，并在上层函数处理完逻辑后跳入到这个 generator，恢复之前的状态再继续运行下去。Yield语句也举一道经典的Fibonacci 问题。</p>
-<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/fibonacci-number/">Leetcode 509. Fibonacci Number (Easy)</a></p>
-<blockquote>
-<p>The Fibonacci numbers, commonly denoted F(n) form a sequence, called the Fibonacci sequence, such that each number is the sum of the two preceding ones, starting from 0 and 1. That is,<br>F(0) = 0,   F(1) = 1<br>F(N) = F(N - 1) + F(N - 2), for N &gt; 1.<br>Given N, calculate F(N).</p>
-</blockquote>
-<blockquote>
-<p>Example 1:</p>
-<p>Input: 2</p>
-<p>Output: 1</p>
-<p>Explanation: F(2) = F(1) + F(0) = 1 + 0 = 1.</p>
-</blockquote>
-<blockquote>
-<p>Example 2:</p>
-<p>Input: 3</p>
-<p>Output: 2</p>
-<p>Explanation: F(3) = F(2) + F(1) = 1 + 1 = 2.</p>
-</blockquote>
-<blockquote>
-<p>Example 3:</p>
-<p>Input: 4</p>
-<p>Output: 3</p>
-<p>Explanation: F(4) = F(3) + F(2) = 2 + 1 = 3.</p>
-</blockquote>
-<p>Fibonacci 的一般标准解法是循环迭代方式，可以以O(n)时间复杂度和O(1) 空间复杂度来AC。下面的 yield 版本中，我们构造了fib_next generator，它保存了最后两个值作为内部迭代状态，外部每调用一次可以得到下一个fib(n)，如此外部只需不断调用直到满足题目给定次数。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 28 ms, faster than 85.56% of Python3 online submissions for Fibonacci Number.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.8 MB, less than 58.41% of Python3 online submissions for Fibonacci Number.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fib</span>(<span class="hljs-params">self, N: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> N &lt;= <span class="hljs-number">1</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> N</span><br><span class="line">        i = <span class="hljs-number">2</span></span><br><span class="line">        <span class="hljs-keyword">for</span> fib <span class="hljs-keyword">in</span> self.fib_next():</span><br><span class="line">            <span class="hljs-keyword">if</span> i == N:</span><br><span class="line">                <span class="hljs-keyword">return</span> fib</span><br><span class="line">            i += <span class="hljs-number">1</span></span><br><span class="line">            </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fib_next</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        f_last2, f_last = <span class="hljs-number">0</span>, <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            f = f_last2 + f_last</span><br><span class="line">            f_last2, f_last = f_last, f</span><br><span class="line">            <span class="hljs-keyword">yield</span> f</span><br></pre></td></tr></tbody></table></figure>
-
-
-
-<h2 id="yield-from-示例"><a href="#yield-from-示例" class="headerlink" title="yield from 示例"></a>yield from 示例</h2><p>上述yield用法之后，再来演示 yield from 的用法。Yield from 始于Python 3.3，用于嵌套generator时的控制转移，一种典型的用法是有多个generator嵌套时，外层的outer_generator 用 yield from 这种方式等价代替如下代码。</p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">outer_generator</span>():</span></span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> inner_generator():</span><br><span class="line">        <span class="hljs-keyword">yield</span> i</span><br></pre></td></tr></tbody></table></figure>
-
-<p>用一道算法题目来具体示例。</p>
-<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/kth-smallest-element-in-a-bst/">Leetcode 230. Kth Smallest Element in a BST (Medium)</a></p>
-<blockquote>
-<p>Given a binary search tree, write a function kthSmallest to find the kth smallest element in it.</p>
-</blockquote>
-<blockquote>
-<p>Example 1:<br>Input: root = [3,1,4,null,2], k = 1</p>
-</blockquote>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  3</span><br><span class="line"> / \</span><br><span class="line">1   4</span><br><span class="line"> \</span><br><span class="line">  2</span><br></pre></td></tr></tbody></table></figure>
-<blockquote>
-<p>Output: 1</p>
-</blockquote>
-<blockquote>
-<p>Example 2:</p>
-<p>Input: root = [5,3,6,2,4,null,null,1], k = 3</p>
-</blockquote>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">         5</span><br><span class="line">        / \</span><br><span class="line">       3   6</span><br><span class="line">     /  \</span><br><span class="line">    2    4</span><br><span class="line">  /</span><br><span class="line">1</span><br></pre></td></tr></tbody></table></figure>
-<blockquote>
-<p>Output: 3</p>
-</blockquote>
-<p>直觉思路上，我们只要从小到大有序遍历每个节点直至第k个。因为给定的树是Binary Search Tree，有序遍历意味着以左子树、节点本身和右子树的访问顺序递归下去就行。由于ordered_iter是generator，递归调用自己的过程就是嵌套使用generator的过程。下面是yield版本。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 48 ms, faster than 90.31% of Python3 online submissions for Kth Smallest Element in a BST.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 17.9 MB, less than 14.91% of Python3 online submissions for Kth Smallest Element in a BST.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">kthSmallest</span>(<span class="hljs-params">self, root: TreeNode, k: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ordered_iter</span>(<span class="hljs-params">node</span>):</span></span><br><span class="line">            <span class="hljs-keyword">if</span> node:</span><br><span class="line">                <span class="hljs-keyword">for</span> sub_node <span class="hljs-keyword">in</span> ordered_iter(node.left):</span><br><span class="line">                    <span class="hljs-keyword">yield</span> sub_node</span><br><span class="line">                <span class="hljs-keyword">yield</span> node</span><br><span class="line">                <span class="hljs-keyword">for</span> sub_node <span class="hljs-keyword">in</span> ordered_iter(node.right):</span><br><span class="line">                    <span class="hljs-keyword">yield</span> sub_node</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> ordered_iter(root):</span><br><span class="line">            k -= <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">if</span> k == <span class="hljs-number">0</span>:</span><br><span class="line">                <span class="hljs-keyword">return</span> node.val</span><br></pre></td></tr></tbody></table></figure>
-
-<p>等价于如下 yield from 版本：</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 56 ms, faster than 63.74% of Python3 online submissions for Kth Smallest Element in a BST.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 17.7 MB, less than 73.33% of Python3 online submissions for Kth Smallest Element in a BST.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">kthSmallest</span>(<span class="hljs-params">self, root: TreeNode, k: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ordered_iter</span>(<span class="hljs-params">node</span>):</span></span><br><span class="line">            <span class="hljs-keyword">if</span> node:</span><br><span class="line">                <span class="hljs-keyword">yield</span> <span class="hljs-keyword">from</span> ordered_iter(node.left)</span><br><span class="line">                <span class="hljs-keyword">yield</span> node</span><br><span class="line">                <span class="hljs-keyword">yield</span> <span class="hljs-keyword">from</span> ordered_iter(node.right)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> ordered_iter(root):</span><br><span class="line">            k -= <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">if</span> k == <span class="hljs-number">0</span>:</span><br><span class="line">                <span class="hljs-keyword">return</span> node.val</span><br></pre></td></tr></tbody></table></figure>
-
-
-
-<h2 id="24-点问题之函数式枚举解法"><a href="#24-点问题之函数式枚举解法" class="headerlink" title="24 点问题之函数式枚举解法"></a>24 点问题之函数式枚举解法</h2><p>看明白了itertools.permuations，combinations，product，yield以及yield from，我们回到本篇最初的24点游戏问题。</p>
-<p>24点游戏的本质是枚举出所有可能运算，如果有一种方式得到24返回True，否则返回Flase。进一步思考所有可能的运算，包括下面三个维度：</p>
-<ol>
-<li><p>4个数字的所有排列，比如给定 [1, 2, 3, 4]，可以用permutations([1, 2, 3, 4]) 生成这个维度的所有可能</p>
-</li>
-<li><p>三个位置的操作符号的全部可能，可以用 product([+, -, *, /], repeat=3) 生成，具体迭代结果为：[+, +, +]，[+, +, -]，…</p>
-</li>
-<li><p>给定了前面两个维度后，还有一个比较不容易察觉但必要的维度：运算优先级。比如在给定数字顺序 [1, 2, 3, 4]和符号顺序 [+, *, -]之后可能的四种操作树</p>
-</li>
-</ol>
-<figure>
-  <img src="iter_trees.png">
-  <figcaption>四种运算优先级</figcaption>
-</figure>
-能否算得24点只需要枚举这三个维度笛卡尔积的运算结果
-
-<p>(维度1：数字组合)  x  (维度2：符号组合)  x  (维度3：优先级组合)</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 112 ms, faster than 57.59% of Python3 online submissions for 24 Game.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.7 MB, less than 85.60% of Python3 online submissions for 24 Game.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> math</span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> permutations, product</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">iter_trees</span>(<span class="hljs-params">self, op1, op2, op3, a, b, c, d</span>):</span></span><br><span class="line">        <span class="hljs-keyword">yield</span> op1(op2(a, b), op3(c, d))</span><br><span class="line">        <span class="hljs-keyword">yield</span> op1(a, op2(op3(b, c), d))</span><br><span class="line">        <span class="hljs-keyword">yield</span> op1(a, op2(b, op3(c, d)))</span><br><span class="line">        <span class="hljs-keyword">yield</span> op1(op2(a, op3(b, c)), d)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">judgePoint24</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        mul = <span class="hljs-keyword">lambda</span> x, y: x * y</span><br><span class="line">        plus = <span class="hljs-keyword">lambda</span> x, y: x + y</span><br><span class="line">        div = <span class="hljs-keyword">lambda</span> x, y: x / y <span class="hljs-keyword">if</span> y != <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> math.inf</span><br><span class="line">        minus = <span class="hljs-keyword">lambda</span> x, y: x - y</span><br><span class="line"></span><br><span class="line">        op_lst = [plus, minus, mul, div]</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> ops <span class="hljs-keyword">in</span> product(op_lst, repeat=<span class="hljs-number">3</span>):</span><br><span class="line">            <span class="hljs-keyword">for</span> val <span class="hljs-keyword">in</span> permutations(nums):</span><br><span class="line">                <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> self.iter_trees(ops[<span class="hljs-number">0</span>], ops[<span class="hljs-number">1</span>], ops[<span class="hljs-number">2</span>], val[<span class="hljs-number">0</span>], val[<span class="hljs-number">1</span>], val[<span class="hljs-number">2</span>], val[<span class="hljs-number">3</span>]):</span><br><span class="line">                    <span class="hljs-keyword">if</span> <span class="hljs-built_in">abs</span>(v - <span class="hljs-number">24</span>) &lt; <span class="hljs-number">0.0001</span>:</span><br><span class="line">                        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span></span><br></pre></td></tr></tbody></table></figure>
-
-
-
-<h2 id="24-点问题之-DFS-yield-from-解法"><a href="#24-点问题之-DFS-yield-from-解法" class="headerlink" title="24 点问题之 DFS yield from 解法"></a>24 点问题之 DFS yield from 解法</h2><p>一种常规的思路是，在四个数组成的集合中先选出任意两个数，枚举所有可能的计算，再将剩余的三个数组成的集合递归调用下去，直到叶子节点只剩一个数，如下图所示。</p>
-<figure>
-  <img src="dfs.png">
-  <figcaption>DFS 调用示例</figcaption>
-</figure>
-
-<p>下面的代码是这种思路的 itertools + yield from 解法，recurse方法是generator，会自我递归调用。当只剩下两个数时，用 yield 返回两个数的所有可能运算得出的值，其他非叶子情况下则自我调用使用yield from，例如4个数任选2个先计算再合成3个数的情况。这种情况下，比较麻烦的是由于4个数可能有相同值，若用 combinations(lst, 2) 先任选两个数，后续要生成剩余两个数加上第三个计算的数的集合代码会繁琐。因此，我们改成任选4个数index中的两个，剩余的indices 可以通过集合操作来完成。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 116 ms, faster than 56.23% of Python3 online submissions for 24 Game.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.9 MB, less than 44.89% of Python3 online submissions for 24 Game.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> math</span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> combinations, product, permutations</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">judgePoint24</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        mul = <span class="hljs-keyword">lambda</span> x, y: x * y</span><br><span class="line">        plus = <span class="hljs-keyword">lambda</span> x, y: x + y</span><br><span class="line">        div = <span class="hljs-keyword">lambda</span> x, y: x / y <span class="hljs-keyword">if</span> y != <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> math.inf</span><br><span class="line">        minus = <span class="hljs-keyword">lambda</span> x, y: x - y</span><br><span class="line"></span><br><span class="line">        op_lst = [plus, minus, mul, div]</span><br><span class="line"></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">recurse</span>(<span class="hljs-params">lst: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>):</span></span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(lst) == <span class="hljs-number">2</span>:</span><br><span class="line">                <span class="hljs-keyword">for</span> op, values <span class="hljs-keyword">in</span> product(op_lst, permutations(lst)):</span><br><span class="line">                    <span class="hljs-keyword">yield</span> op(values[<span class="hljs-number">0</span>], values[<span class="hljs-number">1</span>])</span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                <span class="hljs-comment"># choose 2 indices from lst of length n</span></span><br><span class="line">                <span class="hljs-keyword">for</span> choosen_idx_lst <span class="hljs-keyword">in</span> combinations(<span class="hljs-built_in">list</span>(<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(lst))), <span class="hljs-number">2</span>):</span><br><span class="line">                    <span class="hljs-comment"># remaining indices not choosen (of length n-2)</span></span><br><span class="line">                    idx_remaining_set = <span class="hljs-built_in">set</span>(<span class="hljs-built_in">list</span>(<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(lst)))) - <span class="hljs-built_in">set</span>(choosen_idx_lst)</span><br><span class="line"></span><br><span class="line">                    <span class="hljs-comment"># remaining values not choosen (of length n-2)</span></span><br><span class="line">                    value_remaining_lst = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: lst[x], idx_remaining_set))</span><br><span class="line">                    <span class="hljs-keyword">for</span> op, idx_lst <span class="hljs-keyword">in</span> product(op_lst, permutations(choosen_idx_lst)):</span><br><span class="line">                        <span class="hljs-comment"># 2 choosen values are lst[idx_lst[0]], lst[idx_lst[1]</span></span><br><span class="line">                        value_remaining_lst.append(op(lst[idx_lst[<span class="hljs-number">0</span>]], lst[idx_lst[<span class="hljs-number">1</span>]]))</span><br><span class="line">                        <span class="hljs-keyword">yield</span> <span class="hljs-keyword">from</span> recurse(value_remaining_lst)</span><br><span class="line">                        value_remaining_lst = value_remaining_lst[:-<span class="hljs-number">1</span>]</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> recurse(nums):</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-built_in">abs</span>(v - <span class="hljs-number">24</span>) &lt; <span class="hljs-number">0.0001</span>:</span><br><span class="line">                <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-
-
 </body></html>
     
     </div>
