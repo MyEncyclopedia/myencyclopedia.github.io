@@ -1,0 +1,28 @@
+strict digraph {
+    
+    Start [shape="ellipse" style="filled" fillcolor="#E0E000" label="Start +1"]
+    
+    l [shape="ellipse" style="filled" fillcolor="#5092b0" label="a<=3, +1"]
+
+    l_ac [shape="ellipse" style="filled" fillcolor="#1be817" label="b<=5"]
+    
+    r [shape="ellipse" style="filled" fillcolor="#5092b0" label="4<=a<=6, +1"]
+    r_ac [shape="ellipse" style="filled" fillcolor="#1be817" label="b<=5"]
+    REJ1 [shape="ellipse" style="filled" fillcolor="#a2a199"]
+    REJ2 [shape="ellipse" style="filled" fillcolor="#a2a199"]
+
+
+
+    Start -> l [xlabel="3/7"]
+    l -> l_ac [xlabel="5/7"]
+    l -> REJ1 [xlabel="2/7"]
+    Start -> r  [label="3/7"]
+    r -> r_ac  [label="5/7"]
+    r -> REJ2  [label="2/7"]
+    Start
+    Start
+    REJ1 -> Start [ style=dashed]
+    REJ2 -> Start [ style=dashed]
+
+    Start -> Start [ style=dashed label="1/7"]
+}

@@ -1,0 +1,38 @@
+classDiagram
+  PyGameBoard
+  ConnectNGame
+  Strategy
+  Strategy <|--  PlannedMinimaxStrategy
+  PyGameBoard..>ConnectNGame:Encapsulates
+  ConnectNGym..>PyGameBoard:Encapsulates
+	Env <|-- ConnectNGym
+
+	BaseAgent <|-- AIAgent
+	BaseAgent <|-- HumanAgent
+  BaseAgent..>PyGameBoard:Operates
+  Strategy..>ConnectNGame:Operates
+  AIAgent..>PlannedMinimaxStrategy:Encapsulates
+  class BaseAgent {
+    act(game: PyGameBoard, available_actions)
+  }
+	class ConnectNGame{
+		move()
+    undo()
+	}
+	class PyGameBoard{
+  	ConnectNGame connectNGame
+		next_user_input()
+    move()
+	}
+  class Strategy {
+    action(game: ConnectNGame)
+  }
+  class AIAgent {
+    Strategy strategy
+  }
+  class ConnectNGym {
+  PyGameBoard pygameBoard
+  reset()
+  step()
+  render()
+  }

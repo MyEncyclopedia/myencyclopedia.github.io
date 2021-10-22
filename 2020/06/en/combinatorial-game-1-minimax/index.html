@@ -8,8 +8,6 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-<link href="/2020/06/en/combinatorial-game-1-minimax/" rel="alternate" hreflang="zh" />
-    
 
 
 <meta name="description" content="">
@@ -21,7 +19,7 @@
     <meta name="description" content="This series, we deal with zero-sum turn-based board game algorithm, a sub type of combinatorial games. We start off with small search space problem, introduce classic algorithms and corresponding comb">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Combinatorial Games. Episode 1: Minimax and Alpha Beta Pruning in Leetcode">
-<meta property="og:url" content="https://myencyclopedia.github.io/2020/06/en/combinatorial-game-1-minimax/index.html">
+<meta property="og:url" content="https://myencyclopedia.github.io/2020/06/en/combinatorial-game-1-minimax/">
 <meta property="og:site_name" content="MyEncyclopedia">
 <meta property="og:description" content="This series, we deal with zero-sum turn-based board game algorithm, a sub type of combinatorial games. We start off with small search space problem, introduce classic algorithms and corresponding comb">
 <meta property="og:locale" content="en_US">
@@ -34,13 +32,13 @@
 <meta property="og:image" content="https://myencyclopedia.github.io/2020/06/en/combinatorial-game-1-minimax/486_minimax.gv.svg">
 <meta property="og:image" content="https://myencyclopedia.github.io/2020/06/en/combinatorial-game-1-minimax/Poda_alfa-beta.svg">
 <meta property="article:published_time" content="2020-06-27T10:45:01.000Z">
-<meta property="article:modified_time" content="2021-10-16T03:53:26.000Z">
+<meta property="article:modified_time" content="2021-10-22T12:32:18.000Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta property="article:tag" content="Algorithm">
-<meta property="article:tag" content="LeetCode">
-<meta property="article:tag" content="Java">
 <meta property="article:tag" content="Python">
+<meta property="article:tag" content="Java">
 <meta property="article:tag" content="Gaming">
+<meta property="article:tag" content="LeetCode">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://myencyclopedia.github.io/2020/06/en/combinatorial-game-1-minimax/nim_7_brute.gv.svg">
 
@@ -236,11 +234,11 @@
     
         <html><head></head><body><p>This series, we deal with zero-sum turn-based board game algorithm, a sub type of combinatorial games. We start off with small search space problem, introduce classic algorithms and corresponding combinatorial gaming theory and ultimately end with modern approximating Deep RL techniques. From there, after stepping stone is laid, we are able to learn and appreciate how AlphaGo works.<br>In this first episode, we illustrate 3 classic gaming problems in leetcode and solve them from brute force version to DP version then finally rewrite them using classic gaming algorithms, minimax and alpha beta pruning.</p>
 <ul>
-<li><p><a href="!--swig%EF%BF%BC16--">Episode 1: Minimax and Alpha Beta Pruning in Leetcode</a></p>
+<li><p><strong><a href="!--swig%EF%BF%BC16--">Episode 1: Minimax and Alpha Beta Pruning in Leetcode</a></strong></p>
 </li>
 <li><p><a href="!--swig%EF%BF%BC17--">Episode 2: Tic-Tac-Toe Problems in Leetcode and Solve the Game using Minimax</a></p>
 </li>
-<li><p><strong><a href="!--swig%EF%BF%BC18--">Episode 3: Connect-N (Tic-Tac-Toe, Gomoku) OpenAI Gym GUI Environment</a></strong></p>
+<li><p><a href="!--swig%EF%BF%BC18--">Episode 3: Connect-N (Tic-Tac-Toe, Gomoku) OpenAI Gym GUI Environment</a></p>
 </li>
 <li><p>Episode 4: Connect-N (Tic-Tac-Toe, Gomoku) AlphaGo Zero Self-Play MCTS Reinforcement Learning</p>
 </li>
@@ -404,13 +402,13 @@ Pseudo code in Python 3 is listed below.
     
         <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Algorithm/">#Algorithm</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/LeetCode/">#LeetCode</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Python/">#Python</a></span>
     
         <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Java/">#Java</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Python/">#Python</a></span>
-    
         <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Gaming/">#Gaming</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/LeetCode/">#LeetCode</a></span>
     
     </div>
     
@@ -418,10 +416,12 @@ Pseudo code in Python 3 is listed below.
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/2021/06/en/vlog-paper-mine/">Paper Explained: MINE - Mutual Information Neural Estimation (2018)</a>
+            <a href="/2020/07/en/combinatorial-game-2-tictactoe/">Combinatorial Games. Episode 2: Tic-Tac-Toe Problems in Leetcode and Solve the Game using Minimax</a>
             
         </span>
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-next">
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/2020/06/en/tsp-5-rl/">TSP From DP to Deep Learning. Episode 5: Reinforcement Learning</a>
             
         </span>
     </div>
@@ -479,35 +479,6 @@ Pseudo code in Python 3 is listed below.
             </div>
             
             
-<div class="column is-narrow has-text-centered">
-    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
-        <div class="dropdown-trigger">
-            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
-                <span class="icon">
-                    <i class="fas fa-globe"></i>
-                </span>
-                <span>English</span>
-                <span class="icon is-small">
-            <i class="fas fa-angle-down" aria-hidden="true"></i>
-          </span>
-            </button>
-        </div>
-        <div class="dropdown-menu has-text-left" role="menu">
-            <div class="dropdown-content">
-            
-                <a href="/2020/06/en/combinatorial-game-1-minimax/" class="dropdown-item">
-                    简体中文
-                </a>
-            
-                <a href="/en/2020/06/en/combinatorial-game-1-minimax/" class="dropdown-item">
-                    English
-                </a>
-            
-            </div>
-        </div>
-    </div>
-</div>
-
         </div>
     </div>
 </footer>

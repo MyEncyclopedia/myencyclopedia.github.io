@@ -8,8 +8,6 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-<link href="/en/tags/Gaming/index.html" rel="alternate" hreflang="en" />
-    
 
 
 <meta name="description" content="">
@@ -20,7 +18,7 @@
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="MyEncyclopedia">
-<meta property="og:url" content="https://myencyclopedia.github.io/tags/Gaming/index.html">
+<meta property="og:url" content="https://myencyclopedia.github.io/tags/Gaming/">
 <meta property="og:site_name" content="MyEncyclopedia">
 <meta property="og:locale">
 <meta property="article:author" content="MyEncyclopedia">
@@ -85,13 +83,13 @@
         <div class="navbar-menu navbar-start">
             
             <a class="navbar-item "
-               href="/zh/archives">Archives</a>
+               href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/zh/categories/Technology">Technology</a>
+               href="/categories/Technology">Technology</a>
             
             <a class="navbar-item "
-               href="/zh/about">About</a>
+               href="/about">About</a>
             
         </div>
         
@@ -127,6 +125,843 @@
         <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/2020/08/zh/combinatorial-game-5-alphago-zero-connect-n/" itemprop="url">组合游戏系列5: 井字棋、五子棋AlphaGo Zero 算法实战</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-08-22T10:45:01.000Z" itemprop="datePublished">8月 22 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            23 分钟 读完 (约 3517 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>上一篇我们从原理层面解析了AlphaGo Zero如何改进MCTS算法，通过不断自我对弈，最终实现从零棋力开始训练直至能够打败任何高手。在本篇中，我们在已有的N子棋OpenAI Gym 环境中用Pytorch实现一个简化版的AlphaGo Zero算法。本篇所有代码在 <a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/ConnectNGym">github MyEncyclopedia/ConnectNGym</a> 中，其中部分参考了SongXiaoJun 的 <a target="_blank" rel="noopener" href="https://github.com/junxiaosong/AlphaZero_Gomoku">AlphaZero_Gomoku</a>。</p>
+<ul>
+<li><p><a href="/2020/06/zh/combinatorial-game-1-minimax/">第一篇: Leetcode中的Minimax 和 Alpha Beta剪枝</a></p>
+</li>
+<li><p><a href="/2020/07/zh/combinatorial-game-2-tictactoe/">第二篇: 井字棋Leetcode系列题解和Minimax最佳策略实现</a></p>
+</li>
+<li><p><a href="/2020/07/zh/combinatorial-game-3-openai-gym-pygame/">第三篇: 井字棋、五子棋的OpenAI Gym GUI环境</a></p>
+</li>
+<li><p><a href="zh/combinatorial-game-4-alphago-zero-theory/index.md">第四篇: AlphaGo Zero 强化学习算法原理深度分析</a></p>
+</li>
+<li><p><strong><a href="zh/combinatorial-game-5-alphago-zero-connect-n/index.md">第五篇: 井字棋、五子棋AlphaGo Zero 算法实战</a></strong></p>
+</li>
+</ul>
+<h2 id="AlphaGo-Zero-MCTS-树节点"><a href="#AlphaGo-Zero-MCTS-树节点" class="headerlink" title="AlphaGo Zero MCTS 树节点"></a>AlphaGo Zero MCTS 树节点</h2><p>上一篇中，我们知道AlphaGo Zero 的MCTS树搜索是基于传统MCTS 的UCT （UCB for Tree）的改进版PUCT（Polynomial Upper Confidence Trees）。局面节点的PUCT值由两部分组成，分别是代表Exploitation的action value Q值，和代表Exploration的U值。<br>$$<br>PUCT(s, a) =Q(s,a) + U(s,a)<br>$$<br>U值计算由这些参数决定：系数$c_{puct}$，节点先验概率P(s, a) ，父节点访问次数，本节点的访问次数。具体公式如下<br>$$<br>U(s, a)=c_{p u c t} \cdot P(s, a) \cdot \frac{\sqrt{\Sigma_{b} N(s, b)}}{1+N(s, a)}<br>$$</p>
+<p>因此在实现过程中，对于一个树节点来说，需要保存其Q值、节点访问次数 _visit_num和先验概率 _prior。其中，_prior在节点初始化后不变，Q值和 <em>visit_num随着游戏MCTS模拟进程而改变。此外，节点保存了</em> parent和_children变量，用于维护父子关系。c_puct为class variable，作为全局参数。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TreeNode</span>:</span></span><br><span class="line">    <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">    MCTS Tree Node</span></span><br><span class="line"><span class="hljs-string">    """</span></span><br><span class="line"></span><br><span class="line">    c_puct: ClassVar[<span class="hljs-built_in">int</span>] = <span class="hljs-number">5</span>  <span class="hljs-comment"># class-wise global param c_puct, exploration weight factor.</span></span><br><span class="line"></span><br><span class="line">    _parent: TreeNode</span><br><span class="line">    _children: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">int</span>, TreeNode]  <span class="hljs-comment"># map from action to TreeNode</span></span><br><span class="line">    _visit_num: <span class="hljs-built_in">int</span></span><br><span class="line">    _Q: <span class="hljs-built_in">float</span>   <span class="hljs-comment"># Q value of the node, which is the mean action value.</span></span><br><span class="line">    _prior: <span class="hljs-built_in">float</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>和上面的计算公式相对应，下列代码根据节点状态计算PUCT(s, a)。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TreeNode</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_puct</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">float</span>:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Computes AlphaGo Zero PUCT (polynomial upper confidence trees) of the node.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :return: Node PUCT value.</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        U = (TreeNode.c_puct * self._prior * np.sqrt(self._parent._visit_num) / (<span class="hljs-number">1</span> + self._visit_num))</span><br><span class="line">        <span class="hljs-keyword">return</span> self._Q + U</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<p>AlphaGo Zero MCTS在playout时遇到已经被展开的节点，会根据selection规则选择子节点，该规则本质上是在所有子节点中选择最大的PUCT值的节点。</p>
+<p>$$<br>a=\operatorname{argmax}_a(PUCT(s, a))=\operatorname{argmax}_a(Q(s,a) + U(s,a))<br>$$</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TreeNode</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">select</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Tuple</span>[Pos, TreeNode]:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Selects an action(Pos) having max UCB value.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :return: Action and corresponding node</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(self._children.items(), key=<span class="hljs-keyword">lambda</span> act_node: act_node[<span class="hljs-number">1</span>].get_puct())</span><br></pre></td></tr></tbody></table></figure>
+
+<p>新的叶节点一旦在playout时产生，关联的 v 值会一路向上更新至根节点，具体新节点的v值将在下一节中解释。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TreeNode</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">propagate_to_root</span>(<span class="hljs-params">self, leaf_value: <span class="hljs-built_in">float</span></span>):</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Updates current node with observed leaf_value and propagates to root node.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :param leaf_value:</span></span><br><span class="line"><span class="hljs-string">        :return:</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        <span class="hljs-keyword">if</span> self._parent:</span><br><span class="line">            self._parent.propagate_to_root(-leaf_value)</span><br><span class="line">        self._update(leaf_value)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_update</span>(<span class="hljs-params">self, leaf_value: <span class="hljs-built_in">float</span></span>):</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Updates the node by newly observed leaf_value.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :param leaf_value:</span></span><br><span class="line"><span class="hljs-string">        :return:</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        self._visit_num += <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-comment"># new Q is updated towards deviation from existing Q</span></span><br><span class="line">        self._Q += <span class="hljs-number">0.5</span> * (leaf_value - self._Q)</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="AlphaGo-Zero-MCTS-Player-实现"><a href="#AlphaGo-Zero-MCTS-Player-实现" class="headerlink" title="AlphaGo Zero MCTS Player 实现"></a>AlphaGo Zero MCTS Player 实现</h2><p>AlphaGo Zero MCTS  在训练阶段分为如下几个步骤。游戏初始局面下，整个局面树的建立由子节点的不断被探索而丰富起来。AlphaGo Zero对弈一次即产生了一次完整的游戏开始到结束的动作系列。在对弈过程中的某一游戏局面，需要采样海量的playout，又称MCTS模拟，以此来决定此局面的下一步动作。一次playout可视为在真实游戏状态树的一种特定采样，playout可能会产生游戏结局，生成真实的v值；也可能explore 到新的叶子节点，此时v值依赖策略价值网络的输出，目的是利用训练的神经网络来产生高质量的游戏对战局面。每次playout会从当前给定局面递归向下，向下的过程中会遇到下面三种节点情况。</p>
+<ul>
+<li>若局面节点是游戏结局（叶子节点），可以得到游戏的真实价值 z。从底部节点带着z向上更新沿途节点的Q值，直至根节点（初始局面）。</li>
+<li>若局面节点从未被扩展过（叶子节点），此时会将局面编码输入到策略价值双头网络，输出结果为网络预估的action分布和v值。Action分布作为节点先验概率P(s, a)来初始化子节点，预估的v值和上面真实游戏价值z一样，从叶子节点向上沿途更新到根节点。</li>
+<li>若局面节点已经被扩展过，则根据PUCT的select规则继续选择下一节点。</li>
+</ul>
+<p>海量的playout模拟后，建立了游戏状态树的节点信息。但至此，AI玩家只是收集了信息，还仍未给定局面落子，而落子的决定由Play规则产生。下图展示了给定局面（Current节点）下，MCST模拟进行的多次playout探索后生成的局面树，play规则根据这些节点信息，产生Current 节点的动作分布 $\pi$ ，确定下一步落子。</p>
+<figure>
+  <img src="mcts_game_tree.png">
+  <figcaption>MCTS Playout和Play关系</figcaption>
+</figure>
+
+
+
+<h3 id="Play-给定局面"><a href="#Play-给定局面" class="headerlink" title="Play 给定局面"></a>Play 给定局面</h3><p>对于当前需要做落子决定的某游戏局面$s_0$，根据如下play公式生成落子分布 $\pi$ ，子局面的落子概率正比于其访问次数的某次方。其中，某次方的倒数称为温度参数（Temperature）。</p>
+<p>$$<br>\pi\left(a \mid s_{0}\right)=\frac{N\left(s_{0}, a\right)^{1 / \tau}}{\sum_{b} N\left(s_{0}, b\right)^{1 / \tau}}<br>$$</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MCTSAlphaGoZeroPlayer</span>(<span class="hljs-params">BaseAgent</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_next_step_play_act_probs</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-type">List</span>[Pos], ActionProbs]:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        For the given game status, run playouts number of times specified by self._playout_num.</span></span><br><span class="line"><span class="hljs-string">        Returns the action distribution according to AlphaGo Zero MCTS play formula.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :param game:</span></span><br><span class="line"><span class="hljs-string">        :return: actions and their probability</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self._playout_num):</span><br><span class="line">            self._playout(copy.deepcopy(game))</span><br><span class="line"></span><br><span class="line">        act_visits = [(act, node._visit_num) <span class="hljs-keyword">for</span> act, node <span class="hljs-keyword">in</span> self._current_root._children.items()]</span><br><span class="line">        acts, visits = <span class="hljs-built_in">zip</span>(*act_visits)</span><br><span class="line">        act_probs = softmax(<span class="hljs-number">1.0</span> / MCTSAlphaGoZeroPlayer.temperature * np.log(np.array(visits) + <span class="hljs-number">1e-10</span>))</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> acts, act_probs</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在训练模式时，考虑到偏向exploration的目的，在$\pi$ 落子分布的基础上增加了 Dirichlet 分布。</p>
+<p>$$<br>P(s,a) = (1-\epsilon)*\pi(a \mid s) + \epsilon * \boldsymbol{\eta} \quad (\boldsymbol{\eta} \sim \operatorname{Dir}(0.3))<br>$$</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MCTSAlphaGoZeroPlayer</span>(<span class="hljs-params">BaseAgent</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_action</span>(<span class="hljs-params">self, board: PyGameBoard</span>) -&gt; Pos:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Method defined in BaseAgent.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :param board:</span></span><br><span class="line"><span class="hljs-string">        :return: next move for the given game board.</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        <span class="hljs-keyword">return</span> self._get_action(copy.deepcopy(board.connect_n_game))[<span class="hljs-number">0</span>]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_get_action</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[MoveWithProb]:</span></span><br><span class="line">        epsilon = <span class="hljs-number">0.25</span></span><br><span class="line">        avail_pos = game.get_avail_pos()</span><br><span class="line">        move_probs: ActionProbs = np.zeros(game.board_size * game.board_size)</span><br><span class="line">        <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(avail_pos) &gt; <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment"># the pi defined in AlphaGo Zero paper</span></span><br><span class="line">        acts, act_probs = self._next_step_play_act_probs(game)</span><br><span class="line">        move_probs[<span class="hljs-built_in">list</span>(acts)] = act_probs</span><br><span class="line">        <span class="hljs-keyword">if</span> self._is_training:</span><br><span class="line">            <span class="hljs-comment"># add Dirichlet Noise when training in favour of exploration</span></span><br><span class="line">            p_ = (<span class="hljs-number">1</span>-epsilon) * act_probs + epsilon * np.random.dirichlet(<span class="hljs-number">0.3</span> * np.ones(<span class="hljs-built_in">len</span>(act_probs)))</span><br><span class="line">            move = np.random.choice(acts, p=p_)</span><br><span class="line">            <span class="hljs-keyword">assert</span> move <span class="hljs-keyword">in</span> game.get_avail_pos()</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            move = np.random.choice(acts, p=act_probs)</span><br><span class="line"></span><br><span class="line">        self.reset()</span><br><span class="line">        <span class="hljs-keyword">return</span> move, move_probs</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="一次完整的对弈"><a href="#一次完整的对弈" class="headerlink" title="一次完整的对弈"></a>一次完整的对弈</h3><p>一次完整的AI对弈就是从初始局面迭代play直至游戏结束，对弈生成的数据是一系列的 $(s, \vec\pi, z) $。</p>
+<p>如下图 s0 到 s5 是某次井字棋的对弈。最终结局是先手黑棋玩家赢，即对于黑棋玩家 z = +1。需要注意的是：z = +1 是对于所有黑棋面临的局面，即s0, s2, s4，而对应的其余白棋玩家来说 z = -1。</p>
+<figure>
+  <img src="self_play.png">
+  <figcaption>一局完整对弈</figcaption>
+</figure>
+
+<div>
+$$
+\begin{align*}
+&amp;0: (s_0,  \vec{\pi_0}, +1)  \\
+&amp;1: (s_1,  \vec{\pi_1}, -1) \\
+&amp;2: (s_2,  \vec{\pi_2}, +1) \\
+&amp;3: (s_3,  \vec{\pi_3}, -1) \\
+&amp;4: (s_4,  \vec{\pi_4}, +1) 
+\end{align*}
+$$
+</div>
+
+
+
+<p>以下代码展示如何在AI对弈时收集数据  $(s, \vec\pi, z) $ </p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MCTSAlphaGoZeroPlayer</span>(<span class="hljs-params">BaseAgent</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">self_play_one_game</span>(<span class="hljs-params">self, game: ConnectNGame</span>) \</span></span><br><span class="line"><span class="hljs-function">            -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[NetGameState, ActionProbs, NDArray[(<span class="hljs-type">Any</span>), np.<span class="hljs-built_in">float</span>]]]:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :param game:</span></span><br><span class="line"><span class="hljs-string">        :return:</span></span><br><span class="line"><span class="hljs-string">            Sequence of (s, pi, z) of a complete game play. The number of list is the game play length.</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line"></span><br><span class="line">        states: <span class="hljs-type">List</span>[NetGameState] = []</span><br><span class="line">        probs: <span class="hljs-type">List</span>[ActionProbs] = []</span><br><span class="line">        current_players: <span class="hljs-type">List</span>[np.<span class="hljs-built_in">float</span>] = []</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> game.game_over:</span><br><span class="line">            move, move_probs = self._get_action(game)</span><br><span class="line">            states.append(convert_game_state(game))</span><br><span class="line">            probs.append(move_probs)</span><br><span class="line">            current_players.append(game.current_player)</span><br><span class="line">            game.move(move)</span><br><span class="line"></span><br><span class="line">        current_player_z = np.zeros(<span class="hljs-built_in">len</span>(current_players))</span><br><span class="line">        current_player_z[np.array(current_players) == game.game_result] = <span class="hljs-number">1.0</span></span><br><span class="line">        current_player_z[np.array(current_players) == -game.game_result] = -<span class="hljs-number">1.0</span></span><br><span class="line">        self.reset()</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">list</span>(<span class="hljs-built_in">zip</span>(states, probs, current_player_z))</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="Playout-代码实现"><a href="#Playout-代码实现" class="headerlink" title="Playout 代码实现"></a>Playout 代码实现</h3><p>一次playout会从当前局面根据PUCT selection规则下沉到叶子节点，如果此叶子节点非游戏终结点，则会扩展当前节点生成下一层新节点，其先验分布由策略价值网络输出的action分布决定。一次playout最终会得到叶子节点的 v 值，并沿着MCTS树向上更新沿途的所有父节点 Q值。<br>从上一篇文章已知，游戏节点的数量随着参数而指数级增长，举例来说，井字棋（k=3，m=n=3）的状态数量是5478，k=3，m=n=4时是6035992 ，k=m=n=4时是9722011 。如果我们将初始局面节点作为根节点，同时保存海量playout探索得到的局面节点，实现时会发现我们无法将所有探索到的局面节点都保存在内存中。这里的一种解决方法是在一次self play中每轮playout之后，将根节点重置成落子的节点，从而有效控制整颗局面树中的节点数量。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MCTSAlphaGoZeroPlayer</span>(<span class="hljs-params">BaseAgent</span>):</span></span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_playout</span>(<span class="hljs-params">self, game: ConnectNGame</span>):</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        From current game status, run a sequence down to a leaf node, either because game ends or unexplored node.</span></span><br><span class="line"><span class="hljs-string">        Get the leaf value of the leaf node, either the actual reward of game or action value returned by policy net.</span></span><br><span class="line"><span class="hljs-string">        And propagate upwards to root node.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :param game:</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        player_id = game.current_player</span><br><span class="line"></span><br><span class="line">        node = self._current_root</span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            <span class="hljs-keyword">if</span> node.is_leaf():</span><br><span class="line">                <span class="hljs-keyword">break</span></span><br><span class="line">            act, node = node.select()</span><br><span class="line">            game.move(act)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment"># now game state is a leaf node in the tree, either a terminal node or an unexplored node</span></span><br><span class="line">        act_and_probs: Iterator[MoveWithProb]</span><br><span class="line">        act_and_probs, leaf_value = self._policy_value_net.policy_value_fn(game)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> game.game_over:</span><br><span class="line">            <span class="hljs-comment"># case where encountering an unexplored leaf node, update leaf_value estimated by policy net to root</span></span><br><span class="line">            <span class="hljs-keyword">for</span> act, prob <span class="hljs-keyword">in</span> act_and_probs:</span><br><span class="line">                game.move(act)</span><br><span class="line">                child_node = node.expand(act, prob)</span><br><span class="line">                game.undo()</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            <span class="hljs-comment"># case where game ends, update actual leaf_value to root</span></span><br><span class="line">            <span class="hljs-keyword">if</span> game.game_result == ConnectNGame.RESULT_TIE:</span><br><span class="line">                leaf_value = ConnectNGame.RESULT_TIE</span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                leaf_value = <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> game.game_result == player_id <span class="hljs-keyword">else</span> -<span class="hljs-number">1</span></span><br><span class="line">            leaf_value = <span class="hljs-built_in">float</span>(leaf_value)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment"># Update leaf_value and propagate up to root node</span></span><br><span class="line">        node.propagate_to_root(-leaf_value)</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+
+
+<h2 id="编码游戏局面"><a href="#编码游戏局面" class="headerlink" title="编码游戏局面"></a>编码游戏局面</h2><p>为了将信息有效的传递给策略神经网络，必须从当前玩家的角度编码游戏局面。局面不仅要反映棋盘上黑白棋子的位置，也需要考虑最后一个落子的位置以及是否为当前玩家棋局。因此，我们将某局面按照当前玩家来编码，返回类型为4个棋盘大小组成的ndarray，即shape  [4, board_size, board_size]，其中</p>
+<ol>
+<li>第一个数组编码当前玩家的棋子位置</li>
+<li>第二个数组编码对手玩家棋子位置</li>
+<li>第三个表示最后落子位置</li>
+<li>第四个全1表示此局面为先手（黑棋）局面，全0表示白棋局面</li>
+</ol>
+<p>例如之前游戏对弈中的前四步：</p>
+<figure>
+  <img src="self_play_first_3.jpg">
+  <figcaption></figcaption>
+</figure>
+
+<p>s1-&gt;s2 后局面s2的编码：当前玩家为黑棋玩家，编码局面s2 返回如下ndarray，数组[0] 为s2黑子位置，[1]为白子位置，[2]表示最后一个落子(1, 1) ，[3] 全1表示当前是黑棋落子的局面。</p>
+<figure>
+  <img src="s2_state.jpg">
+  <figcaption>编码黑棋玩家局面 s2</figcaption>
+</figure>
+
+<p> s2-&gt;s3 后局面s3的编码：当前玩家为白棋玩家，编码返回如下，数组[0] 为s3白子位置，[1]为黑子位置，[2]表示最后一个落子(1, 0) ，[3] 全0表示当前是白棋落子的局面。</p>
+<figure>
+  <img src="s3_state.jpg">
+  <figcaption>编码白棋玩家局面 s3</figcaption>
+</figure>
+
+<p>具体代码实现如下。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">NetGameState = NDArray[(<span class="hljs-number">4</span>, <span class="hljs-type">Any</span>, <span class="hljs-type">Any</span>), np.<span class="hljs-built_in">int</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">convert_game_state</span>(<span class="hljs-params">game: ConnectNGame</span>) -&gt; NetGameState:</span></span><br><span class="line">    <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">    Converts game state to type NetGameState as ndarray.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">    :param game:</span></span><br><span class="line"><span class="hljs-string">    :return:</span></span><br><span class="line"><span class="hljs-string">        Of shape 4 * board_size * board_size.</span></span><br><span class="line"><span class="hljs-string">        [0] is current player positions.</span></span><br><span class="line"><span class="hljs-string">        [1] is opponent positions.</span></span><br><span class="line"><span class="hljs-string">        [2] is last move location.</span></span><br><span class="line"><span class="hljs-string">        [3] all 1 meaning move by black player, all 0 meaning move by white.</span></span><br><span class="line"><span class="hljs-string">    """</span></span><br><span class="line">    state_matrix = np.zeros((<span class="hljs-number">4</span>, game.board_size, game.board_size))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">if</span> game.action_stack:</span><br><span class="line">        actions = np.array(game.action_stack)</span><br><span class="line">        move_curr = actions[::<span class="hljs-number">2</span>]</span><br><span class="line">        move_oppo = actions[<span class="hljs-number">1</span>::<span class="hljs-number">2</span>]</span><br><span class="line">        <span class="hljs-keyword">for</span> move <span class="hljs-keyword">in</span> move_curr:</span><br><span class="line">            state_matrix[<span class="hljs-number">0</span>][move] = <span class="hljs-number">1.0</span></span><br><span class="line">        <span class="hljs-keyword">for</span> move <span class="hljs-keyword">in</span> move_oppo:</span><br><span class="line">            state_matrix[<span class="hljs-number">1</span>][move] = <span class="hljs-number">1.0</span></span><br><span class="line">        <span class="hljs-comment"># indicate the last move location</span></span><br><span class="line">        state_matrix[<span class="hljs-number">2</span>][actions[-<span class="hljs-number">1</span>]] = <span class="hljs-number">1.0</span></span><br><span class="line">    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(game.action_stack) % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>:</span><br><span class="line">        state_matrix[<span class="hljs-number">3</span>][:, :] = <span class="hljs-number">1.0</span>  <span class="hljs-comment"># indicate the colour to play</span></span><br><span class="line">    <span class="hljs-keyword">return</span> state_matrix[:, ::-<span class="hljs-number">1</span>, :]</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="策略价值网络训练"><a href="#策略价值网络训练" class="headerlink" title="策略价值网络训练"></a>策略价值网络训练</h2><p>策略价值网络是一个共享参数 $\theta$ 的双头网络，给定上面的游戏局面编码会产生预估的p和v。</p>
+<figure>
+  <img src="policy_value_net.png">
+</figure>
+
+<p>$$<br>\vec{p_{\theta}}, v_{\theta}=f_{\theta}(s)<br>$$<br>结合真实游戏对弈后产生三元组数据 $(s, \vec\pi, z) $ ，按照论文中的loss 来训练神经网络。<br>$$<br>l=\sum_{t}\left(v_{\theta}\left(s_{t}\right)-z_{t}\right)^{2}-\vec{\pi_{t}} \cdot \log \left(\vec{p_{\theta}}\left(s_{t}\right)\right) + c {\lVert \theta \rVert}^2<br>$$</p>
+<p>下面代码为Pytorch  backward部分。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">backward_step</span>(<span class="hljs-params">self, state_batch: <span class="hljs-type">List</span>[NetGameState], probs_batch: <span class="hljs-type">List</span>[ActionProbs],</span></span></span><br><span class="line"><span class="hljs-params"><span class="hljs-function">               value_batch: <span class="hljs-type">List</span>[NDArray[(<span class="hljs-params"><span class="hljs-type">Any</span></span>), np.<span class="hljs-built_in">float</span>]], lr</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-built_in">float</span>]:</span></span><br><span class="line">    <span class="hljs-keyword">if</span> self.use_gpu:</span><br><span class="line">        state_batch = Variable(torch.FloatTensor(state_batch).cuda())</span><br><span class="line">        probs_batch = Variable(torch.FloatTensor(probs_batch).cuda())</span><br><span class="line">        value_batch = Variable(torch.FloatTensor(value_batch).cuda())</span><br><span class="line">    <span class="hljs-keyword">else</span>:</span><br><span class="line">        state_batch = Variable(torch.FloatTensor(state_batch))</span><br><span class="line">        probs_batch = Variable(torch.FloatTensor(probs_batch))</span><br><span class="line">        value_batch = Variable(torch.FloatTensor(value_batch))</span><br><span class="line"></span><br><span class="line">    self.optimizer.zero_grad()</span><br><span class="line">    <span class="hljs-keyword">for</span> param_group <span class="hljs-keyword">in</span> self.optimizer.param_groups:</span><br><span class="line">        param_group[<span class="hljs-string">'lr'</span>] = lr</span><br><span class="line"></span><br><span class="line">    log_act_probs, value = self.policy_value_net(state_batch)</span><br><span class="line">    <span class="hljs-comment"># loss = (z - v)^2 - pi*T * log(p) + c||theta||^2</span></span><br><span class="line">    value_loss = F.mse_loss(value.view(-<span class="hljs-number">1</span>), value_batch)</span><br><span class="line">    policy_loss = -torch.mean(torch.<span class="hljs-built_in">sum</span>(probs_batch * log_act_probs, <span class="hljs-number">1</span>))</span><br><span class="line">    loss = value_loss + policy_loss</span><br><span class="line">    loss.backward()</span><br><span class="line">    self.optimizer.step()</span><br><span class="line">    entropy = -torch.mean(torch.<span class="hljs-built_in">sum</span>(torch.exp(log_act_probs) * log_act_probs, <span class="hljs-number">1</span>))</span><br><span class="line">    <span class="hljs-keyword">return</span> loss.item(), entropy.item()</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=Wujy7OzvdJk&amp;t=358s">Youtube, Deepmind AlphaZero - Mastering Games Without Human Knowledge, David Silver</a></p>
+</li>
+<li><p>Mastering the game of Go with deep neural networks and tree search</p>
+</li>
+<li><p>Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://xtf615.com/2018/02/12/AlphaGo-Zero/">AlphaGo Zero论文解析</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/32089487">AlphaZero实战：从零学下五子棋（附代码）</a></p>
+</li>
+</ul>
+</body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/2020/08/zh/combinatorial-game-4-alphago-zero-theory/" itemprop="url">组合游戏系列4: AlphaGo Zero 强化学习算法原理深度分析</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-08-08T10:45:01.000Z" itemprop="datePublished">8月 8 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            24 分钟 读完 (约 3527 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>AlphaGo Zero是Deepmind 最后一代AI围棋算法，因为已经达到了棋类游戏AI的终极目的：给定任何游戏规则，AI从零出发只通过自我对弈的方式提高，最终可以取得超越任何对手（包括顶级人类棋手和上一代AlphaGo）的能力。换种方式说，当给定足够多的时间和计算资源，可以取得无限逼近游戏真实解的能力。这一篇，我们深入分析AlphaGo Zero的设计理念和关键组件的细节并解释组件之间的关联。下一篇中，我们将在已有的N子棋OpenAI Gym 环境中用Pytorch实现一个简化版的AlphaGo Zero算法。</p>
+<ul>
+<li><p><a href="/2020/06/zh/combinatorial-game-1-minimax/">第一篇: Leetcode中的Minimax 和 Alpha Beta剪枝</a></p>
+</li>
+<li><p><a href="/2020/07/zh/combinatorial-game-2-tictactoe/">第二篇: 井字棋Leetcode系列题解和Minimax最佳策略实现</a></p>
+</li>
+<li><p><a href="/2020/07/zh/combinatorial-game-3-openai-gym-pygame/">第三篇: 井字棋、五子棋的OpenAI Gym GUI环境</a></p>
+</li>
+<li><p><strong><a href="zh/combinatorial-game-4-alphago-zero-theory/index.md">第四篇: AlphaGo Zero 强化学习算法原理深度分析</a></strong></p>
+</li>
+<li><p><a href="zh/combinatorial-game-5-alphago-zero-connect-n/index.md">第五篇: 井字棋、五子棋AlphaGo Zero 算法实战</a></p>
+</li>
+</ul>
+<h2 id="AlphaGo-Zero-综述"><a href="#AlphaGo-Zero-综述" class="headerlink" title="AlphaGo Zero 综述"></a>AlphaGo Zero 综述</h2><p>AlphaGo Zero 作为Deepmind在围棋领域的最后一代AI Agent，已经可以达到棋类游戏的终极目标：在只给定游戏规则的情况下，AI 棋手从最初始的随机状态开始，通过不断的自我对弈的强化学习来实现超越以往任何人类棋手和上一代Alpha的能力，并且同样的算法和模型应用到了其他棋类也得出相同的效果。这一篇，从原理上来解析AlphaGo Zero的运行方式。</p>
+<p>AlphaGo Zero 算法由三种元素构成：强化学习（RL）、深度学习（DL）和蒙特卡洛树搜索（MCTS，Monte Carlo Tree Search）。核心思想是基于神经网络的Policy Iteration强化学习，即最终学的是一个深度学习的policy network，输入是某棋盘局面 s，输出是此局面下可走位的概率分布：$p(a|s)$。</p>
+<figure>
+  <img src="policy_net.png">
+</figure>
+在第一代AlphaGo算法中，这个初始policy network通过收集专业人类棋手的海量棋局训练得来，再采用传统RL 的Monte Carlo Tree Search Rollout 技术来强化现有的AI对于局面落子（Policy Network）的判断。Monte Carlo Tree Search Rollout 简单说来就是海量棋局模拟，AI Agent在通过现有的Policy Network策略完成一次从某局面节点到最终游戏胜负结束的对弈，这个完整的对弈叫做rollout，又称playout。完成一次rollout之后，通过局面树层层回溯到初始局面节点，并在回溯过程中同步修订所有经过的局面节点的统计指标，修正原先policy network对于落子导致输赢的判断。通过海量并发的棋局模拟来提升基准policy network，即在各种局面下提高好的落子的$p(a_{win}|s)$，降低坏的落子的$p(a_{lose}|s)$
+
+<p>举例如下井字棋局面：</p>
+<figure>
+  <img src="pos.png">
+  <figcaption>局面s</figcaption>
+</figure>
+基准policy network返回 p(s) 如下
+$$
+p(a|s) =  
+\begin{align*}
+  \left\lbrace
+  \begin{array}{r@{}l}
+    0.1, &amp; &amp; a = (0,2) \\
+    0.05, &amp; &amp; a = (1,0) \\
+     0.5, &amp; &amp; a = (1,1) \\
+     0.05, &amp; &amp; a = (1,2)\\
+     0.2, &amp; &amp; a = (2,0) \\
+    0.05, &amp; &amp; a = (2,1) \\
+    0.05, &amp; &amp; a = (2,2) 
+  \end{array}
+  \right.
+\end{align*}
+$$
+通过海量并发模拟后，修订成如下的action概率分布，然后通过policy iteration迭代新的网络来逼近 $p'$ 就提高了棋力。
+$$
+p'(a|s) =  
+\begin{align*}
+  \left\lbrace
+  \begin{array}{r@{}l}
+   0, &amp; &amp; a = (0,2) \\
+    0, &amp; &amp; a = (1,0) \\
+     0.9, &amp; &amp; a = (1,1) \\
+     0, &amp; &amp; a = (1,2)\\
+     0, &amp; &amp; a = (2,0) \\
+    0, &amp; &amp; a = (2,1) \\
+    0.1, &amp; &amp; a = (2,2) 
+  \end{array}
+  \right.
+\end{align*}
+$$
+
+
+
+
+
+<h2 id="蒙特卡洛树搜索（MCTS）概述"><a href="#蒙特卡洛树搜索（MCTS）概述" class="headerlink" title="蒙特卡洛树搜索（MCTS）概述"></a>蒙特卡洛树搜索（MCTS）概述</h2><p>Monte Carlo Tree Search 是Monte Carlo 在棋类游戏中的变种，棋类游戏的一大特点是可以用动作(move)联系的决策树来表示，树的节点数量取决于分支的数量和树的深度。MCTS的目的是在树节点非常多的情况下，通过实验模拟（rollout, playout）的方式来收集尽可能多的局面输赢情况，并基于这些统计信息，将搜索资源的重点均衡地放在未被探索的节点和值得探索的节点上，减少在大概率输的节点上的模拟资源投入。传统MCTS有四个过程：Selection, Expansion, Simulation 和Backpropagation。下图是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Monte_Carlo_tree_search">Wikipedia</a> 的例子：</p>
+<figure>
+  <img src="MCTS_selection.png">
+</figure>
+- Selection：从根节点出发，根据现有统计的信息和selection规则，选择子节点递归向下做决定，后面我们会详细介绍AlphaGo的UCB规则。图中节点的数字，例如根节点11/21，分别代表赢的次数和总模拟次数。从根节点一路向下分别选择节点 7/10, 1/6直到叶子节点3/3，叶子节点表示它未被探索过。
+
+
+
+<figure>
+  <img src="MCTS_expansion.png">
+</figure>
+- Expansion：由于3/3节点未被探索过，初始化其所有子节点为0/0，图中3/3只有一个子节点。后面我们会看到神经网络在初始化子节点的时候起到的指导作用，即所有子节点初始权重并非相同，而是由神经网络给出估计。
+
+
+
+<figure>
+  <img src="MCTS_simulation.png">
+</figure>
+- Simulation：重复selection和expansion，根据游戏规则递归向下直至游戏结束。
+
+
+
+<figure>
+  <img src="MCTS_backprop.png">
+</figure>
+- Backpropagation：游戏结束在终点节点产生游戏真实的价值，回溯向上调整所有父节点的统计状态。
+
+<h3 id="权衡-Exploration-和-Exploitation"><a href="#权衡-Exploration-和-Exploitation" class="headerlink" title="权衡 Exploration 和 Exploitation"></a>权衡 Exploration 和 Exploitation</h3><p>在不断扩张决策树并收集节点统计信息的同时，MCTS根据规则来权衡探索目的（采样不足）或利用目的来做决策，这个权衡规则叫做Upper Confidence Bound（UCB）。典型的UCB公式如下：w表示通过节点的赢的次数，n表示通过节点的总次数，N是父节点的访问次数，c是调节Exploration 和 Exploitation权重的超参。</p>
+<p>$$<br>{\frac{w_i}{n_i}} + c \sqrt{\frac{\ln N_i}{n_i}}<br>$$</p>
+<p>假设某节点有两个子节点s1, s2，它们的统计指标为 s1: w/n = 3/4，s2: w/n = 6/8，由于两者输赢比率一样，因此根据公式，访问次数少的节点出于Exploration的目的胜出，MCTS最终决定从s局面走向s1。</p>
+<h2 id="从第一性原理来理解AlphaGo-Zero"><a href="#从第一性原理来理解AlphaGo-Zero" class="headerlink" title="从第一性原理来理解AlphaGo Zero"></a>从第一性原理来理解AlphaGo Zero</h2><p>前一代的AlphaGo已经战胜了世界冠军，取得了空前的成就，AlphaGo Zero 的设计目标变得更加General，去除围棋相关的处理和知识，用统一的框架和算法来解决棋类问题。</p>
+<ol>
+<li><p>无人工先验数据</p>
+<p>改进之前需要专家棋手对弈数据来冷启动初始棋力</p>
+</li>
+<li><p>无特定游戏特征工程</p>
+<p>无需围棋特定技巧，只包含下棋规则，可以适用到所有棋类游戏</p>
+</li>
+<li><p>单一神经网络</p>
+<p>统一Policy Network和Value Network，使用一个共享参数的双头神经网络</p>
+</li>
+<li><p>简单树搜索</p>
+<p>去除传统MCTS的Rollout 方式，用神经网络来指导MCTS更有效产生搜索策略</p>
+</li>
+</ol>
+<h3 id="搜索空间的两个优化原则"><a href="#搜索空间的两个优化原则" class="headerlink" title="搜索空间的两个优化原则"></a>搜索空间的两个优化原则</h3><p>尽管理论上围棋是有解的，即先手必赢、被逼平或必输，通过遍历所有可能局面可以求得解。同理，通过海量模拟所有可能游戏局面，也可以无限逼近所有局面下的真实输赢概率，直至收敛于局面落子的确切最佳结果。但由于围棋棋局的数目远远大于宇宙原子数目，3^361 &gt;&gt; 10^80，因此需要将计算资源有效的去模拟值得探索的局面，例如对于显然的被动局面减小模拟次数，所以如何有效地减小搜索空间是AlphaGo Zero 需要解决的重大问题。David Silver 在<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=Wujy7OzvdJk&amp;t=358s">Deepmind AlphaZero - Mastering Games Without Human Knowledge</a>中提到AlphaGo Zero 采用两个原则来有效减小搜索空间。</p>
+<figure>
+  <img src="exhaustive_search.png">
+</figure>
+
+
+<h4 id="原则1-通过Value-Network减少搜索的深度"><a href="#原则1-通过Value-Network减少搜索的深度" class="headerlink" title="原则1: 通过Value Network减少搜索的深度"></a>原则1: 通过Value Network减少搜索的深度</h4><p>Value Network 通过预测给定局面的value来直接预测最终结果，思想和上一期Minimax DP 策略中直接缓存当前局面的胜负状态一样，减少每次必须靠模拟到最后才能知道当前局面的输赢概率，或者需要多层树搜索才能知道输赢概率。</p>
+<figure>
+  <img src="value_net.png">
+</figure>
+
+<figure>
+  <img src="reduce_depth.png">
+</figure>
+
+<h4 id="原则2-通过Policy-Network减少搜索的宽度"><a href="#原则2-通过Policy-Network减少搜索的宽度" class="headerlink" title="原则2: 通过Policy Network减少搜索的宽度"></a>原则2: 通过Policy Network减少搜索的宽度</h4><p>搜索广度的减少是由Policy Network预估来达成的，将下一步搜索局限在高概率的动作上，大幅度提升原先MCTS新节点生成后冷启动的搜索宽度。</p>
+<figure>
+  <img src="reduce_breadth.png">
+</figure>
+
+
+<h3 id="神经网络结构"><a href="#神经网络结构" class="headerlink" title="神经网络结构"></a>神经网络结构</h3><p>AlphaGo Zero 使用一个单一的深度神经网络来完成policy 和value的预测。具体实现方式是将policy network和value network合并成一个共享参数 $ \theta$ 的双头网络。其中z是真实游戏结局的效用，范围为[-1, 1] 。</p>
+<p>$$<br>(p, v)=f_{\theta}(s)<br>$$<br>$$<br>p_{a}=\operatorname{Pr}(a \mid s)<br>$$<br>$$<br>v =  \mathop{\mathbb{E}}[z|s]<br>$$</p>
+<figure>
+  <img src="policy_value_net.png">
+</figure>
+
+<p>Monte Carlo Tree Search (MCTS) 建立了棋局搜索树，节点的初始状态由神经网络输出的p和v值来估计，由此初始的动作策略和价值预判就会建立在高手的水平之上。模拟一局游戏之后向上回溯，会同步更新路径上节点的统计数值并生成更好的MCTS搜索策略 $\vec{\pi}$。进一步来看，MCTS和神经网络互相形成了正循环。神经网络指导了未知节点的MCTS初始搜索策略，产生自我对弈游戏结局后，通过减小 $\vec{p}$ 和$\vec{\pi}$的 Loss ，最终又提高了神经网络对于局面的估计能力。神经网络value network的提升也是通过不断减小网络预测的结果和最终结果的差异来提升。<br>因此，具体神经网络的Loss函数由三部分组成，value network的损失，policy network的损失以及正则项。<br>$$<br>l=\sum_{t}\left(v_{\theta}\left(s_{t}\right)-z_{t}\right)^{2}-\vec{\pi}<em>{t} \cdot \log \left(\vec{p}</em>{\theta}\left(s_{t}\right)\right) + c {\lVert \theta \rVert}^2<br>$$</p>
+<h3 id="AlphaGo-Zero-MCTS-具体过程"><a href="#AlphaGo-Zero-MCTS-具体过程" class="headerlink" title="AlphaGo Zero MCTS 具体过程"></a>AlphaGo Zero MCTS 具体过程</h3><figure>
+  <img src="self-play.png">
+  <figcaption>AlphaGo Plays Games Against Itself</figcaption>
+</figure>
+AlphaGo Zero的MCTS和传统MCTS都有相似的四个过程，但AlphaGo Zero的MCTS步骤相对更复杂。
+首先，除了W/N统计指标之外，AlphaGo Zero的MCTS保存了决策边 a|s 的Q(s,a)：Action Value，也就是Q-Learning中的Q值，其初始值由神经网络给出。此外，Q 值也用于串联自底向上更新节点的Value值。具体说来，当某个新节点被Explore后，会将网络给出的Q值向上传递，并逐层更新父节点的Q值。当游戏结局产生时，也会向上更新所有父节点的Q值。
+此外对于某一游戏局面s进行多次模拟，每次在局面s出发向下探索，每次探索在已知节点按Selection规则深入一步，直至达到未探索的局面或者游戏结束，产生Q值后向上回溯到最初局面s，回溯过程中更新路径上的局面的统计值或者Q值。在多次模拟结束后根据Play的算法，决定局面s的下一步行动。尽管每次模拟探索可能会深入多层，但最终play阶段的算法规则仅决定给定局面s的下一层落子动作。多次向下探索的优势在于：
+
+<ol>
+<li><p>探索和采样更多的叶子节点，在更多信息下做决策。</p>
+</li>
+<li><p>通过average out多次模拟下一层落子决定，尽可能提升MCTS策略的下一步判断能力，提高 $\pi$ 能力，更有效指导神经网络，提高其学习效率。</p>
+</li>
+</ol>
+<figure>
+  <img src="MCTS_alphago.png">
+  <figcaption>New Policy Network V' is Trained to Predict Winner</figcaption>
+</figure>
+
+
+<ol>
+<li>Selection: </li>
+</ol>
+<p>从游戏局面s开始，选择a向下递归，直至未展开的节点（搜索树中的叶子节点）或者游戏结局。具体在局面s下选择a的规则由以下UCB(Upper Confidence Bound)决定<br>$$<br>a=\operatorname{argmax}_a(Q(s,a) + u(s,a))<br>$$</p>
+<p>其中，Q(s,a) 和u(s,a) 项分别代表Exploitation 和Exploration。两项相加来均衡Exploitation和Exploration，保证初始时每个节点被explore，在有足够多的信息时逐渐偏向exploitation。</p>
+<p>$$<br>u(s, a)=c_{p u c t} \cdot P(s, a) \cdot \frac{\sqrt{\Sigma_{b} N(s, b)}}{1+N(s, a)}<br>$$</p>
+<ol start="2">
+<li>Expand</li>
+</ol>
+<p>当遇到一个未展开的节点（搜索树中的叶子节点）时，对其每个子节点使用现有网络进行预估，即</p>
+<p>$$<br>(p(s), v(s))=f_{\theta}(s)<br>$$</p>
+<ol start="3">
+<li>Backup</li>
+</ol>
+<p>当新的叶子节点展开时或者到达终点局面时，向上更新父节点的Q值，具体公式为<br>$$<br>Q(s, a)=\frac{1}{N(s, a)} \sum_{s^{\prime} \mid s, a \rightarrow s^{\prime}} V\left(s^{\prime}\right)<br>$$</p>
+<ol start="4">
+<li>Play</li>
+</ol>
+<p>多次模拟结束后，使用得到搜索概率分布 $\pi_{a} $来确定最终的落子动作。正比于访问次数的某次方 $ \pi_{a} \propto N(s, a)^{1 / \tau}$，其中$\tau$为温度参数（temperature parameter）。</p>
+<figure>
+  <img src="net_training.png">
+  <figcaption>New Policy Network V' is Trained to Predict Winner</figcaption>
+</figure>
+
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=Wujy7OzvdJk&amp;t=358s">Youtube, Deepmind AlphaZero - Mastering Games Without Human Knowledge, David Silver</a></p>
+</li>
+<li><p>Mastering the game of Go with deep neural networks and tree search</p>
+</li>
+<li><p>Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://xtf615.com/2018/02/12/AlphaGo-Zero/">AlphaGo Zero论文解析</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/32089487">AlphaZero实战：从零学下五子棋（附代码）</a></p>
+</li>
+</ul>
+</body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/2020/07/zh/combinatorial-game-3-openai-gym-pygame/" itemprop="url">组合游戏系列3: 井字棋、五子棋的OpenAI Gym GUI环境</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-07-24T10:45:01.000Z" itemprop="datePublished">7月 24 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            18 分钟 读完 (约 2749 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>继上一篇完成了井字棋（N子棋）的minimax 最佳策略后，我们基于Pygame来创造一个图形游戏环境，可供人机和机器对弈，为后续模拟AlphaGo的自我强化学习算法做环境准备。OpenAI Gym 在强化学习领域是事实标准，我们最终封装成OpenAI Gym的接口。本篇所有代码都在<a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/ConnectNGym">github.com/MyEncyclopedia/ConnectNGym</a>。</p>
+<ul>
+<li><p><a href="/2020/06/zh/combinatorial-game-1-minimax/">第一篇: Leetcode中的Minimax 和 Alpha Beta剪枝</a></p>
+</li>
+<li><p><a href="/2020/07/zh/combinatorial-game-2-tictactoe/">第二篇: 井字棋Leetcode系列题解和Minimax最佳策略实现</a></p>
+</li>
+<li><p><strong><a href="/2020/07/zh/combinatorial-game-3-openai-gym-pygame/">第三篇: 井字棋、五子棋的OpenAI Gym GUI环境</a></strong></p>
+</li>
+<li><p><a href="zh/combinatorial-game-4-alphago-zero-theory/index.md">第四篇: AlphaGo Zero 强化学习算法原理深度分析</a></p>
+</li>
+<li><p><a href="zh/combinatorial-game-5-alphago-zero-connect-n/index.md">第五篇: 井字棋、五子棋AlphaGo Zero 算法实战</a></p>
+</li>
+</ul>
+<h2 id="井字棋、五子棋-Pygame-实现"><a href="#井字棋、五子棋-Pygame-实现" class="headerlink" title="井字棋、五子棋 Pygame 实现"></a>井字棋、五子棋 Pygame 实现</h2><figure>
+  <img src="pygame.gif">
+  <figcaption>Pygame 井字棋玩家对弈效果</figcaption>
+</figure>
+
+
+<p>Python 上有Tkinter，PyQt等跨平台GUI类库，主要用于桌面程序编程，但此类库容量较大，编程也相对麻烦。Pygame具有代码少，开发快的优势，比较适合快速开发五子棋这类桌面小游戏。</p>
+<h3 id="Pygame-极简入门"><a href="#Pygame-极简入门" class="headerlink" title="Pygame 极简入门"></a>Pygame 极简入门</h3><p>与所有的GUI开发相同，Pygame也是基于事件的单线程编程模型。下面的例子包含了显示一个最简单GUI窗口，操作系统产生事件并发送到Pygame窗口，while True 控制了python主线程永远轮询事件。我们在这里仅仅判断了当前是否是关闭应用程序事件，如果是则退出进程。此外，clock 用于控制FPS。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> sys</span><br><span class="line"><span class="hljs-keyword">import</span> pygame</span><br><span class="line">pygame.init()</span><br><span class="line">display = pygame.display.set_mode((<span class="hljs-number">800</span>,<span class="hljs-number">600</span>))</span><br><span class="line">clock = pygame.time.Clock()</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">	<span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> pygame.event.get():</span><br><span class="line">		<span class="hljs-keyword">if</span> event.<span class="hljs-built_in">type</span> == pygame.QUIT:</span><br><span class="line">			sys.exit(<span class="hljs-number">0</span>)</span><br><span class="line">		<span class="hljs-keyword">else</span>:</span><br><span class="line">			pygame.display.update()</span><br><span class="line">			clock.tick(<span class="hljs-number">1</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="PyGameBoard-主体代码"><a href="#PyGameBoard-主体代码" class="headerlink" title="PyGameBoard 主体代码"></a>PyGameBoard 主体代码</h3><p>PyGameBoard类封装了Pygame实现游戏交互和显示的逻辑。上一篇中，我们完成了ConnectNGame逻辑，这里PyGameBoard需要在初始化时，指定传入ConnectNGame 实例（见下图），支持通过API 方式改变其状态，也支持GUI交互方式等待人类玩家的输入。next_user_input(self)实现了等待人类玩家输入的逻辑，本质上是循环检查GUI事件直到有合法的落子产生。</p>
+<figure>
+  <img src="diagram-pygameboard.svg">
+  <figcaption>PyGameBoard Class Diagram</figcaption>
+</figure>
+
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PyGameBoard</span>:</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, connectNGame: ConnectNGame</span>):</span></span><br><span class="line">		self.connectNGame = connectNGame</span><br><span class="line">		pygame.init()</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">next_user_input</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]:</span></span><br><span class="line">		self.action = <span class="hljs-literal">None</span></span><br><span class="line">		<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> self.action:</span><br><span class="line">			self.check_event()</span><br><span class="line">			self._render()</span><br><span class="line">			self.clock.tick(<span class="hljs-number">60</span>)</span><br><span class="line">		<span class="hljs-keyword">return</span> self.action</span><br><span class="line">  </span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">move</span>(<span class="hljs-params">self, r: <span class="hljs-built_in">int</span>, c: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">		<span class="hljs-keyword">return</span> self.connectNGame.move(r, c)</span><br><span class="line">  </span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">	connectNGame = ConnectNGame()</span><br><span class="line">	pygameBoard = PyGameBoard(connectNGame)</span><br><span class="line">	<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> pygameBoard.isGameOver():</span><br><span class="line">		pos = pygameBoard.next_user_input()</span><br><span class="line">		pygameBoard.move(*pos)</span><br><span class="line"></span><br><span class="line">	pygame.quit()</span><br></pre></td></tr></tbody></table></figure>
+<p>check_event 较之极简版本增加了处理用户输入事件，这里我们仅支持人类玩家鼠标输入。方法_handle_user_input 将鼠标点击事件转换成棋盘行列值，并判断点击位置是否合法，合法则返回落子位置，类型为Tuple[int, int]，例如(0, 0)表示棋盘最左上角位置。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check_event</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">	<span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pygame.event.get():</span><br><span class="line">		<span class="hljs-keyword">if</span> e.<span class="hljs-built_in">type</span> == pygame.QUIT:</span><br><span class="line">			pygame.quit()</span><br><span class="line">			sys.exit(<span class="hljs-number">0</span>)</span><br><span class="line">		<span class="hljs-keyword">elif</span> e.<span class="hljs-built_in">type</span> == pygame.MOUSEBUTTONDOWN:</span><br><span class="line">			self._handle_user_input(e)</span><br><span class="line">    </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_handle_user_input</span>(<span class="hljs-params">self, e: Event</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]:</span></span><br><span class="line">	origin_x = self.start_x - self.edge_size</span><br><span class="line">	origin_y = self.start_y - self.edge_size</span><br><span class="line">	size = (self.board_size - <span class="hljs-number">1</span>) * self.grid_size + self.edge_size * <span class="hljs-number">2</span></span><br><span class="line">	pos = e.pos</span><br><span class="line">	<span class="hljs-keyword">if</span> origin_x &lt;= pos[<span class="hljs-number">0</span>] &lt;= origin_x + size <span class="hljs-keyword">and</span> origin_y &lt;= pos[<span class="hljs-number">1</span>] &lt;= origin_y + size:</span><br><span class="line">		<span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.connectNGame.gameOver:</span><br><span class="line">			x = pos[<span class="hljs-number">0</span>] - origin_x</span><br><span class="line">			y = pos[<span class="hljs-number">1</span>] - origin_y</span><br><span class="line">			r = <span class="hljs-built_in">int</span>(y // self.grid_size)</span><br><span class="line">			c = <span class="hljs-built_in">int</span>(x // self.grid_size)</span><br><span class="line">			valid = self.connectNGame.checkAction(r, c)</span><br><span class="line">			<span class="hljs-keyword">if</span> valid:</span><br><span class="line">				self.action = (r, c)</span><br><span class="line">				<span class="hljs-keyword">return</span> self.action</span><br></pre></td></tr></tbody></table></figure>
+
+
+<h2 id="OpenAI-Gym-接口规范"><a href="#OpenAI-Gym-接口规范" class="headerlink" title="OpenAI Gym 接口规范"></a>OpenAI Gym 接口规范</h2><p>OpenAI Gym规范了Agent和环境（Env）之间的互动，核心抽象接口类是gym.Env，自定义的游戏环境需要继承Env，并实现 reset、step和render方法。下面我们看一下如何具体实现ConnectNGym的这几个方法：</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConnectNGym</span>(<span class="hljs-params">gym.Env</span>):</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reset</span>(<span class="hljs-params">self</span>) -&gt; ConnectNGame:</span></span><br><span class="line">		<span class="hljs-string">"""Resets the state of the environment and returns an initial observation.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Returns:</span></span><br><span class="line"><span class="hljs-string">			observation (object): the initial observation.</span></span><br><span class="line"><span class="hljs-string">		"""</span></span><br><span class="line">		<span class="hljs-keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span>(<span class="hljs-params">self, action: <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-type">Tuple</span>[ConnectNGame, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">bool</span>, <span class="hljs-literal">None</span>]:</span></span><br><span class="line">		<span class="hljs-string">"""Run one timestep of the environment's dynamics. When end of</span></span><br><span class="line"><span class="hljs-string">		episode is reached, you are responsible for calling `reset()`</span></span><br><span class="line"><span class="hljs-string">		to reset this environment's state.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Accepts an action and returns a tuple (observation, reward, done, info).</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Args:</span></span><br><span class="line"><span class="hljs-string">			action (object): an action provided by the agent</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Returns:</span></span><br><span class="line"><span class="hljs-string">			observation (object): agent's observation of the current environment</span></span><br><span class="line"><span class="hljs-string">			reward (float) : amount of reward returned after previous action</span></span><br><span class="line"><span class="hljs-string">			done (bool): whether the episode has ended, in which case further step() calls will return undefined results</span></span><br><span class="line"><span class="hljs-string">			info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)</span></span><br><span class="line"><span class="hljs-string">		"""</span></span><br><span class="line">		<span class="hljs-keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">render</span>(<span class="hljs-params">self, mode=<span class="hljs-string">'human'</span></span>):</span></span><br><span class="line">		<span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">		Renders the environment.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		The set of supported modes varies per environment. (And some</span></span><br><span class="line"><span class="hljs-string">		environments do not support rendering at all.) By convention,</span></span><br><span class="line"><span class="hljs-string">		if mode is:</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		- human: render to the current display or terminal and</span></span><br><span class="line"><span class="hljs-string">			return nothing. Usually for human consumption.</span></span><br><span class="line"><span class="hljs-string">		- rgb_array: Return an numpy.ndarray with shape (x, y, 3),</span></span><br><span class="line"><span class="hljs-string">			representing RGB values for an x-by-y pixel image, suitable</span></span><br><span class="line"><span class="hljs-string">			for turning into a video.</span></span><br><span class="line"><span class="hljs-string">		- ansi: Return a string (str) or StringIO.StringIO containing a</span></span><br><span class="line"><span class="hljs-string">			terminal-style text representation. The text can include newlines</span></span><br><span class="line"><span class="hljs-string">			and ANSI escape sequences (e.g. for colors).</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Note:</span></span><br><span class="line"><span class="hljs-string">		Make sure that your class's metadata 'render.modes' key includes</span></span><br><span class="line"><span class="hljs-string">		the list of supported modes. It's recommended to call super()</span></span><br><span class="line"><span class="hljs-string">		in implementations to use the functionality of this method.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Args:</span></span><br><span class="line"><span class="hljs-string">			mode (str): the mode to render with</span></span><br><span class="line"><span class="hljs-string">		"""</span></span><br><span class="line">		<span class="hljs-keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="reset-方法"><a href="#reset-方法" class="headerlink" title="reset 方法"></a>reset 方法</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reset</span>(<span class="hljs-params">self</span>) -&gt; ConnectNGame</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>重置环境状态，并返回给Agent重置后环境下观察到的状态。ConnectNGym内部维护了ConnectNGame实例作为自身状态，每个agent落子后会更新这个实例。由于棋类游戏对于玩家来说是完全信息的，我们直接返回ConnectNGame的deepcopy。</p>
+<h3 id="step-方法"><a href="#step-方法" class="headerlink" title="step 方法"></a>step 方法</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span>(<span class="hljs-params">self, action: <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-type">Tuple</span>[ConnectNGame, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">bool</span>, <span class="hljs-literal">None</span>]</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>Agent 选择了某一action后，由环境来执行这个action并返回4个值：1. 执行后的环境Agent观察到的状态；2. 环境执行了这个action回馈给agent的reward；3. 环境是否结束；4. 其余信息。</p>
+<p>step方法是最核心的接口，因此举例来说明ConnectNGym中的输入和输出：</p>
+<p>初始状态</p>
+<figure>
+  <img src="s0.png">
+  <figcaption>状态 ((0, 0, 0),  (0, 0, 0), (0, 0, 0))</figcaption>
+</figure>
+
+<p>Agent A 选择action = (0, 0)，执行ConnectNGym.step 后返回值：status =  ((1, 0, 0), (0, 0, 0), (0, 0, 0))，reward = 0，game_end = False</p>
+<figure>
+  <img src="s1.png">
+  <figcaption>状态 ((1, 0, 0), (0, 0, 0), (0, 0, 0))</figcaption>
+</figure> 
+Agent B 选择action = (1, 1)，执行ConnectNGym.step 后返回值：status =  ((1, 0, 0),  (0, -1, 0), (0, 0, 0))，reward = 0，game_end = False
+
+<figure>
+  <img src="s2.png">
+  <figcaption>状态 ((1, 0, 0), (0, -1, 0), (0, 0, 0))</figcaption>
+</figure> 
+
+<p>重复此过程直至游戏结束，下面是5步后游戏可能达到的最终状态</p>
+<figure>
+  <img src="s5.png">
+  <figcaption>终结状态  ((1, 1, 1),  (-1, -1, 0),  (0, 0, 0))</figcaption>
+</figure> 
+此时step的返回值为：status =  ((1, 1, 1),  (-1, -1, 0),  (0, 0, 0))，reward = 1，game_end = True
+
+<h3 id="render-方法"><a href="#render-方法" class="headerlink" title="render 方法"></a>render 方法</h3><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">render</span>(<span class="hljs-params">self, mode=<span class="hljs-string">'human'</span></span>)</span></span><br></pre></td></tr></tbody></table></figure>
+<p>展现环境，通过mode区分是否是人类玩家。</p>
+<h3 id="ConnectNGym-代码"><a href="#ConnectNGym-代码" class="headerlink" title="ConnectNGym 代码"></a>ConnectNGym 代码</h3><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConnectNGym</span>(<span class="hljs-params">gym.Env</span>):</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, pygameBoard: PyGameBoard, isGUI=<span class="hljs-literal">True</span>, displaySec=<span class="hljs-number">2</span></span>):</span></span><br><span class="line">		self.pygameBoard = pygameBoard</span><br><span class="line">		self.isGUI = isGUI</span><br><span class="line">		self.displaySec = displaySec</span><br><span class="line">		self.action_space = spaces.Discrete(pygameBoard.board_size * pygameBoard.board_size)</span><br><span class="line">		self.observation_space = spaces.Discrete(pygameBoard.board_size * pygameBoard.board_size)</span><br><span class="line">		self.seed()</span><br><span class="line">		self.reset()</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reset</span>(<span class="hljs-params">self</span>) -&gt; ConnectNGame:</span></span><br><span class="line">		self.pygameBoard.connectNGame.reset()</span><br><span class="line">		<span class="hljs-keyword">return</span> copy.deepcopy(self.pygameBoard.connectNGame)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span>(<span class="hljs-params">self, action: <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-type">Tuple</span>[ConnectNGame, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">bool</span>, <span class="hljs-literal">None</span>]:</span></span><br><span class="line">		<span class="hljs-comment"># assert self.action_space.contains(action)</span></span><br><span class="line"></span><br><span class="line">		r, c = action</span><br><span class="line">		reward = REWARD_NONE</span><br><span class="line">		result = self.pygameBoard.move(r, c)</span><br><span class="line">		<span class="hljs-keyword">if</span> self.pygameBoard.isGameOver():</span><br><span class="line">			reward = result</span><br><span class="line"></span><br><span class="line">		<span class="hljs-keyword">return</span> copy.deepcopy(self.pygameBoard.connectNGame), reward, <span class="hljs-keyword">not</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>, <span class="hljs-literal">None</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">render</span>(<span class="hljs-params">self, mode=<span class="hljs-string">'human'</span></span>):</span></span><br><span class="line">		<span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.isGUI:</span><br><span class="line">			self.pygameBoard.connectNGame.drawText()</span><br><span class="line">			time.sleep(self.displaySec)</span><br><span class="line">		<span class="hljs-keyword">else</span>:</span><br><span class="line">			self.pygameBoard.display(sec=self.displaySec)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_available_actions</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">		<span class="hljs-keyword">return</span> self.pygameBoard.getAvailablePositions()</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="井字棋（N子棋）Minimax策略玩家"><a href="#井字棋（N子棋）Minimax策略玩家" class="headerlink" title="井字棋（N子棋）Minimax策略玩家"></a>井字棋（N子棋）Minimax策略玩家</h2><p>图中当k=3,m=n=3即井字棋游戏中，两个minimax策略玩家的对弈效果，游戏结局符合已知的结论：井字棋的解是先手被对方逼平。</p>
+<figure>
+  <img src="self_play.gif">
+  <figcaption>Minimax策略AI对弈</figcaption>
+</figure>
+
+<h3 id="镜像游戏状态的DP处理"><a href="#镜像游戏状态的DP处理" class="headerlink" title="镜像游戏状态的DP处理"></a>镜像游戏状态的DP处理</h3><p>上一篇中，我们确认了井字棋的总状态数是5478。当k=3, m=n=4时是6035992，k=4, m=n=4时是9722011，总的来说游戏状态数是以指数级增长的。上一版minimax DP策略还有改善的空间，第一种是旋转格局的处理。对于任意一种棋盘格局可以得到90度旋转后的另外三种格局，它们的最佳结局是一致的。因此，我们在递归过程中解得某一棋盘格局后，将其另外三种旋转后格局的解也一起缓存起来。例如：</p>
+<figure>
+  <img src="pos.png">
+  <figcaption>游戏状态1</figcaption>
+</figure>
+
+<figure>
+  <img src="pos_others.png">
+  <figcaption>旋转后的三种游戏状态</figcaption>
+</figure>
+
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">similarStatus</span>(<span class="hljs-params">self, status: <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]</span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]]:</span></span><br><span class="line">	ret = []</span><br><span class="line">	rotatedS = status</span><br><span class="line">	<span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>):</span><br><span class="line">		rotatedS = self.rotate(rotatedS)</span><br><span class="line">		ret.append(rotatedS)</span><br><span class="line">	<span class="hljs-keyword">return</span> ret</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rotate</span>(<span class="hljs-params">self, status: <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]:</span></span><br><span class="line">	N = <span class="hljs-built_in">len</span>(status)</span><br><span class="line">	board = [[ConnectNGame.AVAILABLE] * N <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">		<span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">			board[c][N - <span class="hljs-number">1</span> - r] = status[r][c]</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-built_in">tuple</span>([<span class="hljs-built_in">tuple</span>(board[i]) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)])</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="Minimax-策略预计算"><a href="#Minimax-策略预计算" class="headerlink" title="Minimax 策略预计算"></a>Minimax 策略预计算</h3><p>之前我们对每个棋局去计算最佳的下一步，并在此过程中做了剪枝，即当已经找到当前玩家必胜落子时直接返回。这对于单一局面的计算是较优的，但是AI Agent 需要在每一步都重复这个过程，当棋盘大小&gt;3时运算非常耗时，因此我们来做第二种优化。初始空棋盘时使用Minimax来保证遍历所有状态，缓存所有棋局的最佳结果。对于AI Agent面临的每个棋局只需查找此棋局下所有的可能落子位置，并返回最佳决定，这样大大减少了每次棋局下重复的minimax递归计算。相关代码如下。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PlannedMinimaxStrategy</span>(<span class="hljs-params">Strategy</span>):</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, game: ConnectNGame</span>):</span></span><br><span class="line">		<span class="hljs-built_in">super</span>().__init__()</span><br><span class="line">		self.game = copy.deepcopy(game)</span><br><span class="line">		self.dpMap = {}  <span class="hljs-comment"># game_status =&gt; result, move</span></span><br><span class="line">		self.result = self.minimax(game.getStatus())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">action</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">		game = copy.deepcopy(game)</span><br><span class="line"></span><br><span class="line">		player = game.currentPlayer</span><br><span class="line">		bestResult = player * -<span class="hljs-number">1</span>  <span class="hljs-comment"># assume opponent win as worst result</span></span><br><span class="line">		bestMove = <span class="hljs-literal">None</span></span><br><span class="line">		<span class="hljs-keyword">for</span> move <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">			game.move(*move)</span><br><span class="line">			status = game.getStatus()</span><br><span class="line">			game.undo()</span><br><span class="line"></span><br><span class="line">			result = self.dpMap[status]</span><br><span class="line"></span><br><span class="line">			<span class="hljs-keyword">if</span> player == ConnectNGame.PLAYER_A:</span><br><span class="line">				bestResult = <span class="hljs-built_in">max</span>(bestResult, result)</span><br><span class="line">			<span class="hljs-keyword">else</span>:</span><br><span class="line">				bestResult = <span class="hljs-built_in">min</span>(bestResult, result)</span><br><span class="line">			<span class="hljs-comment"># update bestMove if any improvement</span></span><br><span class="line">			bestMove = move <span class="hljs-keyword">if</span> bestResult == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">			<span class="hljs-built_in">print</span>(<span class="hljs-string">f'move <span class="hljs-subst">{move}</span> =&gt; <span class="hljs-subst">{result}</span>'</span>)</span><br><span class="line"></span><br><span class="line">		<span class="hljs-keyword">return</span> bestResult, bestMove</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="Agent-类和对弈逻辑"><a href="#Agent-类和对弈逻辑" class="headerlink" title="Agent 类和对弈逻辑"></a>Agent 类和对弈逻辑</h2><p>Agent 类的抽象并不是 OpenAI Gym的规范，出于代码扩展性，我们也封装了Agent基类及其子类，包括AI玩家和人类玩家。BaseAgent需要子类实现 act方法，默认实现为随机决定。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BaseAgent</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">		<span class="hljs-keyword">pass</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, game: PyGameBoard, available_actions</span>):</span></span><br><span class="line">		<span class="hljs-keyword">return</span> random.choice(available_actions)</span><br></pre></td></tr></tbody></table></figure>
+<p>AIAgent 实现act并代理给 strategy 的action方法。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AIAgent</span>(<span class="hljs-params">BaseAgent</span>):</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, strategy: Strategy</span>):</span></span><br><span class="line">		self.strategy = strategy</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, game: PyGameBoard, available_actions</span>):</span></span><br><span class="line">		result, move = self.strategy.action(game.connectNGame)</span><br><span class="line">		<span class="hljs-keyword">assert</span> move <span class="hljs-keyword">in</span> available_actions</span><br><span class="line">		<span class="hljs-keyword">return</span> move</span><br></pre></td></tr></tbody></table></figure>
+
+<p>HumanAgent 实现act并代理给 PyGameBoard 的next_user_input方法。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HumanAgent</span>(<span class="hljs-params">BaseAgent</span>):</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">		<span class="hljs-keyword">pass</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, game: PyGameBoard, available_actions</span>):</span></span><br><span class="line">		<span class="hljs-keyword">return</span> game.next_user_input()</span><br></pre></td></tr></tbody></table></figure>
+<figure>
+  <img src="diagram-agent.svg">
+  <figcaption>Agent Class Diagram</figcaption>
+</figure>
+
+<p>下面代码展示如何将Agent，ConnectNGym，PyGameBoard 等所有上述类串联起来，完成人人对弈，人机对弈。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">play_ai_vs_ai</span>(<span class="hljs-params">env: ConnectNGym</span>):</span></span><br><span class="line">	plannedMinimaxAgent = AIAgent(PlannedMinimaxStrategy(env.pygameBoard.connectNGame))</span><br><span class="line">	play(env, plannedMinimaxAgent, plannedMinimaxAgent)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">play</span>(<span class="hljs-params">env: ConnectNGym, agent1: BaseAgent, agent2: BaseAgent</span>):</span></span><br><span class="line">	agents = [agent1, agent2]</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">		env.reset()</span><br><span class="line">		done = <span class="hljs-literal">False</span></span><br><span class="line">		agent_id = -<span class="hljs-number">1</span></span><br><span class="line">		<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> done:</span><br><span class="line">			agent_id = (agent_id + <span class="hljs-number">1</span>) % <span class="hljs-number">2</span></span><br><span class="line">			available_actions = env.get_available_actions()</span><br><span class="line">			agent = agents[agent_id]</span><br><span class="line">			action = agent.act(pygameBoard, available_actions)</span><br><span class="line">			_, reward, done, info = env.step(action)</span><br><span class="line">			env.render(<span class="hljs-literal">True</span>)</span><br><span class="line"></span><br><span class="line">			<span class="hljs-keyword">if</span> done:</span><br><span class="line">				<span class="hljs-built_in">print</span>(<span class="hljs-string">f'result=<span class="hljs-subst">{reward}</span>'</span>)</span><br><span class="line">				time.sleep(<span class="hljs-number">3</span>)</span><br><span class="line">				<span class="hljs-keyword">break</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">	pygameBoard = PyGameBoard(connectNGame=ConnectNGame(board_size=<span class="hljs-number">3</span>, N=<span class="hljs-number">3</span>))</span><br><span class="line">	env = ConnectNGym(pygameBoard)</span><br><span class="line">	env.render(<span class="hljs-literal">True</span>)</span><br><span class="line"></span><br><span class="line">	play_ai_vs_ai(env)</span><br></pre></td></tr></tbody></table></figure>
+
+<figure>
+  <img src="diagram-overview.svg">
+  <figcaption>Class Diagram 总览</figcaption>
+</figure>
+
+
+
+
+</body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/2020/07/zh/combinatorial-game-2-tictactoe/" itemprop="url">组合游戏系列2: 井字棋Leetcode系列题解和Minimax最佳策略实现</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-07-12T10:45:01.000Z" itemprop="datePublished">7月 12 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            32 分钟 读完 (约 4735 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>继上一篇介绍了Minimax 和Alpha Beta 剪枝算法之后，本篇选择了Leetcode中的井字棋游戏题目，积累相关代码后实现井字棋游戏并扩展到五子棋和N子棋（战略井字棋），随后用Minimax和Alpha Beta剪枝算法解得小规模下N子棋的游戏结局，并分析其状态数量和每一步的最佳策略。后续篇章中，我们基于本篇代码完成一个N子棋的OpenAI Gym 图形环境，可用于人机对战或机器对战，并最终实现棋盘规模稍大的五子棋或者N子棋中的蒙特卡洛树搜索（MCTS）算法。</p>
+<ul>
+<li><p><a href="/2020/06/zh/combinatorial-game-1-minimax/">第一篇: Leetcode中的Minimax 和 Alpha Beta剪枝</a></p>
+</li>
+<li><p><strong><a href="/2020/07/zh/combinatorial-game-2-tictactoe/">第二篇: 井字棋Leetcode系列题解和Minimax最佳策略实现</a></strong></p>
+</li>
+<li><p><a href="/2020/07/zh/combinatorial-game-3-openai-gym-pygame/">第三篇: 井字棋、五子棋的OpenAI Gym GUI环境</a></p>
+</li>
+<li><p><a href="zh/combinatorial-game-4-alphago-zero-theory/index.md">第四篇: AlphaGo Zero 强化学习算法原理深度分析</a></p>
+</li>
+<li><p><a href="zh/combinatorial-game-5-alphago-zero-connect-n/index.md">第五篇: 井字棋、五子棋AlphaGo Zero 算法实战</a></p>
+</li>
+</ul>
+<h2 id="Leetcode-上的井字棋系列"><a href="#Leetcode-上的井字棋系列" class="headerlink" title="Leetcode 上的井字棋系列"></a>Leetcode 上的井字棋系列</h2><h3 id="Leetcode-1275-找出井字棋的获胜者-简单"><a href="#Leetcode-1275-找出井字棋的获胜者-简单" class="headerlink" title="Leetcode 1275. 找出井字棋的获胜者 (简单)"></a><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/find-winner-on-a-tic-tac-toe-game/">Leetcode 1275. 找出井字棋的获胜者 (简单)</a></h3><blockquote>
+<p>A 和&nbsp;B&nbsp;在一个&nbsp;3&nbsp;x&nbsp;3&nbsp;的网格上玩井字棋。<br><br>井字棋游戏的规则如下：<br><br>玩家轮流将棋子放在空方格 (“ “) 上。<br><br>第一个玩家 A 总是用&nbsp;“X” 作为棋子，而第二个玩家 B 总是用 “O” 作为棋子。<br><br>“X” 和 “O” 只能放在空方格中，而不能放在已经被占用的方格上。<br><br>只要有 3 个相同的（非空）棋子排成一条直线（行、列、对角线）时，游戏结束。<br><br>如果所有方块都放满棋子（不为空），游戏也会结束。<br><br>游戏结束后，棋子无法再进行任何移动。<br><br>给你一个数组 moves，其中每个元素是大小为 2 的另一个数组（元素分别对应网格的行和列），它按照 A 和 B 的行动顺序（先 A 后 B）记录了两人各自的棋子位置。<br><br>如果游戏存在获胜者（A 或 B），就返回该游戏的获胜者；如果游戏以平局结束，则返回 “Draw”；如果仍会有行动（游戏未结束），则返回 “Pending”。<br><br>你可以假设&nbsp;moves&nbsp;都 有效（遵循井字棋规则），网格最初是空的，A 将先行动。</p>
+</blockquote>
+<blockquote>
+<p>示例 1：<br><br>输入：moves = [[0,0],[2,0],[1,1],[2,1],[2,2]]<br><br>输出：”A”<br><br>解释：”A” 获胜，他总是先走。<br><br>“X  “    “X  “    “X  “    “X  “    “X  “<br><br>“   “ -&gt; “   “ -&gt; “ X “ -&gt; “ X “ -&gt; “ X “<br><br>“   “    “O  “    “O  “    “OO “    “OOX”<br></p>
+</blockquote>
+<blockquote>
+<p>示例 2：<br>输入：moves = [[0,0],[1,1],[0,1],[0,2],[1,0],[2,0]]<br><br>输出：”B”<br><br>解释：”B” 获胜。<br><br>“X  “    “X  “    “XX “    “XXO”    “XXO”    “XXO”<br><br>“   “ -&gt; “ O “ -&gt; “ O “ -&gt; “ O “ -&gt; “XO “ -&gt; “XO “ <br><br>“   “    “   “    “   “    “   “    “   “    “O  “<br></p>
+</blockquote>
+<p>第一种解法，检查A或者B赢的所有可能情况：某玩家占据8种连线的任意一种情况则胜利，我们使用八个变量来保存所有情况。下面的代码使用了一个小技巧，将moves转换成3x3的棋盘状态数组，元素的值为1，-1和0。1，-1代表两个玩家，0代表空的棋盘格子，其优势在于后续我们只需累加棋盘的值到八个变量中关联的若干个，再检查这八个变量是否满足取胜条件。例如，row[0]表示第一行的状态，当遍历一次所有棋盘格局后，row[0]为第一行的3个格子的总和，只有当row[0] == 3 才表明玩家A占据了第一行，-3表明玩家B占据了第一行。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tictactoe</span>(<span class="hljs-params">self, moves: <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]</span>) -&gt; <span class="hljs-built_in">str</span>:</span></span><br><span class="line">        board = [[<span class="hljs-number">0</span>] * <span class="hljs-number">3</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)]</span><br><span class="line">        <span class="hljs-keyword">for</span> idx, xy <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(moves):</span><br><span class="line">            player = <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> idx % <span class="hljs-number">2</span> == <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> -<span class="hljs-number">1</span></span><br><span class="line">            board[xy[<span class="hljs-number">0</span>]][xy[<span class="hljs-number">1</span>]] = player</span><br><span class="line"></span><br><span class="line">        turn = <span class="hljs-number">0</span></span><br><span class="line">        row, col = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>]</span><br><span class="line">        diag1, diag2 = <span class="hljs-literal">False</span>, <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):</span><br><span class="line">            <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):</span><br><span class="line">                turn += board[r][c]</span><br><span class="line">                row[r] += board[r][c]</span><br><span class="line">                col[c] += board[r][c]</span><br><span class="line">                <span class="hljs-keyword">if</span> r == c:</span><br><span class="line">                    diag1 += board[r][c]</span><br><span class="line">                <span class="hljs-keyword">if</span> r + c == <span class="hljs-number">2</span>:</span><br><span class="line">                    diag2 += board[r][c]</span><br><span class="line"></span><br><span class="line">        oWin = <span class="hljs-built_in">any</span>(row[r] == <span class="hljs-number">3</span> <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)) <span class="hljs-keyword">or</span> <span class="hljs-built_in">any</span>(col[c] == <span class="hljs-number">3</span> <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)) <span class="hljs-keyword">or</span> diag1 == <span class="hljs-number">3</span> <span class="hljs-keyword">or</span> diag2 == <span class="hljs-number">3</span></span><br><span class="line">        xWin = <span class="hljs-built_in">any</span>(row[r] == -<span class="hljs-number">3</span> <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)) <span class="hljs-keyword">or</span> <span class="hljs-built_in">any</span>(col[c] == -<span class="hljs-number">3</span> <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)) <span class="hljs-keyword">or</span> diag1 == -<span class="hljs-number">3</span> <span class="hljs-keyword">or</span> diag2 == -<span class="hljs-number">3</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">"A"</span> <span class="hljs-keyword">if</span> oWin <span class="hljs-keyword">else</span> <span class="hljs-string">"B"</span> <span class="hljs-keyword">if</span> xWin <span class="hljs-keyword">else</span> <span class="hljs-string">"Draw"</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(moves) == <span class="hljs-number">9</span> <span class="hljs-keyword">else</span> <span class="hljs-string">"Pending"</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>下面我们给出另一种解法，这种解法虽然代码较多，但可以不必遍历棋盘每个格子，比上一种严格遍历一次棋盘的解法略为高效。原理如下，题目保证了moves过程中不会产生输赢结果，因此我们直接检查最后一个棋子向外的八个方向，若任意方向有三连子，则此玩家获胜。这种解法主要是为后续井字棋扩展到五子棋时判断每个落子是否产生输赢做代码准备。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">checkWin</span>(<span class="hljs-params">self, r: <span class="hljs-built_in">int</span>, c: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        north = self.getConnectedNum(r, c, -<span class="hljs-number">1</span>, <span class="hljs-number">0</span>)</span><br><span class="line">        south = self.getConnectedNum(r, c, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)</span><br><span class="line"></span><br><span class="line">        east = self.getConnectedNum(r, c, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>)</span><br><span class="line">        west = self.getConnectedNum(r, c, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>)</span><br><span class="line"></span><br><span class="line">        south_east = self.getConnectedNum(r, c, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span><br><span class="line">        north_west = self.getConnectedNum(r, c, -<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)</span><br><span class="line"></span><br><span class="line">        north_east = self.getConnectedNum(r, c, -<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span><br><span class="line">        south_west = self.getConnectedNum(r, c, <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> (north + south + <span class="hljs-number">1</span> &gt;= <span class="hljs-number">3</span>) <span class="hljs-keyword">or</span> (east + west + <span class="hljs-number">1</span> &gt;= <span class="hljs-number">3</span>) <span class="hljs-keyword">or</span> \</span><br><span class="line">                (south_east + north_west + <span class="hljs-number">1</span> &gt;= <span class="hljs-number">3</span>) <span class="hljs-keyword">or</span> (north_east + south_west + <span class="hljs-number">1</span> &gt;= <span class="hljs-number">3</span>):</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getConnectedNum</span>(<span class="hljs-params">self, r: <span class="hljs-built_in">int</span>, c: <span class="hljs-built_in">int</span>, dr: <span class="hljs-built_in">int</span>, dc: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        player = self.board[r][c]</span><br><span class="line">        result = <span class="hljs-number">0</span></span><br><span class="line">        i = <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            new_r = r + dr * i</span><br><span class="line">            new_c = c + dc * i</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-number">0</span> &lt;= new_r &lt; <span class="hljs-number">3</span> <span class="hljs-keyword">and</span> <span class="hljs-number">0</span> &lt;= new_c &lt; <span class="hljs-number">3</span>:</span><br><span class="line">                <span class="hljs-keyword">if</span> self.board[new_r][new_c] == player:</span><br><span class="line">                    result += <span class="hljs-number">1</span></span><br><span class="line">                <span class="hljs-keyword">else</span>:</span><br><span class="line">                    <span class="hljs-keyword">break</span></span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                <span class="hljs-keyword">break</span></span><br><span class="line">            i += <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tictactoe</span>(<span class="hljs-params">self, moves: <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]</span>) -&gt; <span class="hljs-built_in">str</span>:</span></span><br><span class="line">        self.board = [[<span class="hljs-number">0</span>] * <span class="hljs-number">3</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)]</span><br><span class="line">        <span class="hljs-keyword">for</span> idx, xy <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(moves):</span><br><span class="line">            player = <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> idx % <span class="hljs-number">2</span> == <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> -<span class="hljs-number">1</span></span><br><span class="line">            self.board[xy[<span class="hljs-number">0</span>]][xy[<span class="hljs-number">1</span>]] = player</span><br><span class="line"></span><br><span class="line">        <span class="hljs-comment"># only check last move</span></span><br><span class="line">        r, c = moves[-<span class="hljs-number">1</span>]</span><br><span class="line">        win = self.checkWin(r, c)</span><br><span class="line">        <span class="hljs-keyword">if</span> win:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-string">"A"</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(moves) % <span class="hljs-number">2</span> == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-string">"B"</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-string">"Draw"</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(moves) == <span class="hljs-number">9</span> <span class="hljs-keyword">else</span> <span class="hljs-string">"Pending"</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="Leetcode-794-有效的井字游戏-中等"><a href="#Leetcode-794-有效的井字游戏-中等" class="headerlink" title="Leetcode 794. 有效的井字游戏 (中等)"></a><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/valid-tic-tac-toe-state/">Leetcode 794. 有效的井字游戏 (中等)</a></h3><blockquote>
+<p>用字符串数组作为井字游戏的游戏板 board。当且仅当在井字游戏过程中，玩家有可能将字符放置成游戏板所显示的状态时，才返回 true。<br><br>该游戏板是一个 3 x 3 数组，由字符 “ “，”X” 和 “O” 组成。字符 “ “ 代表一个空位。<br><br>以下是井字游戏的规则：<br><br>玩家轮流将字符放入空位（” “）中。<br><br>第一个玩家总是放字符 “X”，且第二个玩家总是放字符 “O”。<br><br>“X” 和 “O” 只允许放置在空位中，不允许对已放有字符的位置进行填充。<br><br>当有 3 个相同（且非空）的字符填充任何行、列或对角线时，游戏结束。<br><br>当所有位置非空时，也算为游戏结束。<br><br>如果游戏结束，玩家不允许再放置字符。<br></p>
+</blockquote>
+<blockquote>
+<p>示例 1:<br><br>输入: board = [“O  “, “   “, “   “]<br><br>输出: false<br><br>解释: 第一个玩家总是放置“X”。<br></p>
+</blockquote>
+<blockquote>
+<p>示例 2:<br><br>输入: board = [“XOX”, “ X “, “   “]<br><br>输出: false<br><br>解释: 玩家应该是轮流放置的。<br></p>
+</blockquote>
+<blockquote>
+<p>示例 3:<br><br>输入: board = [“XXX”, “   “, “OOO”]<br><br>输出: false<br></p>
+</blockquote>
+<blockquote>
+<p>示例 4:<br><br>输入: board = [“XOX”, “O O”, “XOX”]<br><br>输出: true<br><br>说明:<br></p>
+</blockquote>
+<blockquote>
+<p>游戏板 board 是长度为 3 的字符串数组，其中每个字符串 board[i] 的长度为 3。<br> board[i][j] 是集合 {“ “, “X”, “O”} 中的一个字符。</p>
+</blockquote>
+<p>这道题第一反应是需要DFS来判断给定状态是否可达，但其实可以用上面1275的思路，即通过检验最终棋盘的一些特点来判断给定状态是否合法。比如，X和O的数量只有可能相同，或X比O多一个。其关键在于需要找到判断状态合法的充要条件，就可以在$O(1)$ 时间复杂度完成判断。<br>此外，这道题给了我们井字棋所有可能状态数量的启示。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">convertCell</span>(<span class="hljs-params">self, c:<span class="hljs-built_in">str</span></span>):</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> c == <span class="hljs-string">'X'</span> <span class="hljs-keyword">else</span> -<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> c == <span class="hljs-string">'O'</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">validTicTacToe</span>(<span class="hljs-params">self, board: <span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        turn = <span class="hljs-number">0</span></span><br><span class="line">        row, col = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>]</span><br><span class="line">        diag1, diag2 = <span class="hljs-literal">False</span>, <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):</span><br><span class="line">            <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):</span><br><span class="line">                turn += self.convertCell(board[r][c])</span><br><span class="line">                row[r] += self.convertCell(board[r][c])</span><br><span class="line">                col[c] += self.convertCell(board[r][c])</span><br><span class="line">                <span class="hljs-keyword">if</span> r == c:</span><br><span class="line">                    diag1 += self.convertCell(board[r][c])</span><br><span class="line">                <span class="hljs-keyword">if</span> r + c == <span class="hljs-number">2</span>:</span><br><span class="line">                    diag2 += self.convertCell(board[r][c])</span><br><span class="line"></span><br><span class="line">        xWin = <span class="hljs-built_in">any</span>(row[r] == <span class="hljs-number">3</span> <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)) <span class="hljs-keyword">or</span> <span class="hljs-built_in">any</span>(col[c] == <span class="hljs-number">3</span> <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)) <span class="hljs-keyword">or</span> diag1 == <span class="hljs-number">3</span> <span class="hljs-keyword">or</span> diag2 == <span class="hljs-number">3</span></span><br><span class="line">        oWin = <span class="hljs-built_in">any</span>(row[r] == -<span class="hljs-number">3</span> <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)) <span class="hljs-keyword">or</span> <span class="hljs-built_in">any</span>(col[c] == -<span class="hljs-number">3</span> <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>)) <span class="hljs-keyword">or</span> diag1 == -<span class="hljs-number">3</span> <span class="hljs-keyword">or</span> diag2 == -<span class="hljs-number">3</span></span><br><span class="line">        <span class="hljs-keyword">if</span> (xWin <span class="hljs-keyword">and</span> turn == <span class="hljs-number">0</span>) <span class="hljs-keyword">or</span> (oWin <span class="hljs-keyword">and</span> turn == <span class="hljs-number">1</span>):</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">return</span> (turn == <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> turn == <span class="hljs-number">1</span>) <span class="hljs-keyword">and</span> (<span class="hljs-keyword">not</span> xWin <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> oWin)</span><br></pre></td></tr></tbody></table></figure>
+
+
+<h3 id="Leetcode-348-判定井字棋胜负-中等，加锁"><a href="#Leetcode-348-判定井字棋胜负-中等，加锁" class="headerlink" title="Leetcode 348. 判定井字棋胜负 (中等，加锁)"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/design-tic-tac-toe/">Leetcode 348. 判定井字棋胜负 (中等，加锁)</a></h3><blockquote>
+<p>请在 n × n 的棋盘上，实现一个判定井字棋（Tic-Tac-Toe）胜负的神器，判断每一次玩家落子后，是否有胜出的玩家。<br><br>在这个井字棋游戏中，会有 2 名玩家，他们将轮流在棋盘上放置自己的棋子。<br><br>在实现这个判定器的过程中，你可以假设以下这些规则一定成立：<br><br>每一步棋都是在棋盘内的，并且只能被放置在一个空的格子里；<br><br>一旦游戏中有一名玩家胜出的话，游戏将不能再继续；<br><br>一个玩家如果在同一行、同一列或者同一斜对角线上都放置了自己的棋子，那么他便获得胜利。</p>
+</blockquote>
+<blockquote>
+<p>示例：<br>给定棋盘边长 n = 3, 玩家 1 的棋子符号是 “X”，玩家 2 的棋子符号是 “O”。<br><br>TicTacToe toe = new TicTacToe(3);<br><br>toe.move(0, 0, 1); -&gt; 函数返回 0 (此时，暂时没有玩家赢得这场对决)<br><br>|X| | |<br><br>| | | |    // 玩家 1 在 (0, 0) 落子。<br><br>| | | |<br><br><br><br>toe.move(0, 2, 2); -&gt; 函数返回 0 (暂时没有玩家赢得本场比赛)<br><br>|X| |O|<br><br>| | | |    // 玩家 2 在 (0, 2) 落子。<br><br>| | | |<br><br><br><br>toe.move(2, 2, 1); -&gt; 函数返回 0 (暂时没有玩家赢得比赛)<br><br>|X| |O|<br><br>| | | |    // 玩家 1 在 (2, 2) 落子。<br><br>| | |X|<br><br><br><br>toe.move(1, 1, 2); -&gt; 函数返回 0 (暂没有玩家赢得比赛)<br><br>|X| |O|<br><br>| |O| |    // 玩家 2 在 (1, 1) 落子。<br><br>| | |X|<br><br><br><br>toe.move(2, 0, 1); -&gt; 函数返回 0 (暂无玩家赢得比赛)<br><br>|X| |O|<br><br>| |O| |    // 玩家 1 在 (2, 0) 落子。<br><br>|X| |X|<br><br><br><br>toe.move(1, 0, 2); -&gt; 函数返回 0 (没有玩家赢得比赛)<br><br>|X| |O|<br><br>|O|O| |    // 玩家 2 在 (1, 0) 落子.<br><br>|X| |X|<br><br><br><br>toe.move(2, 1, 1); -&gt; 函数返回 1 (此时，玩家 1 赢得了该场比赛)<br><br>|X| |O|<br><br>|O|O| |    // 玩家 1 在 (2, 1) 落子。<br><br>|X|X|X|<br></p>
+</blockquote>
+<p>348 是道加锁题，对于每次玩家的move，可以用1275第二种解法中的checkWin 函数。下面代码给出了另一种基于1275解法一的方法：保存八个关键变量，每次落子后更新这个子所关联的某几个变量。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TicTacToe</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, n:<span class="hljs-built_in">int</span></span>):</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Initialize your data structure here.</span></span><br><span class="line"><span class="hljs-string">        :type n: int</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        self.row, self.col, self.diag1, self.diag2, self.n = [<span class="hljs-number">0</span>] * n, [<span class="hljs-number">0</span>] * n, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, n</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">move</span>(<span class="hljs-params">self, row:<span class="hljs-built_in">int</span>, col:<span class="hljs-built_in">int</span>, player:<span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Player {player} makes a move at ({row}, {col}).</span></span><br><span class="line"><span class="hljs-string">        @param row The row of the board.</span></span><br><span class="line"><span class="hljs-string">        @param col The column of the board.</span></span><br><span class="line"><span class="hljs-string">        @param player The player, can be either 1 or 2.</span></span><br><span class="line"><span class="hljs-string">        @return The current winning condition, can be either:</span></span><br><span class="line"><span class="hljs-string">                0: No one wins.</span></span><br><span class="line"><span class="hljs-string">                1: Player 1 wins.</span></span><br><span class="line"><span class="hljs-string">                2: Player 2 wins.</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        <span class="hljs-keyword">if</span> player == <span class="hljs-number">2</span>:</span><br><span class="line">            player = -<span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">        self.row[row] += player</span><br><span class="line">        self.col[col] += player</span><br><span class="line">        <span class="hljs-keyword">if</span> row == col:</span><br><span class="line">            self.diag1 += player</span><br><span class="line">        <span class="hljs-keyword">if</span> row + col == self.n - <span class="hljs-number">1</span>:</span><br><span class="line">            self.diag2 += player</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> self.n <span class="hljs-keyword">in</span> [self.row[row], self.col[col], self.diag1, self.diag2]:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">if</span> -self.n <span class="hljs-keyword">in</span> [self.row[row], self.col[col], self.diag1, self.diag2]:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-number">2</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+
+<h2 id="井字棋最佳策略"><a href="#井字棋最佳策略" class="headerlink" title="井字棋最佳策略"></a>井字棋最佳策略</h2><p>井字棋的规模可以很自然的扩展成四子棋或五子棋等，区别在于棋盘大小和胜利时的连子数量。这类游戏最一般的形式为 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/M,n,k-game">M,n,k-game</a>，中文可能翻译为战略井字游戏，表示棋盘大小为M x N，当k连子时获胜。<br>下面的ConnectNGame类实现了战略井字游戏（M=N）中，两个玩家轮流下子、更新棋盘状态和判断每次落子输赢等逻辑封装。其中undo方法用于撤销最后一个落子，方便在后续寻找最佳策略时回溯。</p>
+<h3 id="ConnectNGame"><a href="#ConnectNGame" class="headerlink" title="ConnectNGame"></a>ConnectNGame</h3><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConnectNGame</span>:</span></span><br><span class="line"></span><br><span class="line">    PLAYER_A = <span class="hljs-number">1</span></span><br><span class="line">    PLAYER_B = -<span class="hljs-number">1</span></span><br><span class="line">    AVAILABLE = <span class="hljs-number">0</span></span><br><span class="line">    RESULT_TIE = <span class="hljs-number">0</span></span><br><span class="line">    RESULT_A_WIN = <span class="hljs-number">1</span></span><br><span class="line">    RESULT_B_WIN = -<span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, N:<span class="hljs-built_in">int</span> = <span class="hljs-number">3</span>, board_size:<span class="hljs-built_in">int</span> = <span class="hljs-number">3</span></span>):</span></span><br><span class="line">        <span class="hljs-keyword">assert</span> N &lt;= board_size</span><br><span class="line">        self.N = N</span><br><span class="line">        self.board_size = board_size</span><br><span class="line">        self.board = [[ConnectNGame.AVAILABLE] * board_size <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(board_size)]</span><br><span class="line">        self.gameOver = <span class="hljs-literal">False</span></span><br><span class="line">        self.gameResult = <span class="hljs-literal">None</span></span><br><span class="line">        self.currentPlayer = ConnectNGame.PLAYER_A</span><br><span class="line">        self.remainingPosNum = board_size * board_size</span><br><span class="line">        self.actionStack = []</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">move</span>(<span class="hljs-params">self, r: <span class="hljs-built_in">int</span>, c: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        :param r:</span></span><br><span class="line"><span class="hljs-string">        :param c:</span></span><br><span class="line"><span class="hljs-string">        :return: None: game ongoing</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        <span class="hljs-keyword">assert</span> self.board[r][c] == ConnectNGame.AVAILABLE</span><br><span class="line">        self.board[r][c] = self.currentPlayer</span><br><span class="line">        self.actionStack.append((r, c))</span><br><span class="line">        self.remainingPosNum -= <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">if</span> self.checkWin(r, c):</span><br><span class="line">            self.gameOver = <span class="hljs-literal">True</span></span><br><span class="line">            self.gameResult = self.currentPlayer</span><br><span class="line">            <span class="hljs-keyword">return</span> self.currentPlayer</span><br><span class="line">        <span class="hljs-keyword">if</span> self.remainingPosNum == <span class="hljs-number">0</span>:</span><br><span class="line">            self.gameOver = <span class="hljs-literal">True</span></span><br><span class="line">            self.gameResult = ConnectNGame.RESULT_TIE</span><br><span class="line">            <span class="hljs-keyword">return</span> ConnectNGame.RESULT_TIE</span><br><span class="line">        self.currentPlayer *= -<span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">undo</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.actionStack) &gt; <span class="hljs-number">0</span>:</span><br><span class="line">            lastAction = self.actionStack.pop()</span><br><span class="line">            r, c = lastAction</span><br><span class="line">            self.board[r][c] = ConnectNGame.AVAILABLE</span><br><span class="line">            self.currentPlayer = ConnectNGame.PLAYER_A <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.actionStack) % <span class="hljs-number">2</span> == <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> ConnectNGame.PLAYER_B</span><br><span class="line">            self.remainingPosNum += <span class="hljs-number">1</span></span><br><span class="line">            self.gameOver = <span class="hljs-literal">False</span></span><br><span class="line">            self.gameResult = <span class="hljs-literal">None</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">'No lastAction'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getAvailablePositions</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> [(i,j) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.board_size) <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.board_size) <span class="hljs-keyword">if</span> self.board[i][j] == ConnectNGame.AVAILABLE]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getStatus</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">tuple</span>([<span class="hljs-built_in">tuple</span>(self.board[i]) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.board_size)])</span><br></pre></td></tr></tbody></table></figure>
+<p>其中checkWin和1275解法二中的逻辑一致。</p>
+<h3 id="Minimax-算法"><a href="#Minimax-算法" class="headerlink" title="Minimax 算法"></a>Minimax 算法</h3><p>此战略井字游戏的逻辑代码，结合之前的minimax算法，可以实现游戏最佳策略。</p>
+<p>先定义一个通用的策略基类和抽象方法 action。action表示给定一个棋盘状态，返回一个动作决定。返回Tuple的第一个int值表示估计走这一步的结局，第二个值类型是Tuple[int, int]，表示这次落子的位置，例如（1，1）。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Strategy</span>(<span class="hljs-params">ABC</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-built_in">super</span>().__init__()</span><br><span class="line"></span><br><span class="line"><span class="hljs-meta">    @abstractmethod</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">action</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        <span class="hljs-keyword">pass</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>MinimaxStrategy 的逻辑和之前的minimax模版算法大致相同，多了保存最佳move对应的动作，用于最后返回。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MinimaxStrategy</span>(<span class="hljs-params">Strategy</span>):</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">action</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        self.game = copy.deepcopy(game)</span><br><span class="line">        result, move = self.minimax()</span><br><span class="line">        <span class="hljs-keyword">return</span> result, move</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">minimax</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        game = self.game</span><br><span class="line">        bestMove = <span class="hljs-literal">None</span></span><br><span class="line">        <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">        <span class="hljs-keyword">if</span> game.currentPlayer == ConnectNGame.PLAYER_A:</span><br><span class="line">            ret = -math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">                move = pos</span><br><span class="line">                result = game.move(*pos)</span><br><span class="line">                <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:</span><br><span class="line">                    <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">                    result, oppMove = self.minimax()</span><br><span class="line">                game.undo()</span><br><span class="line">                ret = <span class="hljs-built_in">max</span>(ret, result)</span><br><span class="line">                bestMove = move <span class="hljs-keyword">if</span> ret == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">                <span class="hljs-keyword">if</span> ret == <span class="hljs-number">1</span>:</span><br><span class="line">                    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>, move</span><br><span class="line">            <span class="hljs-keyword">return</span> ret, bestMove</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            ret = math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">                move = pos</span><br><span class="line">                result = game.move(*pos)</span><br><span class="line">                <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:</span><br><span class="line">                    <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">                    result, oppMove = self.minimax()</span><br><span class="line">                game.undo()</span><br><span class="line">                ret = <span class="hljs-built_in">min</span>(ret, result)</span><br><span class="line">                bestMove = move <span class="hljs-keyword">if</span> ret == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">                <span class="hljs-keyword">if</span> ret == -<span class="hljs-number">1</span>:</span><br><span class="line">                    <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>, move</span><br><span class="line">            <span class="hljs-keyword">return</span> ret, bestMove</span><br></pre></td></tr></tbody></table></figure>
+<p>通过上面的代码可以画出初始两步的井字棋最终结局。对于先手O来说可以落9个位置，排除对称位置后只有三种，分别为角落，边上和正中。但无论哪一个位置作为先手，最好的结局都是被对方逼平，不存在必赢的开局。所以井字棋的结局是：如果两个玩家都采用最优策略（无失误），游戏结果为双方逼平。</p>
+<figure>
+  <img src="tictactoe_1.gv.svg">
+  <figcaption>井字棋第一步结局</figcaption>
+</figure>
+下面分别画出三种开局后进一步的游戏结局。
+<figure>
+  <img src="tictactoe_2_1.gv.svg">
+  <figcaption>井字棋角落开局</figcaption>
+</figure>
+<figure>
+  <img src="tictactoe_2_2.gv.svg">
+  <figcaption>井字棋边上开局</figcaption>
+</figure>
+<figure>
+  <img src="tictactoe_2_3.gv.svg">
+  <figcaption>井字棋中间开局</figcaption>
+</figure>
+
+<h3 id="井字棋游戏状态数和解"><a href="#井字棋游戏状态数和解" class="headerlink" title="井字棋游戏状态数和解"></a>井字棋游戏状态数和解</h3><p>有趣的是井字棋游戏的状态数量，简单的上限估算是$3^9=19683$。这显然是个较宽泛的上限，因为很多状态在游戏结束后无法达到。 这篇文章 <a target="_blank" rel="noopener" href="http://www.mathrec.org/old/2002jan/solutions.html">Tic-Tac-Toe (Naughts and Crosses, Cheese and Crackers, etc</a> 中列出了每一步的状态数，合计5478个。</p>
+<table>
+<thead>
+<tr>
+<th>Moves</th>
+<th>Positions</th>
+<th>Terminal Positions</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>9</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>72</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>252</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>756</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>1260</td>
+<td>120</td>
+</tr>
+<tr>
+<td>6</td>
+<td>1520</td>
+<td>148</td>
+</tr>
+<tr>
+<td>7</td>
+<td>1140</td>
+<td>444</td>
+</tr>
+<tr>
+<td>8</td>
+<td>390</td>
+<td>168</td>
+</tr>
+<tr>
+<td>9</td>
+<td>78</td>
+<td>78</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>5478</td>
+<td>958</td>
+</tr>
+</tbody></table>
+<p>我们已经实现了井字棋的minimax策略，算法本质上遍历了所有情况，稍加改造后增加dp数组，就可以确认上面的总状态数。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CountingMinimaxStrategy</span>(<span class="hljs-params">Strategy</span>):</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">action</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        self.game = copy.deepcopy(game)</span><br><span class="line">        self.dpMap = {}</span><br><span class="line">        result, move = self.minimax(game.getStatus())</span><br><span class="line">        <span class="hljs-keyword">return</span> result, move</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">minimax</span>(<span class="hljs-params">self, gameStatus: <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        <span class="hljs-comment"># print(f'Current {len(strategy.dpMap)}')</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> gameStatus <span class="hljs-keyword">in</span> self.dpMap:</span><br><span class="line">            <span class="hljs-keyword">return</span> self.dpMap[gameStatus]</span><br><span class="line"></span><br><span class="line">        game = self.game</span><br><span class="line">        bestMove = <span class="hljs-literal">None</span></span><br><span class="line">        <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">        <span class="hljs-keyword">if</span> game.currentPlayer == ConnectNGame.PLAYER_A:</span><br><span class="line">            ret = -math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">                move = pos</span><br><span class="line">                result = game.move(*pos)</span><br><span class="line">                <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:</span><br><span class="line">                    <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">                    result, oppMove = self.minimax(game.getStatus())</span><br><span class="line">                    self.dpMap[game.getStatus()] = result, oppMove</span><br><span class="line">                <span class="hljs-keyword">else</span>:</span><br><span class="line">                    self.dpMap[game.getStatus()] = result, move</span><br><span class="line">                game.undo()</span><br><span class="line">                ret = <span class="hljs-built_in">max</span>(ret, result)</span><br><span class="line">                bestMove = move <span class="hljs-keyword">if</span> ret == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">            self.dpMap[gameStatus] = ret, bestMove</span><br><span class="line">            <span class="hljs-keyword">return</span> ret, bestMove</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            ret = math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">                move = pos</span><br><span class="line">                result = game.move(*pos)</span><br><span class="line"></span><br><span class="line">                <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:</span><br><span class="line">                    <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">                    result, oppMove = self.minimax(game.getStatus())</span><br><span class="line">                    self.dpMap[game.getStatus()] = result, oppMove</span><br><span class="line">                <span class="hljs-keyword">else</span>:</span><br><span class="line">                    self.dpMap[game.getStatus()] = result, move</span><br><span class="line">                game.undo()</span><br><span class="line">                ret = <span class="hljs-built_in">min</span>(ret, result)</span><br><span class="line">                bestMove = move <span class="hljs-keyword">if</span> ret == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">            self.dpMap[gameStatus] = ret, bestMove</span><br><span class="line">            <span class="hljs-keyword">return</span> ret, bestMove</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">    tic_tac_toe = ConnectNGame(N=<span class="hljs-number">3</span>, board_size=<span class="hljs-number">3</span>)</span><br><span class="line">    strategy = CountingMinimaxStrategy()</span><br><span class="line">    strategy.action(tic_tac_toe)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">f'Game States Number <span class="hljs-subst">{<span class="hljs-built_in">len</span>(strategy.dpMap)}</span>'</span>)</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>运行程序证实了井字棋状态数为5478，下面是一些极小规模时代码运行结果：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>3x3</th>
+<th>4x4</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>k=3</td>
+<td>5478 （Draw)</td>
+<td>6035992  （Win）</td>
+</tr>
+<tr>
+<td>k=4</td>
+<td></td>
+<td>9722011 （Draw）</td>
+</tr>
+<tr>
+<td>k=5</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>根据 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/M,n,k-game">Wikipedia M,n,k-game</a>, 列出了一些小规模下的游戏解：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>3x3</th>
+<th>4x4</th>
+<th>5x5</th>
+<th>6x6</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>k=3</td>
+<td>Draw</td>
+<td>Win</td>
+<td>Win</td>
+<td>Win</td>
+</tr>
+<tr>
+<td>k=4</td>
+<td></td>
+<td>Draw</td>
+<td>Draw</td>
+<td>Win</td>
+</tr>
+<tr>
+<td>k=5</td>
+<td></td>
+<td></td>
+<td>Draw</td>
+<td>Draw</td>
+</tr>
+</tbody></table>
+<p>值得一提的是，五子棋（棋盘15x15或以上）被 L. Victor Allis证明是先手赢。</p>
+<h3 id="Alpha-Beta剪枝策略"><a href="#Alpha-Beta剪枝策略" class="headerlink" title="Alpha-Beta剪枝策略"></a>Alpha-Beta剪枝策略</h3><p>Alpha Beta 剪枝策略的代码如下（和之前代码比较类似，不再赘述）：</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AlphaBetaStrategy</span>(<span class="hljs-params">Strategy</span>):</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">action</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        self.game = game</span><br><span class="line">        result, move = self.alpha_beta(self.game.getStatus(), -math.inf, math.inf)</span><br><span class="line">        <span class="hljs-keyword">return</span> result, move</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">alpha_beta</span>(<span class="hljs-params">self, gameStatus: <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]], alpha:<span class="hljs-built_in">int</span>=<span class="hljs-literal">None</span>, beta:<span class="hljs-built_in">int</span>=<span class="hljs-literal">None</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        game = self.game</span><br><span class="line">        bestMove = <span class="hljs-literal">None</span></span><br><span class="line">        <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">        <span class="hljs-keyword">if</span> game.currentPlayer == ConnectNGame.PLAYER_A:</span><br><span class="line">            ret = -math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">                move = pos</span><br><span class="line">                result = game.move(*pos)</span><br><span class="line">                <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:</span><br><span class="line">                    <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">                    result, oppMove = self.alpha_beta(game.getStatus(), alpha, beta)</span><br><span class="line">                game.undo()</span><br><span class="line">                alpha = <span class="hljs-built_in">max</span>(alpha, result)</span><br><span class="line">                ret = <span class="hljs-built_in">max</span>(ret, result)</span><br><span class="line">                bestMove = move <span class="hljs-keyword">if</span> ret == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">                <span class="hljs-keyword">if</span> alpha &gt;= beta <span class="hljs-keyword">or</span> ret == <span class="hljs-number">1</span>:</span><br><span class="line">                    <span class="hljs-keyword">return</span> ret, move</span><br><span class="line">            <span class="hljs-keyword">return</span> ret, bestMove</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            ret = math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">                move = pos</span><br><span class="line">                result = game.move(*pos)</span><br><span class="line">                <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:</span><br><span class="line">                    <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">                    result, oppMove = self.alpha_beta(game.getStatus(), alpha, beta)</span><br><span class="line">                game.undo()</span><br><span class="line">                beta = <span class="hljs-built_in">min</span>(beta, result)</span><br><span class="line">                ret = <span class="hljs-built_in">min</span>(ret, result)</span><br><span class="line">                bestMove = move <span class="hljs-keyword">if</span> ret == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">                <span class="hljs-keyword">if</span> alpha &gt;= beta <span class="hljs-keyword">or</span> ret == -<span class="hljs-number">1</span>:</span><br><span class="line">                    <span class="hljs-keyword">return</span> ret, move</span><br><span class="line">            <span class="hljs-keyword">return</span> ret, bestMove</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>Alpha Beta 的DP版本中，由于lru_cache无法指定cache的有效参数，递归函数并没有传入alpha, beta。因此我们将alpha，beta参数隐式放入自己维护的栈中，并保证栈的状态和alpha_beta_dp函数调用状态一致。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AlphaBetaDPStrategy</span>(<span class="hljs-params">Strategy</span>):</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">action</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        self.game = game</span><br><span class="line">        self.alphaBetaStack = [(-math.inf, math.inf)]</span><br><span class="line">        result, move = self.alpha_beta_dp(self.game.getStatus())</span><br><span class="line">        <span class="hljs-keyword">return</span> result, move</span><br><span class="line"></span><br><span class="line"><span class="hljs-meta">    @lru_cache(<span class="hljs-params">maxsize=<span class="hljs-literal">None</span></span>)</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">alpha_beta_dp</span>(<span class="hljs-params">self, gameStatus: <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        alpha, beta = self.alphaBetaStack[-<span class="hljs-number">1</span>]</span><br><span class="line">        game = self.game</span><br><span class="line">        bestMove = <span class="hljs-literal">None</span></span><br><span class="line">        <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">        <span class="hljs-keyword">if</span> game.currentPlayer == ConnectNGame.PLAYER_A:</span><br><span class="line">            ret = -math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">                move = pos</span><br><span class="line">                result = game.move(*pos)</span><br><span class="line">                <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:</span><br><span class="line">                    <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">                    self.alphaBetaStack.append((alpha, beta))</span><br><span class="line">                    result, oppMove = self.alpha_beta_dp(game.getStatus())</span><br><span class="line">                    self.alphaBetaStack.pop()</span><br><span class="line">                game.undo()</span><br><span class="line">                alpha = <span class="hljs-built_in">max</span>(alpha, result)</span><br><span class="line">                ret = <span class="hljs-built_in">max</span>(ret, result)</span><br><span class="line">                bestMove = move <span class="hljs-keyword">if</span> ret == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">                <span class="hljs-keyword">if</span> alpha &gt;= beta <span class="hljs-keyword">or</span> ret == <span class="hljs-number">1</span>:</span><br><span class="line">                    <span class="hljs-keyword">return</span> ret, move</span><br><span class="line">            <span class="hljs-keyword">return</span> ret, bestMove</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            ret = math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">                move = pos</span><br><span class="line">                result = game.move(*pos)</span><br><span class="line">                <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:</span><br><span class="line">                    <span class="hljs-keyword">assert</span> <span class="hljs-keyword">not</span> game.gameOver</span><br><span class="line">                    self.alphaBetaStack.append((alpha, beta))</span><br><span class="line">                    result, oppMove = self.alpha_beta_dp(game.getStatus())</span><br><span class="line">                    self.alphaBetaStack.pop()</span><br><span class="line">                game.undo()</span><br><span class="line">                beta = <span class="hljs-built_in">min</span>(beta, result)</span><br><span class="line">                ret = <span class="hljs-built_in">min</span>(ret, result)</span><br><span class="line">                bestMove = move <span class="hljs-keyword">if</span> ret == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">                <span class="hljs-keyword">if</span> alpha &gt;= beta <span class="hljs-keyword">or</span> ret == -<span class="hljs-number">1</span>:</span><br><span class="line">                    <span class="hljs-keyword">return</span> ret, move</span><br><span class="line">            <span class="hljs-keyword">return</span> ret, bestMove</span><br></pre></td></tr></tbody></table></figure>
+
+
+</body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/2020/06/zh/combinatorial-game-1-minimax/" itemprop="url">组合游戏系列1: Leetcode中的Minimax 和 Alpha Beta剪枝</a>
         
     </h1>
@@ -146,7 +981,7 @@
         <span class="column is-narrow">
             
             
-            31 分钟 读完 (约 4613 字)
+            31 分钟 读完 (约 4610 字)
         </span>
         
     </div>
@@ -154,16 +989,16 @@
     
         <html><head></head><body><p>本系列，我们来看看在一种常见的组合游戏——回合制棋盘类游戏中，如何用算法来解决问题。首先，我们会介绍并解决搜索空间较小的问题，引入经典的博弈算法和相关理论，最终实现在大搜索空间中的Deep RL近似算法。在此基础上可以理解AlphaGo的原理和工作方式。<br>本系列的第一篇，我们介绍3个Leetcode中的零和回合制游戏，从最初的暴力解法，到动态规划最终演变成博弈论里的经典算法： minimax 以及 alpha beta 剪枝。</p>
 <ul>
-<li><p><strong><a href="!--swig%EF%BF%BC16--">第一篇: Leetcode中的Minimax 和 Alpha Beta剪枝</a></strong></p>
+<li><p><strong><a href="/2020/06/zh/combinatorial-game-1-minimax/">第一篇: Leetcode中的Minimax 和 Alpha Beta剪枝</a></strong></p>
 </li>
-<li><p><a href="!--swig%EF%BF%BC17--">第二篇: 井字棋Leetcode系列题解和Minimax最佳策略实现</a></p>
+<li><p><a href="/2020/07/zh/combinatorial-game-2-tictactoe/">第二篇: 井字棋Leetcode系列题解和Minimax最佳策略实现</a></p>
 </li>
-<li><p><a href="!--swig%EF%BF%BC18--">第三篇: 井字棋、五子棋的OpenAI Gym GUI环境</a></p>
+<li><p><a href="/2020/07/zh/combinatorial-game-3-openai-gym-pygame/">第三篇: 井字棋、五子棋的OpenAI Gym GUI环境</a></p>
 </li>
-</ul>
-<ul>
-<li><a href="!--swig%EF%BF%BC19--">第四篇: AlphaGo Zero 强化学习算法原理深度分析</a></li>
-<li><a href="!--swig%EF%BF%BC20--">第五篇: 井字棋、五子棋AlphaGo Zero 算法实战</a></li>
+<li><p><a href="zh/combinatorial-game-4-alphago-zero-theory/index.md">第四篇: AlphaGo Zero 强化学习算法原理深度分析</a></p>
+</li>
+<li><p><a href="zh/combinatorial-game-5-alphago-zero-connect-n/index.md">第五篇: 井字棋、五子棋AlphaGo Zero 算法实战</a></p>
+</li>
 </ul>
 <h2 id="Leetcode-292-Nim-Game-简单"><a href="#Leetcode-292-Nim-Game-简单" class="headerlink" title="Leetcode 292 Nim Game (简单)"></a>Leetcode 292 Nim Game (简单)</h2><p>简单题 <a target="_blank" rel="noopener" href="https://leetcode.com/problems/nim-game/">Leetcode 292 Nim Game</a>。</p>
 <blockquote>
@@ -357,35 +1192,6 @@ Alpha Beta 剪枝 Python 3伪代码如下
             </div>
             
             
-<div class="column is-narrow has-text-centered">
-    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
-        <div class="dropdown-trigger">
-            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
-                <span class="icon">
-                    <i class="fas fa-globe"></i>
-                </span>
-                <span>简体中文</span>
-                <span class="icon is-small">
-            <i class="fas fa-angle-down" aria-hidden="true"></i>
-          </span>
-            </button>
-        </div>
-        <div class="dropdown-menu has-text-left" role="menu">
-            <div class="dropdown-content">
-            
-                <a href="/tags/Gaming/index.html" class="dropdown-item">
-                    简体中文
-                </a>
-            
-                <a href="/en/tags/Gaming/index.html" class="dropdown-item">
-                    English
-                </a>
-            
-            </div>
-        </div>
-    </div>
-</div>
-
         </div>
     </div>
 </footer>

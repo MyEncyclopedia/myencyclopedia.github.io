@@ -1,0 +1,36 @@
+digraph G {
+
+  subgraph G1 {
+    "1+" [label="" color=blue style=filled];
+    "1*" [label="" color=blue style=filled];
+    "1-" [label="" color=blue style=filled];
+    "11" [label="" shape=square color=orange style=filled];
+    "12" [label="" shape=square color=orange style=filled] ;
+    "13" [label="" shape=square color=orange style=filled];
+    "14" [label="" shape=square color=orange style=filled];
+    "1+" -> "1*"
+    "1+" -> "1-"
+    "1*" -> "11"
+    "1*" -> "12"
+    "1-" -> "13"
+    "1-" -> "14"
+  }
+
+
+  subgraph G2 {
+    "2+" [label="" color=blue style=filled];
+    "2*" [label="" color=blue style=filled];
+    "2-" [label="" color=blue style=filled];
+    "21" [label="" shape=square shape=square color=orange style=filled];
+    "22" [label="" shape=square shape=square color=orange style=filled];
+    "23" [label="" shape=square shape=square color=orange style=filled];
+    "24" [label="" shape=square shape=square color=orange style=filled];
+    "2+" -> "21"
+    "2+" -> "2*"
+    "2*" -> "2-"
+    "2*" -> "24"
+    "2-" -> "22"
+    "2-" -> "23"
+  }
+
+}
