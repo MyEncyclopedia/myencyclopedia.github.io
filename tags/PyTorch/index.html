@@ -63,7 +63,7 @@
 
 
 <meta name="generator" content="Hexo 5.4.0">
-<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
 </head>
 <body>
     
@@ -163,7 +163,7 @@
 <li><a target="_blank" rel="noopener" href="https://mydoc.myencyclopedia.top/pub-html/02_data_interface.html">02 Geometric Graph Data Representation</a></li>
 <li><a target="_blank" rel="noopener" href="https://mydoc.myencyclopedia.top/pub-html/03_gcn.html">03 GCN</a></li>
 </ul>
-<h2 id="公众号系列视频链接"><a href="#公众号系列视频链接" class="headerlink" title="公众号系列视频链接"></a><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA4NzkxNzM3Nw==&amp;action=getalbum&amp;album_id=2055350201493585920#wechat_redirect">公众号系列视频链接</a></h2><h2 id="B站视频系列链接"><a href="#B站视频系列链接" class="headerlink" title="B站视频系列链接"></a><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1f3411i7MQ">B站视频系列链接</a></h2></body></html>
+<h2 id="公众号系列视频链接"><a href="#公众号系列视频链接" class="headerlink" title="公众号系列视频链接"></a><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA4NzkxNzM3Nw==&amp;action=getalbum&amp;album_id=2055350201493585920#wechat_redirect">公众号系列视频链接</a></h2><h2 id="B站视频系列链接"><a href="#B站视频系列链接" class="headerlink" title="B站视频系列链接"></a><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1f3411i7MQ">B站视频系列链接</a></h2><link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
@@ -261,7 +261,7 @@
 <p>代码和 matplotlib 大致一致。注意渲染的时候 hvplot 需要将多个图片数据以乘法形式返回，借助 reduce 函数我们将 7 种节点的图相乘，再乘以描绘边的图，呈现出叠加的完整图片。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> hvplot.networkx <span class="hljs-keyword">as</span> hvnx</span><br><span class="line">options = {</span><br><span class="line">    <span class="hljs-string">'width'</span>: <span class="hljs-number">800</span>,</span><br><span class="line">    <span class="hljs-string">'height'</span>: <span class="hljs-number">1000</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">plt_nodes = []</span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> np.arange(<span class="hljs-built_in">len</span>(np.unique(node_classes))):</span><br><span class="line">    nodelist = node_label[node_classes == i]</span><br><span class="line">    plt = hvnx.draw_networkx_nodes(cora, pos, nodelist=<span class="hljs-built_in">list</span>(nodelist), node_color=node_color[i], **options)</span><br><span class="line">    plt_nodes.append(plt)</span><br><span class="line"></span><br><span class="line">plt_edges = hvnx.draw_networkx_edges(cora, pos, arrowstyle=<span class="hljs-string">'-&gt;'</span>, edge_width=<span class="hljs-number">2</span>, colorbar=<span class="hljs-literal">True</span>, **options)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> functools</span><br><span class="line"><span class="hljs-keyword">import</span> operator</span><br><span class="line">plt_edges * functools.reduce(operator.mul, plt_nodes)</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
 
-</body></html>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
@@ -441,7 +441,7 @@ $$
 <li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/32089487">AlphaZero实战：从零学下五子棋（附代码）</a></p>
 </li>
 </ul>
-</body></html>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
@@ -662,7 +662,7 @@ $$
 
     
 </body>
-</html>lue = self.forward(state)</span><br><span class="line">            action = q_value.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>)[<span class="hljs-number">1</span>].item()</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            action = randrange(self._num_actions)</span><br><span class="line">        <span class="hljs-keyword">return</span> action</span><br></pre></td></tr></tbody></table></figure>
+</html> class="hljs-number">1</span>)[<span class="hljs-number">1</span>].item()</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            action = randrange(self._num_actions)</span><br><span class="line">        <span class="hljs-keyword">return</span> action</span><br></pre></td></tr></tbody></table></figure>
 
 
 
@@ -682,7 +682,7 @@ $$
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">env, args, agent</span>):</span></span><br><span class="line">    <span class="hljs-keyword">for</span> episode_idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(args.num_episodes):</span><br><span class="line">        episode_reward = <span class="hljs-number">0.0</span></span><br><span class="line">        state = env.reset()</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            action = agent.act(state, episode_idx)</span><br><span class="line">            <span class="hljs-keyword">if</span> args.render:</span><br><span class="line">                env.render()</span><br><span class="line">            next_state, reward, done, stats = env.step(action)</span><br><span class="line">            agent.process(episode_idx, state, action, reward, next_state, done)</span><br><span class="line">            state = next_state</span><br><span class="line">            episode_reward += reward</span><br><span class="line">            <span class="hljs-keyword">if</span> done:</span><br><span class="line">                <span class="hljs-built_in">print</span>(<span class="hljs-string">f'<span class="hljs-subst">{episode_idx}</span>: <span class="hljs-subst">{episode_reward}</span>'</span>)</span><br><span class="line">                <span class="hljs-keyword">break</span></span><br></pre></td></tr></tbody></table></figure>
 
 
-</body></html>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
@@ -835,7 +835,7 @@ $$
 
 
 
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2></body></html>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     

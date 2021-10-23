@@ -75,7 +75,7 @@
 
 
 <meta name="generator" content="Hexo 5.4.0">
-<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
 </head>
 <body>
     
@@ -362,7 +362,7 @@ $$
 <figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExpectedSarsaAgent</span>(<span class="hljs-params">CartPoleAbstractAgent</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_q</span>(<span class="hljs-params">self, s: State, a: Action, r, s_next: State, a_next: Action</span>):</span></span><br><span class="line">        self.q[s][a] = self.q[s][a] + self.lr * (r + self.discount * np.dot(self.pi[s_next], self.q[s_next]) - self.q[s][a])</span><br><span class="line">        <span class="hljs-comment"># update pi[s]</span></span><br><span class="line">        best_a = np.random.choice(np.where(self.q[s] == <span class="hljs-built_in">max</span>(self.q[s]))[<span class="hljs-number">0</span>])</span><br><span class="line">        n_actions = self.env.action_space.n</span><br><span class="line">        self.pi[s][:] = self.epsilon / n_actions</span><br><span class="line">        self.pi[s][best_a] = <span class="hljs-number">1</span> - (n_actions - <span class="hljs-number">1</span>) * (self.epsilon / n_actions)</span><br></pre></td></tr></tbody></table></figure>
 
 <p>同样的，Expected SARSA 1000次迭代也能比较好的学到最佳policy。</p>
-</body></html>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     

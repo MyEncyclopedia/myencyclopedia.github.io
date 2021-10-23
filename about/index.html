@@ -2,7 +2,7 @@
 <html class="has-navbar-fixed-top">
 <head>
     <meta charset="utf-8">
-<title>MyEncyclopedia</title>
+<title>关于我 - MyEncyclopedia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -16,17 +16,20 @@
 
 
 
-    <meta name="description" content="digraph G {   b000i0 [label&#x3D;”[000][0]”];   b001i0 [label&#x3D;”[001][0]”];   b010i1 [label&#x3D;”[010][1]”];   b100i2 [label&#x3D;”[100][2]”];   b011i1 [label&#x3D;”[011][1]”];   b101i2 [label&#x3D;”[101][2]”];   b110i2 [labe">
+    <meta name="description" content="资深老程序员，兴趣广泛，精通各个方面的计算机技术，包括  深度学习：RL，DNN，CV，NLP 统计和数学 算法 计算机工程 多线程编程 分布式计算和大数据  欢迎关注我的公众号          我的微信号，注明目的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MyEncyclopedia">
-<meta property="og:url" content="https://myencyclopedia.github.io/2021/10/en/tsp-2-dp-tour/ver3-bottom-up.svg/">
+<meta property="og:title" content="关于我">
+<meta property="og:url" content="https://myencyclopedia.github.io/about/">
 <meta property="og:site_name" content="MyEncyclopedia">
-<meta property="og:description" content="digraph G {   b000i0 [label&#x3D;”[000][0]”];   b001i0 [label&#x3D;”[001][0]”];   b010i1 [label&#x3D;”[010][1]”];   b100i2 [label&#x3D;”[100][2]”];   b011i1 [label&#x3D;”[011][1]”];   b101i2 [label&#x3D;”[101][2]”];   b110i2 [labe">
-<meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-10-22T12:29:49.850Z">
-<meta property="article:modified_time" content="2021-10-22T12:29:50.000Z">
+<meta property="og:description" content="资深老程序员，兴趣广泛，精通各个方面的计算机技术，包括  深度学习：RL，DNN，CV，NLP 统计和数学 算法 计算机工程 多线程编程 分布式计算和大数据  欢迎关注我的公众号          我的微信号，注明目的">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/about/me_wechat_scan_search_white.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/about/frank_wechat.png">
+<meta property="article:published_time" content="2021-10-23T01:35:33.890Z">
+<meta property="article:modified_time" content="2021-10-23T02:45:12.000Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/about/me_wechat_scan_search_white.png">
 
 
 
@@ -67,14 +70,14 @@
 
 
 <meta name="generator" content="Hexo 5.4.0">
-<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
 </head>
 <body>
     
 <nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
-            <a class="navbar-item navbar-logo" href="/en">
+            <a class="navbar-item navbar-logo" href="/">
                 
                 <img src="/images/logo.png" alt="" height="28">
                 
@@ -89,19 +92,19 @@
         <div class="navbar-menu navbar-start">
             
             <a class="navbar-item "
-               href="/en/archives">Archives</a>
+               href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/en/categories/Technology">Technology</a>
+               href="/categories/Technology">Technology</a>
             
             <a class="navbar-item "
-               href="/en/about">About</a>
+               href="/about">About</a>
             
         </div>
         
         <div class="navbar-menu navbar-end">
             
-            <a class="navbar-item search" title="Search" href="javascript:;">
+            <a class="navbar-item search" title="搜索" href="javascript:;">
                 <i class="fas fa-search"></i>
             </a>
             
@@ -123,44 +126,51 @@
     <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            
+            关于我
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
         <span class="column is-narrow">
             
-                <time datetime="2021-10-22T12:29:49.850Z" itemprop="datePublished">Oct 22 2021</time>
+                <time datetime="2021-10-23T01:35:33.890Z" itemprop="datePublished">10月 22 2021</time>
             
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
         </span>
         
         
         <span class="column is-narrow">
             
             
-            a few seconds read (About 110 words)
+            几秒 读完 (约 89 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><p>digraph G {<br>   b000i0 [label=”[000][0]”];<br>   b001i0 [label=”[001][0]”];<br>   b010i1 [label=”[010][1]”];<br>   b100i2 [label=”[100][2]”];<br>   b011i1 [label=”[011][1]”];<br>   b101i2 [label=”[101][2]”];<br>   b110i2 [label=”[110][2]”];<br>   b011i0 [label=”[011][0]”];<br>   b110i1 [label=”[110][1]”];<br>   b101i0 [label=”[101][0]”];<br>   b111i2s0 [label=”[111][2]”];<br>   b111i1s0 [label=”[111][1]”];<br>   b111i0s0 [label=”[111][0]”];<br>   b001i0 -&gt; b000i0 ;<br>   b010i1 -&gt; b000i0;<br>   b100i2 -&gt; b000i0;<br>   b011i1 -&gt; b001i0;<br>   b101i2 -&gt; b001i0 ;<br>   b110i2 -&gt; b010i1;<br>   b011i0 -&gt; b010i1;<br>   b110i1 -&gt; b100i2;<br>   b101i0 -&gt; b100i2;<br>   b111i2s0 -&gt; b011i1;<br>   b111i1s0 -&gt; b101i2;<br>   b111i0s0 -&gt; b110i2;<br>   b111i2s0 -&gt; b011i0;<br>   b111i0s0 -&gt; b110i1;<br>   b111i1s0 -&gt; b101i0;<br> }</p>
-</body></html>
+        <html><head></head><body><p>资深老程序员，兴趣广泛，精通各个方面的计算机技术，包括</p>
+<ul>
+<li>深度学习：RL，DNN，CV，NLP</li>
+<li>统计和数学</li>
+<li>算法</li>
+<li>计算机工程</li>
+<li>多线程编程</li>
+<li>分布式计算和大数据</li>
+</ul>
+<p>欢迎关注我的公众号</p>
+<figure>
+  <img src="me_wechat_scan_search_white.png">
+  <figcaption></figcaption>
+</figure>
+
+<p>我的微信号，注明目的<br><img src="frank_wechat.png" title="微信"></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
-    
-    <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
-            
-            <a href="/2021/10/en/tsp-2-dp-tour/ver3-top-down.svg/"></a>
-            
-        </span>
-        <span class="column is-12-mobile is-half-desktop  article-nav-next">
-            
-            <a href="/2021/06/en/vlog-paper-mine/">Paper Explained: MINE - Mutual Information Neural Estimation (2018)</a>
-            
-        </span>
-    </div>
     
 </article>
 
@@ -176,7 +186,7 @@
 
 
 <div class="comments">
-    <h3 class="title is-4">Comments</h3>
+    <h3 class="title is-4">评论</h3>
     
 <div id="disqus_thread">
     
@@ -243,7 +253,7 @@
     window.FontAwesomeConfig = {
         searchPseudoElements: true
     }
-    moment.locale("en-AU");
+    moment.locale("zh-CN");
 </script>
 
 
@@ -369,7 +379,7 @@
     <div class="searchbox-mask"></div>
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -381,13 +391,13 @@
     (function (window) {
         var INSIGHT_CONFIG = {
             TRANSLATION: {
-                POSTS: 'Posts',
-                PAGES: 'Pages',
-                CATEGORIES: 'Categories',
-                TAGS: 'Tags',
-                UNTITLED: '(Untitled)',
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
             },
-            CONTENT_URL: '/content.en.json',
+            CONTENT_URL: '/content.json',
         };
         window.INSIGHT_CONFIG = INSIGHT_CONFIG;
     })(window);

@@ -2,7 +2,7 @@
 <html class="has-navbar-fixed-top">
 <head>
     <meta charset="utf-8">
-<title>为什么我将博客从 hugo 切换到了 hexo - MyEncyclopedia</title>
+<title>为什么我将博客从 Hugo 切换到了 Hexo - MyEncyclopedia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -16,12 +16,12 @@
 
 
 
-    <meta name="description" content="当下两种静态博客 hugo 和 hexo 都很出色，都是将 markdown 格式的文件编译成 html。 Hugo 是用 go 语言来写的，hexo 是用 node.js 来实现的。但是在经过了一年多的hugo使用之后，终于下定决心切换到 hexo。这里记录了自己的一些使用心得和比较。 共同优点总的来说，hugo 对于不懂前端但是想部署博客的同学来说是很友好的。但是，对于会大前端的同学，需要在静">
+    <meta name="description" content="当下两种静态博客 Hugo 和 Hexo 都很出色，都是将 markdown 格式的文件编译成 html。 Hugo 是用 go 语言来写的，Hexo 是用 node.js 来实现的。但是在经过了一年多的 Hugo 使用之后，终于下定决心切换到 Hexo。这里记录了自己的一些使用心得，比较和一些小技巧。 发布到 GitHub注意到 Hexo 是发现 Github 可以 host 静态博客，并且 H">
 <meta property="og:type" content="article">
-<meta property="og:title" content="为什么我将博客从 hugo 切换到了 hexo">
+<meta property="og:title" content="为什么我将博客从 Hugo 切换到了 Hexo">
 <meta property="og:url" content="https://myencyclopedia.github.io/2021/10/zh/general-hexo/">
 <meta property="og:site_name" content="MyEncyclopedia">
-<meta property="og:description" content="当下两种静态博客 hugo 和 hexo 都很出色，都是将 markdown 格式的文件编译成 html。 Hugo 是用 go 语言来写的，hexo 是用 node.js 来实现的。但是在经过了一年多的hugo使用之后，终于下定决心切换到 hexo。这里记录了自己的一些使用心得和比较。 共同优点总的来说，hugo 对于不懂前端但是想部署博客的同学来说是很友好的。但是，对于会大前端的同学，需要在静">
+<meta property="og:description" content="当下两种静态博客 Hugo 和 Hexo 都很出色，都是将 markdown 格式的文件编译成 html。 Hugo 是用 go 语言来写的，Hexo 是用 node.js 来实现的。但是在经过了一年多的 Hugo 使用之后，终于下定决心切换到 Hexo。这里记录了自己的一些使用心得，比较和一些小技巧。 发布到 GitHub注意到 Hexo 是发现 Github 可以 host 静态博客，并且 H">
 <meta property="og:locale">
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
@@ -40,6 +40,10 @@
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/274c.png?v8">
+<meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/274c.png?v8">
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
 <meta property="og:image" content="https://github.githubassets.com/images/icons/emoji/unicode/274c.png?v8">
@@ -50,10 +54,12 @@
 <meta property="og:image" content="https://myencyclopedia.github.io/2021/10/zh/general-hexo/vscode-debug-npm.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/2021/10/zh/general-hexo/vscode-debugging.png">
 <meta property="article:published_time" content="2021-10-22T10:45:01.000Z">
-<meta property="article:modified_time" content="2021-10-22T14:02:08.000Z">
+<meta property="article:modified_time" content="2021-10-23T02:49:48.000Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta property="article:tag" content="blog">
 <meta property="article:tag" content="hexo">
+<meta property="article:tag" content="前端">
+<meta property="article:tag" content="javascript">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8">
 
@@ -96,7 +102,7 @@
 
 
 <meta name="generator" content="Hexo 5.4.0">
-<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
 </head>
 <body>
     
@@ -144,19 +150,31 @@
                     
                     
                     
-                    <a class="navbar-item" href="#共同优点">1&nbsp;&nbsp;<b>共同优点</b></a>
+                    <a class="navbar-item" href="#发布到-GitHub">1&nbsp;&nbsp;<b>发布到 GitHub</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#Hexo-优势">2&nbsp;&nbsp;<b>Hexo 优势</b></a>
+                    <a class="navbar-item" href="#共同优点">2&nbsp;&nbsp;<b>共同优点</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#在-VS-Code-中调试插件">3&nbsp;&nbsp;<b>在 VS Code 中调试插件</b></a>
+                    <a class="navbar-item" href="#Hexo-优势">3&nbsp;&nbsp;<b>Hexo 优势</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#集成-Typora">4&nbsp;&nbsp;<b>集成 Typora</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#在-VS-Code-中调试插件">5&nbsp;&nbsp;<b>在 VS Code 中调试插件</b></a>
                     
                 </div>
             </div>
@@ -178,7 +196,7 @@
     <article class="article content gallery" itemscope itemprop="blogPost">
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            为什么我将博客从 hugo 切换到了 hexo
+            为什么我将博客从 Hugo 切换到了 Hexo
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -197,13 +215,14 @@
         <span class="column is-narrow">
             
             
-            6 分钟 读完 (约 852 字)
+            6 分钟 读完 (约 922 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><p>当下两种静态博客 hugo 和 hexo 都很出色，都是将 markdown 格式的文件编译成 html。 Hugo 是用 go 语言来写的，hexo 是用 node.js 来实现的。但是在经过了一年多的hugo使用之后，终于下定决心切换到 hexo。这里记录了自己的一些使用心得和比较。</p>
+        <html><head></head><body><p>当下两种静态博客 Hugo 和 Hexo 都很出色，都是将 markdown 格式的文件编译成 html。 Hugo 是用 go 语言来写的，Hexo 是用 node.js 来实现的。但是在经过了一年多的 Hugo 使用之后，终于下定决心切换到 Hexo。这里记录了自己的一些使用心得，比较和一些小技巧。</p>
+<h2 id="发布到-GitHub"><a href="#发布到-GitHub" class="headerlink" title="发布到 GitHub"></a>发布到 GitHub</h2><p>注意到 Hexo 是发现 Github 可以 host 静态博客，并且 Hexo 默认支持直接发布到 Github<br><a href="https://myencyclopedia.github.io/archives/">https://myencyclopedia.github.io/archives/</a></p>
 <h2 id="共同优点"><a href="#共同优点" class="headerlink" title="共同优点"></a>共同优点</h2><p>总的来说，hugo 对于不懂前端但是想部署博客的同学来说是很友好的。但是，对于会大前端的同学，需要在静态页面上加入动态元素需求，hexo 是比较完美的解决方案。</p>
 <p>下面是我在考虑静态博客时的一些两者都满足的特性：</p>
 <table>
@@ -236,6 +255,11 @@
 </tr>
 <tr>
 <td>发布到github.io</td>
+<td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
+<td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
+</tr>
+<tr>
+<td>Markdown 中引用其他页面</td>
 <td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
 <td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
 </tr>
@@ -286,17 +310,22 @@
 <td><strong><span class="github-emoji" style="display:inline;vertical-align:middle"><span>❌</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/274c.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></strong></td>
 </tr>
 <tr>
+<td>内嵌 PDF 阅读</td>
+<td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
+<td><strong><span class="github-emoji" style="display:inline;vertical-align:middle"><span>❌</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/274c.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></strong></td>
+</tr>
+<tr>
 <td><strong>方便的插件开发</strong></td>
 <td><strong>比较方便</strong></td>
 <td><strong>比较麻烦</strong></td>
 </tr>
 </tbody></table>
-<h2 id="在-VS-Code-中调试插件"><a href="#在-VS-Code-中调试插件" class="headerlink" title="在 VS Code 中调试插件"></a>在 VS Code 中调试插件</h2><p>VS Code 以及支持调试项目中npm 或者 yarn 安装的 node.js 模块，这对于开发或者改动第三方插件来说非常方便，具体方法如下。</p>
+<h2 id="集成-Typora"><a href="#集成-Typora" class="headerlink" title="集成 Typora"></a>集成 Typora</h2><h2 id="在-VS-Code-中调试插件"><a href="#在-VS-Code-中调试插件" class="headerlink" title="在 VS Code 中调试插件"></a>在 VS Code 中调试插件</h2><p>VS Code 以及支持调试项目中npm 或者 yarn 安装的 node.js 模块，这对于开发或者改动第三方插件来说非常方便，具体方法如下。</p>
 <p>打开 <code>package.json</code>，将鼠标放在 <code>scripts</code> 的目标中，会弹出 <code>Run Script | Debug Script</code>。</p>
 <p><img src="vscode-debug-npm.png"></p>
 <p>选择 <code>Debug Script</code> 在 node_modules 中相关源文件中设置断点，就可以调试了！</p>
 <p><img src="vscode-debugging.png"></p>
-</body></html>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
@@ -305,6 +334,10 @@
         <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/blog/">#blog</a></span>
     
         <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/hexo/">#hexo</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/%E5%89%8D%E7%AB%AF/">#前端</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/javascript/">#javascript</a></span>
     
     </div>
     
