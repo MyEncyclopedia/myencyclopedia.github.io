@@ -194,16 +194,18 @@
         <span class="column is-narrow">
             
             
-            6 分钟 读完 (约 922 字)
+            8 分钟 读完 (约 1177 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
         <html><head></head><body><p>当下两种静态博客 Hugo 和 Hexo 都很出色，都是将 markdown 格式的文件编译成 html。 Hugo 是用 go 语言来写的，Hexo 是用 node.js 来实现的。但是在经过了一年多的 Hugo 使用之后，终于下定决心切换到 Hexo。这里记录了自己的一些使用心得，比较和一些小技巧。</p>
-<h2 id="发布到-GitHub"><a href="#发布到-GitHub" class="headerlink" title="发布到 GitHub"></a>发布到 GitHub</h2><p>注意到 Hexo 是发现 Github 可以 host 静态博客，并且 Hexo 默认支持直接发布到 Github<br><a href="https://myencyclopedia.github.io/archives/">https://myencyclopedia.github.io/archives/</a></p>
-<h2 id="共同优点"><a href="#共同优点" class="headerlink" title="共同优点"></a>共同优点</h2><p>总的来说，hugo 对于不懂前端但是想部署博客的同学来说是很友好的。但是，对于会大前端的同学，需要在静态页面上加入动态元素需求，hexo 是比较完美的解决方案。</p>
-<p>下面是我在考虑静态博客时的一些两者都满足的特性：</p>
+<h2 id="发布到-GitHub"><a href="#发布到-GitHub" class="headerlink" title="发布到 GitHub"></a>发布到 GitHub</h2><p>注意到 Hexo 是发现 Github 可以 host 静态博客，并且 Hexo 默认支持直接发布到 Github，就抱着好奇心尝试了下 Hexo。</p>
+<p>下面的链接是站点发布到 Github后通过二级域名可以访问，打开速度比自己的站点快不少。</p>
+<p><a href="https://myencyclopedia.github.io/archives/">https://myencyclopedia.github.io/archives/</a></p>
+<h2 id="两者共同优点"><a href="#两者共同优点" class="headerlink" title="两者共同优点"></a>两者共同优点</h2><p>总的来说，hugo 对于不懂前端但是想部署博客的同学来说是很友好的。但是，对于熟悉大前端的同学，可以很方便在静态页面基础上加入动态元素以及快速开发插件，Hexo 是比较完美的解决方案。</p>
+<p>下面是我在考虑静态博客时一些两者都满足的特性：</p>
 <table>
 <thead>
 <tr>
@@ -233,7 +235,7 @@
 <td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
 </tr>
 <tr>
-<td>发布到github.io</td>
+<td>发布到 Github</td>
 <td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
 <td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
 </tr>
@@ -248,7 +250,12 @@
 <td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
 </tr>
 <tr>
-<td>嵌入 Youtube B站视频</td>
+<td>嵌入 Youtube 和 B站视频</td>
+<td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
+<td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
+</tr>
+<tr>
+<td>接入 Google Analytics</td>
 <td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
 <td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
 </tr>
@@ -259,7 +266,8 @@
 </tr>
 </tbody></table>
 <h2 id="Hexo-优势"><a href="#Hexo-优势" class="headerlink" title="Hexo 优势"></a>Hexo 优势</h2><p>当遇到默认框架无法支持的功能时，两者的差别就体现了出来。</p>
-<p>Hugo 的插件系统主要是通过 shortcode 来完成。记得之前为了开发hugo最简单的 shortcode 花费了九牛二虎之力，既包含了部署 Go语言环境，也包含调试开发的小插件，由于开发工具的匮乏，只能通过log打印出来内部状态，非常花时间。另外，配置 mathjax 等也花了很多时间，出现莫名其妙的 quote 错误时只能不断试错，没有明显的错误提示。又比如，很多时候需要调整编译 pipeline 来完成类似图片加水印，图片文件压缩等功能，也没有简便方案。<br>Hexo 则相反，首先它有着更丰富的插件。其次，可以很方便的通过 node.js 生态来开发新插件，控制编译 pipeline。当然，这需要对 npm，javascript 等大前端的编程环境比较熟悉，所以 hexo 很适合前端程序员。又比如，hexo 可以实现手机版上很炫酷的无线下滚的前端 js 功能，或者类似于微信公众号的图片异步加载功能，这些都是 Hugo 无法简单完成的。可以说，使用大前端 js 的hexo将静态的markdown编译和动态的客户端技术完美结合为一体。</p>
+<p>Hugo 的插件系统主要是通过 shortcode 来完成。记得之前为了开发hugo最简单的 shortcode 花费了九牛二虎之力，既包含了部署 Go语言环境，也包含调试开发的小插件，并且由于开发工具的匮乏，只能通过log打印出来内部状态，非常耗时。另外，配置 mathjax 等也花了很多时间，出现莫名其妙的 quote 错误时只能不断试错，没有明显的错误提示。又比如，很多时候需要调整编译 pipeline 来完成类似图片加水印，图片文件压缩等功能，也没有现成方案。<br>Hexo 则相反，首先它有着更丰富的插件。其次，可以很方便的通过 node.js 生态来开发新插件，控制编译 pipeline。当然，这需要对 npm，javascript 等大前端的编程环境比较熟悉，所以 Hexo 很适合前端程序员。例如，Hexo 可以通过现有插件来实现手机版炫酷的无限下滚功能，或者类似于微信公众号的图片异步加载功能，这些都是 Hugo 无法简单完成的。可以说，使用大前端 js 的 Hexo 将静态markdown 动态编译和动态灵活的客户端技术完美结合为一体。</p>
+<p>下面是一些我目前想到的 Hexo 相对于 Hugo 的优势特性</p>
 <table>
 <thead>
 <tr>
@@ -294,12 +302,31 @@
 <td><strong><span class="github-emoji" style="display:inline;vertical-align:middle"><span>❌</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/274c.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></strong></td>
 </tr>
 <tr>
+<td>动态CDN</td>
+<td><span class="github-emoji" style="display:inline;vertical-align:middle"><span>✔</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/2714.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></td>
+<td><strong><span class="github-emoji" style="display:inline;vertical-align:middle"><span>❌</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/274c.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></strong></td>
+</tr>
+<tr>
 <td><strong>方便的插件开发</strong></td>
-<td><strong>比较方便</strong></td>
+<td><strong>方便</strong></td>
 <td><strong>比较麻烦</strong></td>
 </tr>
 </tbody></table>
-<h2 id="集成-Typora"><a href="#集成-Typora" class="headerlink" title="集成 Typora"></a>集成 Typora</h2><h2 id="在-VS-Code-中调试插件"><a href="#在-VS-Code-中调试插件" class="headerlink" title="在 VS Code 中调试插件"></a>在 VS Code 中调试插件</h2><p>VS Code 以及支持调试项目中npm 或者 yarn 安装的 node.js 模块，这对于开发或者改动第三方插件来说非常方便，具体方法如下。</p>
+<h2 id="Typora-统一资源路径"><a href="#Typora-统一资源路径" class="headerlink" title="Typora 统一资源路径"></a>Typora 统一资源路径</h2><p>在 Hexo 启用了文章资源目录后，可以将相关资源拷贝到专有同名目录下，并在文章中直接引用资源文件名。</p>
+<p>具体步骤如下</p>
+<h4 id="1-启用资源目录"><a href="#1-启用资源目录" class="headerlink" title="1. 启用资源目录"></a>1. 启用资源目录</h4><p><strong>_config.yml</strong> 中编辑</p>
+<figure class="highlight markdown hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">post<span class="hljs-emphasis">_asset_</span>folder: true</span><br></pre></td></tr></tbody></table></figure>
+<h4 id="2-文件存放结构"><a href="#2-文件存放结构" class="headerlink" title="2. 文件存放结构"></a>2. 文件存放结构</h4><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">_posts/</span><br><span class="line">│</span><br><span class="line">└───article1.md</span><br><span class="line">└───article1/</span><br><span class="line">│   │   img1.png</span><br><span class="line">│   │   img2.png</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="3-markdown-中引用资源文件"><a href="#3-markdown-中引用资源文件" class="headerlink" title="3. markdown 中引用资源文件"></a>3. markdown 中引用资源文件</h4><p><strong>article1.md</strong> </p>
+<figure class="highlight markdown hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![](img1.png)</span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="4-Typora-启用同样资源引用模式"><a href="#4-Typora-启用同样资源引用模式" class="headerlink" title="4. Typora 启用同样资源引用模式"></a>4. Typora 启用同样资源引用模式</h4><p>平时我用 Typora 编辑，Typora 也支持这种资源引用模式。</p>
+<p><strong>article1.md</strong> </p>
+<figure class="highlight markdown hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typora-root-url: article1</span><br></pre></td></tr></tbody></table></figure>
+
+
+<h2 id="在-VS-Code-中调试插件"><a href="#在-VS-Code-中调试插件" class="headerlink" title="在 VS Code 中调试插件"></a>在 VS Code 中调试插件</h2><p>VS Code 已经默认支持调试项目 npm 或者 yarn 安装的 node.js 模块，这对于开发或者改动第三方插件而言非常方便，具体方法为。</p>
 <p>打开 <code>package.json</code>，将鼠标放在 <code>scripts</code> 的目标中，会弹出 <code>Run Script | Debug Script</code>。</p>
 <p><img src="vscode-debug-npm.png"></p>
 <p>选择 <code>Debug Script</code> 在 node_modules 中相关源文件中设置断点，就可以调试了！</p>
