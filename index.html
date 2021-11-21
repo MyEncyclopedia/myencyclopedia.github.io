@@ -139,7 +139,7 @@
         <span class="column is-narrow">
             
             
-            6 分钟 读完 (约 884 字)
+            6 分钟 读完 (约 892 字)
         </span>
         
     </div>
@@ -149,40 +149,38 @@
 <p><img src="gym-demo.gif"></p>
 <p>这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux 甚至 Mac 上都可以运行。</p>
 <p>这里将通过大家最常用的 Windows 系统来演示环境的使用。</p>
-<h2 id="X-window-服务器"><a href="#X-window-服务器" class="headerlink" title="X window 服务器"></a>X window 服务器</h2><p>在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 Xlaunch。</p>
+<h2 id="X-window-服务器"><a href="#X-window-服务器" class="headerlink" title="X window 服务器"></a>X window 服务器</h2><p>在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 XLaunch。</p>
 <p><img src="xlaunch.png"></p>
 <p>这里采用 XLaunch 是因为安装比较方便，安装包也很小。</p>
 <p>如果 XLaunch 正常启动的话，就会在系统托管的地方显示出来。接着我们来下载环境的 docker images。</p>
 <h2 id="拉取镜像"><a href="#拉取镜像" class="headerlink" title="拉取镜像"></a>拉取镜像</h2><p>用 docker pull 命令我们将预制的公开镜像拉下来</p>
 <figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull myencyclopedia/gym-nes</span><br></pre></td></tr></tbody></table></figure>
 
-
 <p>拉下来以后，可以用 docker image命令来检查是否存在</p>
 <figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></tbody></table></figure>
-
 
 <p>下一步，我们需要找到物理机或者 docker host 机器的 IP 地址。</p>
 <p>在windows上，我们执行 ipconfig 命令，注意我们要的是 WSL 对应的 IP 地址。</p>
 <p>得到了物理机的 docker 网段地址以后，我们将地址保存在物理机的 Display 环境变量中，注意最后需要加上 <code>:0</code></p>
-<p>至此，我们可以一键跑起超级玛丽了。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> DISPLAY=172.23.0.1:0</span><br></pre></td></tr></tbody></table></figure>
+
+<p>至此，我们可以一键跑超级玛丽了。</p>
 <figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash -c <span class="hljs-string">'python gym_nes_demo.py'</span></span><br></pre></td></tr></tbody></table></figure>
 
-<p>而我们执行一句命令 docker run 把 Display 环境变量注入进去</p>
-<p>一切顺利的话，有个 X window的窗口会跳出来，超级玛丽可以无人控制的运行起来，无人超级玛丽会随机执行一些动作。</p>
-<p>结束程序记得要把 docker container 显示关掉，需要执行 docker stop。</p>
-<p>其实，预制的 docker 环境给大家装了更多的游戏，大家也可以用wanda g的跑其他的游戏</p>
-<p>首先呢 将上面命令稍微修改一下 次我们进入 interactive bash。</p>
+<p>解释一点，<code>-e DISPLAY=$DISPLAY</code> 将 Display 环境变量从当前 shell 注入到 container 中。</p>
+<p>一切顺利的话，有个 X window的窗口会跳出来，无人控制得超级玛丽运行了起来，它会随机执行一些动作。</p>
+<p>结束程序记得要把 docker container 显示关掉，需要执行 <code>docker stop</code>。</p>
+<h2 id="各种游戏"><a href="#各种游戏" class="headerlink" title="各种游戏"></a>各种游戏</h2><p>其实，预制的 docker 环境给大家装了更多的游戏，大家也可以修改源码跑其他游戏</p>
+<p>具体方法是，将上面命令稍微修改一下 次我们进入 interactive bash。</p>
 <figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it  -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash</span><br></pre></td></tr></tbody></table></figure>
 
 <p><img src="docker-bash.gif"></p>
 <p>进了 container 之后，我们发现之前执行的 python 原代码是当前目录的 <code>gym_nes_demo.py</code></p>
-<p>先看一下所有的游戏的 rom。</p>
+<p>先列出所有的游戏的 rom 文件。</p>
 <figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">(py3.7) root@aff72945133b:/proj/nes_py# find . -name '*.nes'</span><br><span class="line">./tests/games/excitebike.nes</span><br><span class="line">./tests/games/super-mario-bros-2.nes</span><br><span class="line">./tests/games/super-mario-bros-3.nes</span><br><span class="line">./tests/games/empty.nes</span><br><span class="line">./tests/games/super-mario-bros-lost-levels.nes</span><br><span class="line">./tests/games/super-mario-bros-1.nes</span><br><span class="line">./tests/games/the-legend-of-zelda.nes</span><br><span class="line">./tests/nes-roms/1942 (Japan, USA).nes</span><br><span class="line">./tests/nes-roms/contra.nes</span><br><span class="line">./tests/nes-roms/Battle City (J).nes</span><br><span class="line">./tests/nes-roms/red.nes</span><br><span class="line">./tests/nes-roms/Gradius 2 (J).nes</span><br><span class="line">./tests/nes-roms/super-mario.nes</span><br><span class="line">./tests/nes-roms/Contra Force (USA).nes</span><br><span class="line">./tests/nes-roms/Rush'n Attack (U).nes</span><br></pre></td></tr></tbody></table></figure>
 
-
-
-<p>文件夹里有很多的游， 包括魂斗罗，坦克大战等等。</p>
-<p>修改 <code>gym_nes_demo.py</code>，将超级玛丽替换成魂斗罗。</p>
+<p>文件夹里有很多游戏， 包括魂斗罗，坦克大战等等。</p>
+<p>修改 <code>gym_nes_demo.py</code>，将超级玛丽替换成魂斗罗 nes。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> nes_py <span class="hljs-keyword">import</span> NESEnv</span><br><span class="line"><span class="hljs-keyword">import</span> tqdm</span><br><span class="line">env = NESEnv(<span class="hljs-string">'/proj/nes_py/tests/games/super-mario-bros-1.nes'</span>)</span><br><span class="line"></span><br><span class="line">done = <span class="hljs-literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">try</span>:</span><br><span class="line">    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> tqdm.tqdm(<span class="hljs-built_in">range</span>(<span class="hljs-number">5000</span>)):</span><br><span class="line">        <span class="hljs-keyword">if</span> done:</span><br><span class="line">            state = env.reset()</span><br><span class="line">            done = <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            state, reward, done, info = env.step(env.action_space.sample())</span><br><span class="line">            env.render()</span><br><span class="line"><span class="hljs-keyword">except</span> KeyboardInterrupt:</span><br><span class="line">    <span class="hljs-keyword">pass</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
 
 <figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env = NESEnv('./tests/nes-roms/contra.nes')</span><br></pre></td></tr></tbody></table></figure>
@@ -192,7 +190,7 @@
 
 <p>魂斗罗的 random agent 也跑起来了。</p>
 <p><img src="contra.png"></p>
-<p>那么下一期呢 我会把一些很经典的深度强化学习的算法应用到这个环境中，让大家可以很方便得训练调试深度强化学习算法闯关红白机游戏。</p>
+<p>下一期，我会把一些很经典的深度强化学习的算法应用到这个环境中，让大家可以很方便得训练调试深度强化学习算法来挑战各种红白机游戏。</p>
 <p>最后 感谢大家关注 MyEncyclopedia 公众号，B站频道或者 Youtube 频道。谢谢大家再见</p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
