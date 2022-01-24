@@ -8,8 +8,6 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-<link href="/blob/en/2020/12/zh/rl-dqn-mario/" rel="alternate" hreflang="en" />
-    
 
 
 <meta name="description" content="">
@@ -21,12 +19,12 @@
     <meta name="description" content="上一期 MyEncyclopedia公众号文章 从Q-Learning 演化到 DQN，我们从原理上讲解了DQN算法，这一期，让我们通过代码来实现任天堂游戏机中经典的超级玛丽的自动通关吧。本文所有代码在 https:&#x2F;&#x2F;github.com&#x2F;MyEncyclopedia&#x2F;reinforcement-learning-2nd&#x2F;tree&#x2F;master&#x2F;super_mario。 DQN 算法回顾上期详细">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深度强化学习之：DQN训练超级玛丽闯关">
-<meta property="og:url" content="https://myencyclopedia.top/2020/12/zh/rl-dqn-mario/">
+<meta property="og:url" content="https://myencyclopedia.github.io/2020/12/zh/rl-dqn-mario/">
 <meta property="og:site_name" content="MyEncyclopedia">
 <meta property="og:description" content="上一期 MyEncyclopedia公众号文章 从Q-Learning 演化到 DQN，我们从原理上讲解了DQN算法，这一期，让我们通过代码来实现任天堂游戏机中经典的超级玛丽的自动通关吧。本文所有代码在 https:&#x2F;&#x2F;github.com&#x2F;MyEncyclopedia&#x2F;reinforcement-learning-2nd&#x2F;tree&#x2F;master&#x2F;super_mario。 DQN 算法回顾上期详细">
 <meta property="og:locale">
-<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/rl-dqn-mario/dqn_alg_nature.png">
-<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/rl-dqn-mario/dqn.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/rl-dqn-mario/dqn_alg_nature.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/rl-dqn-mario/dqn.jpg">
 <meta property="article:published_time" content="2020-12-05T10:45:01.000Z">
 <meta property="article:modified_time" content="2021-10-22T12:29:52.000Z">
 <meta property="article:author" content="MyEncyclopedia">
@@ -36,7 +34,7 @@
 <meta property="article:tag" content="Reinforcement Learning">
 <meta property="article:tag" content="DQN">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://myencyclopedia.top/2020/12/zh/rl-dqn-mario/dqn_alg_nature.png">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/2020/12/zh/rl-dqn-mario/dqn_alg_nature.png">
 
 
 
@@ -56,7 +54,7 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
 
 
-<link rel="stylesheet" href="/blob/css/style.css">
+<link rel="stylesheet" href="/css/style.css">
 
 
 <script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
@@ -84,9 +82,9 @@
 <nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
-            <a class="navbar-item navbar-logo" href="/blob/">
+            <a class="navbar-item navbar-logo" href="/">
                 
-                <img src="/blob/images/logo.png" alt="" height="28">
+                <img src="/images/logo.png" alt="" height="28">
                 
             </a>
             <div class="navbar-burger">
@@ -99,13 +97,13 @@
         <div class="navbar-menu navbar-start">
             
             <a class="navbar-item "
-               href="/blob/archives">Archives</a>
+               href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/blob/categories/Technology">Technology</a>
+               href="/categories/Technology">Technology</a>
             
             <a class="navbar-item "
-               href="/blob/about">About</a>
+               href="/about">About</a>
             
         </div>
         
@@ -195,7 +193,7 @@
         
         <span class="column is-narrow article-category">
             <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/blob/categories/Tech-Blog/">Tech Blog</a>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
         </span>
         
         
@@ -285,15 +283,15 @@
     
     <div class="columns is-variable is-1 is-multiline is-mobile">
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/Deep-Learning/">#Deep Learning</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Deep-Learning/">#Deep Learning</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/Python/">#Python</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/PyTorch/">#PyTorch</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PyTorch/">#PyTorch</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/DQN/">#DQN</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/DQN/">#DQN</a></span>
     
     </div>
     
@@ -301,12 +299,12 @@
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/blob/2020/12/zh/rl-policy-gradient/">深度强化学习之：Policy Gradient Theorem 一些理解</a>
+            <a href="/2020/12/zh/rl-policy-gradient/">深度强化学习之：Policy Gradient Theorem 一些理解</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/blob/2020/11/zh/tsp-4-search/">TSP问题从DP算法到深度学习4：概率最大状态序列算法</a>
+            <a href="/2020/11/zh/tsp-4-search/">TSP问题从DP算法到深度学习4：概率最大状态序列算法</a>
             
         </span>
     </div>
@@ -364,35 +362,6 @@
             </div>
             
             
-<div class="column is-narrow has-text-centered">
-    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
-        <div class="dropdown-trigger">
-            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
-                <span class="icon">
-                    <i class="fas fa-globe"></i>
-                </span>
-                <span>简体中文</span>
-                <span class="icon is-small">
-            <i class="fas fa-angle-down" aria-hidden="true"></i>
-          </span>
-            </button>
-        </div>
-        <div class="dropdown-menu has-text-left" role="menu">
-            <div class="dropdown-content">
-            
-                <a href="/blob/2020/12/zh/rl-dqn-mario/" class="dropdown-item">
-                    简体中文
-                </a>
-            
-                <a href="/blob/en/2020/12/zh/rl-dqn-mario/" class="dropdown-item">
-                    English
-                </a>
-            
-            </div>
-        </div>
-    </div>
-</div>
-
         </div>
     </div>
 </footer>
@@ -539,7 +508,7 @@
 
 
 
-<script src="/blob/js/script.js"></script>
+<script src="/js/script.js"></script>
 
 
     
@@ -565,13 +534,13 @@
                 TAGS: '标签',
                 UNTITLED: '(无标题)',
             },
-            CONTENT_URL: '/blob/content.json',
+            CONTENT_URL: '/content.json',
         };
         window.INSIGHT_CONFIG = INSIGHT_CONFIG;
     })(window);
 </script>
 
-<script src="/blob/js/insight.js"></script>
+<script src="/js/insight.js"></script>
 
     
 </body>
