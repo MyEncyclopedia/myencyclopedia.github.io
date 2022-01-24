@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/blob/en/2020/12/zh/paper-rl-pg-sutton-1999/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -19,54 +21,54 @@
     <meta name="description" content="导读：这篇式1999 年Richard Sutton 在强化学习领域中的经典论文，论文证明了策略梯度定理和在用函数近似 Q 值时策略梯度定理依然成立，本文奠定了后续以深度强化学习策略梯度方法的基石。理解熟悉本论文对 Policy Gradient，Actor Critic 方法有很好的指导意义。  论文分成四部分。第一部分指出策略梯度在两种期望回报定义下都成立（定理一）。第二部分提">
 <meta property="og:type" content="article">
 <meta property="og:title" content="解读深度强化学习基石论文：函数近似的策略梯度方法">
-<meta property="og:url" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/">
+<meta property="og:url" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/">
 <meta property="og:site_name" content="MyEncyclopedia">
 <meta property="og:description" content="导读：这篇式1999 年Richard Sutton 在强化学习领域中的经典论文，论文证明了策略梯度定理和在用函数近似 Q 值时策略梯度定理依然成立，本文奠定了后续以深度强化学习策略梯度方法的基石。理解熟悉本论文对 Policy Gradient，Actor Critic 方法有很好的指导意义。  论文分成四部分。第一部分指出策略梯度在两种期望回报定义下都成立（定理一）。第二部分提">
 <meta property="og:locale">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/0-paper-title.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-average-reward-rou.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-average-reward-d.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-average-reward-q.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-start-state-rou.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-start-state-q.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-start-state-d.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-pg-theorem.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-sum-a.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/1-rt.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/2-dw.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/2-(3).png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/2-pg-func-approx-theorem.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/3-pi.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/3-deriv.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/3-fw.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/3-fw-mean.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/3-a-pi.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-bound.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-alpha.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-wk.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-theta.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-converge.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-1.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-2.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-3.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-4.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-5.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-6.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-7.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-1.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-2.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-3.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-4.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-5.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-6.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-7.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/0-paper-title.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-average-reward-rou.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-average-reward-d.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-average-reward-q.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-start-state-rou.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-start-state-q.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-start-state-d.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-pg-theorem.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-sum-a.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/1-rt.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/2-dw.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/2-(3).png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/2-pg-func-approx-theorem.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/3-pi.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/3-deriv.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/3-fw.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/3-fw-mean.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/3-a-pi.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-bound.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-alpha.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-wk.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-theta.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/4-theorem3-converge.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-1.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-2.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-3.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-4.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-5.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-6.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-avg-7.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-1.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-2.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-3.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-4.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-5.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-6.png">
+<meta property="og:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/5-start-state-7.png">
 <meta property="article:published_time" content="2020-12-12T10:45:01.000Z">
 <meta property="article:modified_time" content="2021-10-22T12:29:52.000Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta property="article:tag" content="Reinforcement Learning">
 <meta property="article:tag" content="Paper Dive">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://myencyclopedia.github.io/2020/12/zh/paper-rl-pg-sutton-1999/0-paper-title.png">
+<meta name="twitter:image" content="https://myencyclopedia.top/2020/12/zh/paper-rl-pg-sutton-1999/0-paper-title.png">
 
 
 
@@ -86,7 +88,7 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
 
 
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/blob/css/style.css">
 
 
 <script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
@@ -114,9 +116,9 @@
 <nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
-            <a class="navbar-item navbar-logo" href="/">
+            <a class="navbar-item navbar-logo" href="/blob/">
                 
-                <img src="/images/logo.png" alt="" height="28">
+                <img src="/blob/images/logo.png" alt="" height="28">
                 
             </a>
             <div class="navbar-burger">
@@ -129,13 +131,13 @@
         <div class="navbar-menu navbar-start">
             
             <a class="navbar-item "
-               href="/archives">Archives</a>
+               href="/blob/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
+               href="/blob/categories/Technology">Technology</a>
             
             <a class="navbar-item "
-               href="/about">About</a>
+               href="/blob/about">About</a>
             
         </div>
         
@@ -233,7 +235,7 @@
         
         <span class="column is-narrow article-category">
             <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+            <a class="article-category-link" href="/blob/categories/Tech-Blog/">Tech Blog</a>
         </span>
         
         
@@ -531,9 +533,9 @@ $\operatorname{Pr}(s \rightarrow x, k, \pi)$ 即 $d^{\pi}$
     
     <div class="columns is-variable is-1 is-multiline is-mobile">
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Paper-Dive/">#Paper Dive</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/Paper-Dive/">#Paper Dive</a></span>
     
     </div>
     
@@ -541,12 +543,12 @@ $\operatorname{Pr}(s \rightarrow x, k, \pi)$ 即 $d^{\pi}$
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/2020/12/zh/paper-rl-trpo-2017/">解读TRPO论文，一种深度强化学习和传统优化方法结合的方法</a>
+            <a href="/blob/2020/12/zh/paper-rl-trpo-2017/">解读TRPO论文，一种深度强化学习和传统优化方法结合的方法</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/2020/12/zh/rl-policy-gradient/">深度强化学习之：Policy Gradient Theorem 一些理解</a>
+            <a href="/blob/2020/12/zh/rl-policy-gradient/">深度强化学习之：Policy Gradient Theorem 一些理解</a>
             
         </span>
     </div>
@@ -583,7 +585,7 @@ $\operatorname{Pr}(s \rightarrow x, k, \pi)$ 即 $d^{\pi}$
     <div class="container">
         <div class="columns content">
             <div class="column is-narrow has-text-centered">
-                &copy; 2021 MyEncyclopedia&nbsp;
+                &copy; 2022 MyEncyclopedia&nbsp;
                 Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
                         target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
             </div>
@@ -604,6 +606,35 @@ $\operatorname{Pr}(s \rightarrow x, k, \pi)$ 即 $d^{\pi}$
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/blob/2020/12/zh/paper-rl-pg-sutton-1999/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/blob/en/2020/12/zh/paper-rl-pg-sutton-1999/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -750,7 +781,7 @@ $\operatorname{Pr}(s \rightarrow x, k, \pi)$ 即 $d^{\pi}$
 
 
 
-<script src="/js/script.js"></script>
+<script src="/blob/js/script.js"></script>
 
 
     
@@ -776,13 +807,13 @@ $\operatorname{Pr}(s \rightarrow x, k, \pi)$ 即 $d^{\pi}$
                 TAGS: '标签',
                 UNTITLED: '(无标题)',
             },
-            CONTENT_URL: '/content.json',
+            CONTENT_URL: '/blob/content.json',
         };
         window.INSIGHT_CONFIG = INSIGHT_CONFIG;
     })(window);
 </script>
 
-<script src="/js/insight.js"></script>
+<script src="/blob/js/insight.js"></script>
 
     
 </body>

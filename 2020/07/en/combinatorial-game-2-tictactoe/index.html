@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/blob/2020/07/en/combinatorial-game-2-tictactoe/" rel="alternate" hreflang="zh" />
+    
 
 
 <meta name="description" content="">
@@ -19,14 +21,14 @@
     <meta name="description" content="This episode extends last one, where Minimax and Alpha Beta Pruning algorithms are introduced. We will solve several tic-tac-toe problems in leetcode, gathering intuition and building blocks for tic-t">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Combinatorial Games. Episode 2: Tic-Tac-Toe Problems in Leetcode and Solve the Game using Minimax">
-<meta property="og:url" content="https://myencyclopedia.github.io/2020/07/en/combinatorial-game-2-tictactoe/">
+<meta property="og:url" content="https://myencyclopedia.top/2020/07/en/combinatorial-game-2-tictactoe/">
 <meta property="og:site_name" content="MyEncyclopedia">
 <meta property="og:description" content="This episode extends last one, where Minimax and Alpha Beta Pruning algorithms are introduced. We will solve several tic-tac-toe problems in leetcode, gathering intuition and building blocks for tic-t">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_1.gv.svg">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_2_1.gv.svg">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_2_2.gv.svg">
-<meta property="og:image" content="https://myencyclopedia.github.io/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_2_3.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.top/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_1.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.top/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_2_1.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.top/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_2_2.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.top/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_2_3.gv.svg">
 <meta property="article:published_time" content="2020-07-12T10:45:01.000Z">
 <meta property="article:modified_time" content="2021-10-22T12:29:50.000Z">
 <meta property="article:author" content="MyEncyclopedia">
@@ -37,7 +39,7 @@
 <meta property="article:tag" content="OpenAI Gym">
 <meta property="article:tag" content="LeetCode">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://myencyclopedia.github.io/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_1.gv.svg">
+<meta name="twitter:image" content="https://myencyclopedia.top/2020/07/en/combinatorial-game-2-tictactoe/tictactoe_1.gv.svg">
 
 
 
@@ -57,7 +59,7 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
 
 
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/blob/css/style.css">
 
 
 <script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
@@ -85,9 +87,9 @@
 <nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
-            <a class="navbar-item navbar-logo" href="/en">
+            <a class="navbar-item navbar-logo" href="/blob/en">
                 
-                <img src="/images/logo.png" alt="" height="28">
+                <img src="/blob/images/logo.png" alt="" height="28">
                 
             </a>
             <div class="navbar-burger">
@@ -100,13 +102,13 @@
         <div class="navbar-menu navbar-start">
             
             <a class="navbar-item "
-               href="/en/archives">Archives</a>
+               href="/blob/en/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/en/categories/Technology">Technology</a>
+               href="/blob/en/categories/Technology">Technology</a>
             
             <a class="navbar-item "
-               href="/en/about">About</a>
+               href="/blob/en/about">About</a>
             
         </div>
         
@@ -194,7 +196,7 @@
         
         <span class="column is-narrow article-category">
             <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/en/categories/Tech-Blog/">Tech Blog</a>
+            <a class="article-category-link" href="/blob/en/categories/Tech-Blog/">Tech Blog</a>
         </span>
         
         
@@ -438,17 +440,17 @@ Plot first step of 3 kinds of moves one by one below.
     
     <div class="columns is-variable is-1 is-multiline is-mobile">
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Algorithm/">#Algorithm</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/en/tags/Algorithm/">#Algorithm</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Python/">#Python</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/en/tags/Python/">#Python</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/en/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Gaming/">#Gaming</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/en/tags/Gaming/">#Gaming</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/OpenAI-Gym/">#OpenAI Gym</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/en/tags/OpenAI-Gym/">#OpenAI Gym</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/LeetCode/">#LeetCode</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/en/tags/LeetCode/">#LeetCode</a></span>
     
     </div>
     
@@ -456,12 +458,12 @@ Plot first step of 3 kinds of moves one by one below.
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/2020/07/en/combinatorial-game-3-openai-gym-pygame/">Combinatorial Games. Episode 3: Connect-N (Tic-Tac-Toe, Gomoku) OpenAI Gym GUI Env</a>
+            <a href="/blob/2020/07/en/combinatorial-game-3-openai-gym-pygame/">Combinatorial Games. Episode 3: Connect-N (Tic-Tac-Toe, Gomoku) OpenAI Gym GUI Env</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/2020/06/en/combinatorial-game-1-minimax/">Combinatorial Games. Episode 1: Minimax and Alpha Beta Pruning in Leetcode</a>
+            <a href="/blob/2020/06/en/combinatorial-game-1-minimax/">Combinatorial Games. Episode 1: Minimax and Alpha Beta Pruning in Leetcode</a>
             
         </span>
     </div>
@@ -498,7 +500,7 @@ Plot first step of 3 kinds of moves one by one below.
     <div class="container">
         <div class="columns content">
             <div class="column is-narrow has-text-centered">
-                &copy; 2021 MyEncyclopedia&nbsp;
+                &copy; 2022 MyEncyclopedia&nbsp;
                 Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
                         target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
             </div>
@@ -519,6 +521,35 @@ Plot first step of 3 kinds of moves one by one below.
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/blob/2020/07/en/combinatorial-game-2-tictactoe/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/blob/en/2020/07/en/combinatorial-game-2-tictactoe/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -665,7 +696,7 @@ Plot first step of 3 kinds of moves one by one below.
 
 
 
-<script src="/js/script.js"></script>
+<script src="/blob/js/script.js"></script>
 
 
     
@@ -691,13 +722,13 @@ Plot first step of 3 kinds of moves one by one below.
                 TAGS: 'Tags',
                 UNTITLED: '(Untitled)',
             },
-            CONTENT_URL: '/content.en.json',
+            CONTENT_URL: '/blob/content.en.json',
         };
         window.INSIGHT_CONFIG = INSIGHT_CONFIG;
     })(window);
 </script>
 
-<script src="/js/insight.js"></script>
+<script src="/blob/js/insight.js"></script>
 
     
 </body>

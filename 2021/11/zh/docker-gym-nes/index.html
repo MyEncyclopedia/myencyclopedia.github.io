@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/blob/en/2021/11/zh/docker-gym-nes/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -19,21 +21,21 @@
     <meta name="description" content="今天和大家分享强化学习的经典训练环境，任天堂的红白机训练环境。  这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux 甚至 Mac 上都可以运行。 这里将通过大家最常用的 Windows 系统来演示环境的使用。 X window 服务器在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 XLaunch。  这里采用">
 <meta property="og:type" content="article">
 <meta property="og:title" content="跨平台任天堂红白机强化学习预制环境">
-<meta property="og:url" content="https://myencyclopedia.github.io/2021/11/zh/docker-gym-nes/">
+<meta property="og:url" content="https://myencyclopedia.top/2021/11/zh/docker-gym-nes/">
 <meta property="og:site_name" content="MyEncyclopedia">
 <meta property="og:description" content="今天和大家分享强化学习的经典训练环境，任天堂的红白机训练环境。  这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux 甚至 Mac 上都可以运行。 这里将通过大家最常用的 Windows 系统来演示环境的使用。 X window 服务器在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 XLaunch。  这里采用">
 <meta property="og:locale">
-<meta property="og:image" content="https://myencyclopedia.github.io/2021/11/zh/docker-gym-nes/gym-demo.gif">
-<meta property="og:image" content="https://myencyclopedia.github.io/2021/11/zh/docker-gym-nes/xlaunch.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/2021/11/zh/docker-gym-nes/docker-bash.gif">
-<meta property="og:image" content="https://myencyclopedia.github.io/2021/11/zh/docker-gym-nes/contra.png">
+<meta property="og:image" content="https://myencyclopedia.top/2021/11/zh/docker-gym-nes/gym-demo.gif">
+<meta property="og:image" content="https://myencyclopedia.top/2021/11/zh/docker-gym-nes/xlaunch.png">
+<meta property="og:image" content="https://myencyclopedia.top/2021/11/zh/docker-gym-nes/docker-bash.gif">
+<meta property="og:image" content="https://myencyclopedia.top/2021/11/zh/docker-gym-nes/contra.png">
 <meta property="article:published_time" content="2021-11-21T10:45:01.000Z">
 <meta property="article:modified_time" content="2021-11-21T11:33:38.000Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta property="article:tag" content="强化学习">
 <meta property="article:tag" content="docker">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://myencyclopedia.github.io/2021/11/zh/docker-gym-nes/gym-demo.gif">
+<meta name="twitter:image" content="https://myencyclopedia.top/2021/11/zh/docker-gym-nes/gym-demo.gif">
 
 
 
@@ -53,7 +55,7 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
 
 
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/blob/css/style.css">
 
 
 <script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
@@ -81,9 +83,9 @@
 <nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
-            <a class="navbar-item navbar-logo" href="/">
+            <a class="navbar-item navbar-logo" href="/blob/">
                 
-                <img src="/images/logo.png" alt="" height="28">
+                <img src="/blob/images/logo.png" alt="" height="28">
                 
             </a>
             <div class="navbar-burger">
@@ -96,13 +98,13 @@
         <div class="navbar-menu navbar-start">
             
             <a class="navbar-item "
-               href="/archives">Archives</a>
+               href="/blob/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
+               href="/blob/categories/Technology">Technology</a>
             
             <a class="navbar-item "
-               href="/about">About</a>
+               href="/blob/about">About</a>
             
         </div>
         
@@ -168,7 +170,7 @@
         
         <span class="column is-narrow article-category">
             <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+            <a class="article-category-link" href="/blob/categories/Tech-Blog/">Tech Blog</a>
         </span>
         
         
@@ -236,20 +238,22 @@
     
     <div class="columns is-variable is-1 is-multiline is-mobile">
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/">#强化学习</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/">#强化学习</a></span>
     
-        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/docker/">#docker</a></span>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/blob/tags/docker/">#docker</a></span>
     
     </div>
     
     
     <div class="columns is-mobile is-multiline article-nav">
-        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/blob/2021/12/zh/service-arxiv/">MyEncyclopedia Arxiv Trending 发现服务</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/2021/10/zh/general-hexo/">为什么我将博客从 Hugo 切换到了 Hexo</a>
+            <a href="/blob/2021/10/zh/general-hexo/">为什么我将博客从 Hugo 切换到了 Hexo</a>
             
         </span>
     </div>
@@ -286,7 +290,7 @@
     <div class="container">
         <div class="columns content">
             <div class="column is-narrow has-text-centered">
-                &copy; 2021 MyEncyclopedia&nbsp;
+                &copy; 2022 MyEncyclopedia&nbsp;
                 Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
                         target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
             </div>
@@ -307,6 +311,35 @@
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/blob/2021/11/zh/docker-gym-nes/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/blob/en/2021/11/zh/docker-gym-nes/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -453,7 +486,7 @@
 
 
 
-<script src="/js/script.js"></script>
+<script src="/blob/js/script.js"></script>
 
 
     
@@ -479,13 +512,13 @@
                 TAGS: '标签',
                 UNTITLED: '(无标题)',
             },
-            CONTENT_URL: '/content.json',
+            CONTENT_URL: '/blob/content.json',
         };
         window.INSIGHT_CONFIG = INSIGHT_CONFIG;
     })(window);
 </script>
 
-<script src="/js/insight.js"></script>
+<script src="/blob/js/insight.js"></script>
 
     
 </body>

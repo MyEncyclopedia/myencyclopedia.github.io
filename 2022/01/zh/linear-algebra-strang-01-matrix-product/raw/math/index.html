@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/blob/en/2022/01/zh/linear-algebra-strang-01-matrix-product/raw/math/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="B矩阵列组合$$\begin{eqnarray*}&amp;&amp;A_{m \cdot n} \times B_{n \cdot p} \&amp;&#x3D;&amp;\begin{bmatrix}&amp;&amp;\A_{col_1}&amp;A_{col_2}&amp;\cdots&amp;A_{col_n}\&amp;&amp;\end{bmatrix}{m \cdot n}\begin{bm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MyEncyclopedia">
+<meta property="og:url" content="https://myencyclopedia.top/2022/01/zh/linear-algebra-strang-01-matrix-product/raw/math/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="B矩阵列组合$$\begin{eqnarray*}&amp;&amp;A_{m \cdot n} \times B_{n \cdot p} \&amp;&#x3D;&amp;\begin{bmatrix}&amp;&amp;\A_{col_1}&amp;A_{col_2}&amp;\cdots&amp;A_{col_n}\&amp;&amp;\end{bmatrix}{m \cdot n}\begin{bm">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-01-21T13:33:37.350Z">
+<meta property="article:modified_time" content="2022-01-24T11:29:58.000Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/blob/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/blob/">
+                
+                <img src="/blob/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/blob/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/blob/categories/Technology">Technology</a>
+            
+            <a class="navbar-item "
+               href="/blob/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-01-21T13:33:37.350Z" itemprop="datePublished">1月 21 2022</time>
+            
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            6 分钟 读完 (约 936 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><h2 id="B矩阵列组合"><a href="#B矩阵列组合" class="headerlink" title="B矩阵列组合"></a>B矩阵列组合</h2><p>$$<br>\begin{eqnarray*}<br>&amp;&amp;<br>A_{m \cdot n} \times B_{n \cdot p} \<br>&amp;=&amp;<br>\begin{bmatrix}<br>&amp;&amp;\A_{col_1}&amp;A_{col_2}&amp;\cdots&amp;A_{col_n}\&amp;&amp;<br>\end{bmatrix}<em>{m \cdot n}<br>\begin{bmatrix}<br>&amp;&amp;\ \color{blue} B</em>{col_1}&amp; \cdots &amp; \color{green} B_{col_j}&amp;\cdots&amp; \color{purple} B_{col_p}\&amp;&amp;<br>\end{bmatrix}<em>{n \cdot p} \<br>&amp;=&amp;<br>\begin{bmatrix}<br>&amp;&amp;\A</em>{col_1}&amp;A_{col_2}&amp;\cdots&amp;A_{col_n}\&amp;&amp;<br>\end{bmatrix}<em>{m \cdot n}<br>\left(<br>\color{blue}<br>\begin{bmatrix}<br>&amp;&amp;\  B</em>{col_1}&amp; 0 &amp;\cdots&amp; 0\&amp;&amp;<br>\end{bmatrix}<em>{n \cdot p} \color{black} + \cdots +<br>\color{green}<br>\begin{bmatrix}<br>&amp;&amp;\0 &amp;\cdots&amp; B</em>{col_j} &amp; \cdots &amp; 0 \&amp;&amp;<br>\end{bmatrix}<em>{n \cdot p} \color{black} + \cdots +<br>\color{purple}<br>\begin{bmatrix}<br>&amp;&amp;\0 &amp; 0 &amp;\cdots&amp; B</em>{col_p}\&amp;&amp;<br>\end{bmatrix}<em>{n \cdot p}<br>\right) \<br>&amp;=&amp;<br>\begin{bmatrix}<br>&amp;&amp;\A</em>{col_1}&amp;A_{col_2}&amp;\cdots&amp;A_{col_n}\&amp;&amp;<br>\end{bmatrix}<em>{m \cdot n}<br>\left(<br>\color{blue}<br>\begin{bmatrix}<br>b</em>{11}&amp;0&amp;\cdots&amp;0 \<br>b_{12}&amp;0&amp;\cdots&amp;0 \<br>\cdots&amp;\vdots&amp;\cdots&amp;0 \<br>b_{1n}&amp;0&amp;\cdots&amp;0 \<br>\end{bmatrix}<em>{n \cdot p}<br>\color{black} + \cdots +<br>\color{green}<br>\begin{bmatrix}<br>0&amp;\cdots&amp;b</em>{1j}&amp;\cdots&amp;0 \<br>0&amp;\cdots&amp;b_{2j}&amp;\cdots&amp;0 \<br>0&amp;\cdots&amp;\vdots&amp;\cdots&amp;0 \<br>0&amp;\cdots&amp;b_{nj}&amp;\cdots&amp;0 \<br>\end{bmatrix}<em>{n \cdot p}<br>\color{black} + \cdots<br>\right) \<br>&amp;=&amp;<br>\color{blue}<br>\begin{bmatrix} \<br>\left(b</em>{11}A_{col_1}+b_{21}A_{col_2}+\cdots+b_{n1}A_{col_n}\right) &amp; 0 &amp;\cdots &amp;  0 \<br>&amp; 0 &amp; \cdots &amp; 0 \<br>&amp; \vdots &amp; \cdots &amp; 0 \<br>&amp; 0 &amp; \cdots &amp; 0<br>\end{bmatrix}<em>{m \cdot p}<br>\color{black} + \cdots +<br>\color{green}<br>\begin{bmatrix} \<br> 0 &amp;\cdots &amp;\left(b</em>{1j}A_{col_1}+b_{2j}A_{col_2}+\cdots+b_{nj}A_{col_n}\right)&amp;\cdots &amp; 0 \<br> 0 &amp; \cdots &amp; &amp; \cdots &amp; 0 \<br> 0 &amp; \vdots &amp;  &amp; \vdots &amp; 0 \<br> 0 &amp; \cdots &amp; &amp; \cdots &amp; 0 \<br>\end{bmatrix}_{m \cdot p}<br>\color{black}</p>
+<ul>
+<li>\cdots<br>\end{eqnarray*}<br>$$</li>
+</ul>
+<h2 id="A矩阵行组合"><a href="#A矩阵行组合" class="headerlink" title="A矩阵行组合"></a>A矩阵行组合</h2><p>$$<br>\begin{eqnarray*}<br>&amp;&amp;<br>A_{m \cdot n} \times B_{n \cdot p} \ </p>
+<p>&amp;=&amp;<br>\begin{bmatrix}<br>\color{blue}<br>A_{row_1} \<br>\vdots \<br>\color{green}<br>A_{row_i} \<br>\vdots \<br>\color{purple}<br>A_{row_m}&amp;<br>\end{bmatrix}<em>{m \cdot n}<br>\begin{bmatrix}<br>&amp;B</em>{row_1}&amp;\&amp;B_{row_2}&amp;\&amp;\vdots&amp;\&amp;B_{row_n}&amp;<br>\end{bmatrix}_{n \cdot p} \</p>
+<p>&amp;=&amp;<br>\left(<br>\color{blue}<br>\begin{bmatrix}<br>A_{row_1} \<br>0 \<br>\vdots \<br>\vdots \<br>0<br>\end{bmatrix}_{m \cdot n}<br>\color{black}</p>
+<ul>
+<li>\cdots +<br>\color{green}<br>\begin{bmatrix}<br>0 \<br>\vdots \<br>A_{row_i} \<br>\vdots \<br>0<br>\end{bmatrix}_{m \cdot n}<br>\color{black}</li>
+<li>\cdots +<br>\color{purple}<br>\begin{bmatrix}<br>0 \<br>\vdots \<br>\vdots \<br>0 \<br>A_{row_m} \<br>\end{bmatrix}<em>{m \cdot n}<br>\right)<br>\begin{bmatrix}<br>&amp;B</em>{row_1}&amp;\&amp;B_{row_2}&amp;\&amp;\vdots&amp;\&amp;B_{row_n}&amp;<br>\end{bmatrix}_{n \cdot p} \</li>
+</ul>
+<p>&amp;=&amp;<br>\left(<br>\color{blue}<br>\begin{bmatrix}<br>a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n} \<br>0 &amp; 0 &amp; 0 &amp; 0 \<br>\vdots &amp; \vdots &amp; \vdots &amp; \vdots \<br>\vdots &amp; \vdots &amp; \vdots &amp; \vdots \<br>0 &amp; 0 &amp; 0 &amp; 0 \<br>\end{bmatrix}_{m \cdot n}<br>\color{black}</p>
+<ul>
+<li>\cdots +<br>\color{green}<br>\begin{bmatrix}<br>0 &amp; 0 &amp; 0 &amp; 0 \<br>\vdots &amp; \vdots &amp; \vdots &amp; \vdots \<br>a_{i1} &amp; a_{i2} &amp; \cdots &amp; a_{in} \<br>\vdots &amp; \vdots &amp; \vdots &amp; \vdots \<br>0 &amp; 0 &amp; 0 &amp; 0 \<br>\end{bmatrix}_{m \cdot n}<br>\color{black}</li>
+<li>\cdots<br>\right)<br>\begin{bmatrix}<br>&amp;B_{row_1}&amp;\&amp;B_{row_2}&amp;\&amp;\vdots&amp;\&amp;B_{row_n}&amp;<br>\end{bmatrix}_{n \cdot p} \</li>
+</ul>
+<p>&amp;=&amp;<br>\color{blue}<br>\begin{bmatrix}<br>a_{11}B_{row_1}+a_{12}B_{row_2}+\cdots+a_{1n}B_{row_n} \<br>0 \<br>\vdots \<br>\vdots \<br>0 \<br>\end{bmatrix}_{m \cdot p}<br>\color{black}</p>
+<ul>
+<li>\cdots +<br>\color{green}<br>\begin{bmatrix}<br>0 \<br>\vdots \<br>a_{i1}B_{row_1}+a_{i2}B_{row_2}+\cdots+a_{in}B_{row_n}\<br>\vdots \<br>0 \<br>\end{bmatrix}_{m \cdot p}<br>\color{black}</li>
+<li>\cdots +<br>\end{eqnarray*}<br>$$</li>
+</ul>
+<h2 id="A行-x-B列-点乘"><a href="#A行-x-B列-点乘" class="headerlink" title="A行 x B列 点乘"></a>A行 x B列 点乘</h2><p>$$<br>\begin{eqnarray*}<br>&amp;&amp; A_{m \cdot n} \times B_{n \cdot p} \<br>&amp;=&amp;<br>\begin{bmatrix}<br>A_{row_1} \<br>A_{row_2} \<br>\vdots \<br>A_{row_i} \<br>\vdots \<br>\end{bmatrix}<em>{m \cdot n}<br>\begin{bmatrix}<br> B</em>{col_1} &amp;  B_{col_2} &amp; \cdots &amp; B_{col_p}<br>\end{bmatrix}<em>{n \cdot p} \<br>&amp;=&amp;<br>\begin{bmatrix}<br>&amp;\vdots&amp;\&amp;<br>A</em>{row_i}&amp;\&amp;\vdots&amp;<br>\end{bmatrix}<em>{m \cdot n}<br>\begin{bmatrix}<br>&amp;&amp;\\cdots&amp; B</em>{col_j} &amp; \cdots\&amp;&amp;<br>\end{bmatrix}<em>{n \cdot p} \<br>&amp;=&amp;<br>\begin{bmatrix}<br>&amp;\vdots&amp;\\cdots&amp;c</em>{ij}&amp;\cdots\&amp;<br>\vdots<br>\end{bmatrix}_{m \cdot p}<br>\end{eqnarray*}<br>$$</p>
+<p>$$<br>c_{ij}=A_{row_i} \cdot B_{col_j}<br>=<br>\begin{bmatrix}<br>a_{i1} &amp; a_{i2} &amp; \cdots &amp; a_{in}<br>\end{bmatrix}<br>\begin{bmatrix}<br>b_{1j} \  b_{2j} \ \vdots \ b_{nj}<br>\end{bmatrix}<br>=\sum_{k=i}^na_{ik}b_{kj}<br>$$</p>
+<h2 id="A列-x-B行-矩阵和"><a href="#A列-x-B行-矩阵和" class="headerlink" title="A列 x B行 矩阵和"></a>A列 x B行 矩阵和</h2><p>$$<br>\begin{eqnarray*}<br>&amp;&amp;<br>\begin{bmatrix}<br>&amp;&amp;\ \color{blue} A_{col_1} &amp; \color{green} A_{col_2}&amp; \cdots &amp; \color{purple} A_{col_n}\&amp;&amp;<br>\end{bmatrix}<br>\begin{bmatrix}<br>&amp; \color{blue} B_{row_1}&amp;\&amp; \color{green} B_{row_2}&amp;\&amp;\vdots&amp;\&amp; \color{purple} B_{row_n}&amp;<br>\end{bmatrix}\\<br>&amp;=&amp;<br>\color{blue} A_{col_1}B_{row_1} \color{black} +<br>\color{green} A_{col_2}B_{row_2} \color{black} + \cdots +<br>\color{purple} A_{col_n}B_{row_n} \<br>\<br>&amp;=&amp;<br>\color{blue}<br>\begin{bmatrix}<br>a_{11} \ \vdots \ a_{m1}<br>\end{bmatrix}<br>\begin{bmatrix}<br>b_{11} &amp; \cdots &amp; b_{1p}<br>\end{bmatrix}<br>\color{black} +<br>\color{green}<br>\begin{bmatrix}<br>a_{12} \ \vdots \ a_{m2}<br>\end{bmatrix}<br>\begin{bmatrix}<br>b_{21} &amp; \cdots &amp; b_{2p}<br>\end{bmatrix}<br>\color{black} + \cdots +<br>\color{purple}<br>\begin{bmatrix}<br>a_{1n} \ \vdots \ a_{mn}<br>\end{bmatrix}<br>\begin{bmatrix}<br>b_{n1} &amp; \cdots &amp; b_{np}<br>\end{bmatrix}<br>\\<br>&amp;=&amp;<br>\color{blue}<br>\begin{bmatrix}<br>a_{11}b_{11} &amp; a_{11}b_{12} &amp;\cdots &amp; a_{11}b_{1p} \<br>a_{21}b_{11} &amp; a_{21}b_{12} &amp; \cdots &amp; a_{21}b_{1p} \<br>\vdots &amp; \vdots &amp; \vdots  &amp; \vdots \<br>a_{m1}b_{11} &amp; a_{m1}b_{12} &amp;\cdots &amp; a_{m1}b_{1p} \<br>\end{bmatrix}<br>\color{black} +<br>\color{green}<br>\begin{bmatrix}<br>a_{12}b_{21} &amp; a_{12}b_{22} &amp;\cdots &amp; a_{12}b_{2p} \<br>a_{22}b_{21} &amp; a_{22}b_{22} &amp; \cdots &amp; a_{22}b_{2p} \<br>\vdots &amp; \vdots &amp; \vdots  &amp; \vdots \<br>a_{m2}b_{21} &amp; a_{m2}b_{22} &amp;\cdots &amp; a_{m2}b_{2p} \<br>\end{bmatrix}<br>\color{black} + \cdots +<br>\color{purple}<br>\begin{bmatrix}<br>a_{1n}b_{n1} &amp; a_{1n}b_{n2} &amp;\cdots &amp; a_{1n}b_{np} \<br>a_{2n}b_{n1} &amp; a_{2n}b_{n2} &amp; \cdots &amp; a_{2n}b_{np} \<br>\vdots &amp; \vdots &amp; \vdots  &amp; \vdots \<br>a_{mn}b_{n1} &amp; a_{mn}b_{n2} &amp;\cdots &amp; a_{mn}b_{np} \<br>\end{bmatrix}<br>\<br>\end{eqnarray*}<br>$$</p>
+<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><p>$$<br>\left[<br>\begin{array}<br>{c|c}A_1&amp;A_2\\hline A_3&amp;A_4<br>\end{array}<br>\right]<br>\left[<br>\begin{array}<br>{c|c}B_1&amp;B_2\\hline B_3&amp;B_4<br>\end{array}<br>\right]<br>=<br>\left[<br>\begin{array}<br>{c|c}A_1B_1+A_2B_3&amp;A_1B_2+A_2B_4\\hline A_3B_1+A_4B_3&amp;A_3B_2+A_4B_4<br>\end{array}<br>\right]<br>$$</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/blob/2022/01/zh/linear-algebra-strang-01-matrix-product/">Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/blob/2021/12/zh/service-arxiv/">MyEncyclopedia Arxiv Trending 发现服务</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/blob/2022/01/zh/linear-algebra-strang-01-matrix-product/raw/math/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/blob/en/2022/01/zh/linear-algebra-strang-01-matrix-product/raw/math/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/blob/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/blob/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/blob/js/insight.js"></script>
+
+    
+</body>
+</html>
