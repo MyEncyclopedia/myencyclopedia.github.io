@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/en/tags/Course/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -88,9 +90,6 @@
                href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
-            
-            <a class="navbar-item "
                href="/about">About</a>
             
         </div>
@@ -103,7 +102,7 @@
             
             
             
-            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
                 
                 <i class="fab fa-github"></i>
                 
@@ -125,9 +124,57 @@
     <div class="container">
     
         <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/2021/06/zh/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/" itemprop="url">[Harvard 2021] ECON 2355 - Unleashing Novel Data at Scale</a>
+            <a href="/zh/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/" itemprop="url">[Harvard 2021] ECON 2355 - Unleashing Novel Data at Scale</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -152,7 +199,8 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><h2 id="BiliBili"><a href="#BiliBili" class="headerlink" title="BiliBili"></a>BiliBili</h2><div class="bvideo">
+        <html><head></head><body><h2 id="bilibili">BiliBili</h2>
+<div class="bvideo">
     <a href="//www.bilibili.com/video/BV1Lw411o7um" target="_blank">
         <div class="bvideo-box">
             <div class="bvideo-cover">
@@ -181,60 +229,64 @@
         </div>
     </a>
 </div>
-
-
-<h2 id="Lecture-1-Introduction-to-Unleashing-Novel-Data-at-Scale"><a href="#Lecture-1-Introduction-to-Unleashing-Novel-Data-at-Scale" class="headerlink" title="Lecture 1 - Introduction to Unleashing Novel Data at Scale"></a>Lecture 1 - Introduction to Unleashing Novel Data at Scale</h2><ul>
+<h2 id="lecture-1---introduction-to-unleashing-novel-data-at-scale">Lecture 1 - Introduction to Unleashing Novel Data at Scale</h2>
+<ul>
 <li>Why data accessibility is so central to the advancement of knowledge in economics (with some historical background)</li>
-<li>An overview of the data curation pipeline    <ul>
+<li>An overview of the data curation pipeline
+<ul>
 <li>Step 1: Detect document layouts</li>
 <li>Step 2: OCR</li>
 <li>Step 3: Post-processing and database assembly</li>
 <li>Step 4: Convert information into computable format</li>
-</ul>
-</li>
-<li>Why is the material covered in this course useful to social scientists?    <ul>
+</ul></li>
+<li>Why is the material covered in this course useful to social scientists?
+<ul>
 <li>Why there won’t be an app/commercial product capable of end-to-end processing of social science documents anytime soon</li>
 <li>Why manual data entry often falls short</li>
 <li>Why our problems differ from those that are the central focus of computer science and the digital humanities</li>
+</ul></li>
+<li>At its core, deep learning is an optimization problem, which economists are well-trained to understand. It would be really unfortunate if we did not take full advantage of the very powerful methods that deep learning offers, which we are well poised to utilize</li>
 </ul>
-</li>
-<li>At its core, deep learning is an optimization problem, which  economists are well-trained to understand. It would be really  unfortunate if we did not take full advantage of the very powerful  methods that deep learning offers, which we are well poised to utilize</li>
-</ul>
-<h2 id="Lecture-2-Why-Deep-Learning"><a href="#Lecture-2-Why-Deep-Learning" class="headerlink" title="Lecture 2 - Why Deep Learning?"></a>Lecture 2 - Why Deep Learning?</h2><p>This post compares rule-based and deep learning-based approaches to  data curation. It discusses their requirements and why rule-based  approaches often (but not always) produce disappointing results when  applied to social science data.</p>
+<h2 id="lecture-2---why-deep-learning">Lecture 2 - Why Deep Learning?</h2>
+<p>This post compares rule-based and deep learning-based approaches to data curation. It discusses their requirements and why rule-based approaches often (but not always) produce disappointing results when applied to social science data.</p>
 <ul>
-<li>An overview of the syllabus (ultimately, the course had a few  deviations from the original syllabus, based on student interests; final syllabus posted in the course section of this website)</li>
-<li>There are two distinct approaches to automated data curation    <ul>
+<li>An overview of the syllabus (ultimately, the course had a few deviations from the original syllabus, based on student interests; final syllabus posted in the course section of this website)</li>
+<li>There are two distinct approaches to automated data curation
+<ul>
 <li>Tell the computer how to process the data by defining a set of rules</li>
 <li>Let the computer learn how to process the data from empirical examples, using deep learning</li>
-</ul>
-</li>
+</ul></li>
 <li>Overview of rules, how they are used to process image scans and text, why they often fail, and why they sometimes succeed</li>
 <li>Deep learning, how it contrasts with rule-based approaches, and its requirements</li>
 <li>Does the noise from rule-based approaches really matter?</li>
 </ul>
-<h2 id="Lecture-4-Convolutional-Neural-Networks"><a href="#Lecture-4-Convolutional-Neural-Networks" class="headerlink" title="Lecture 4 - Convolutional Neural Networks"></a>Lecture 4 - Convolutional Neural Networks</h2><ul>
+<h2 id="lecture-4---convolutional-neural-networks">Lecture 4 - Convolutional Neural Networks</h2>
+<ul>
 <li>A brief overview of convolutions</li>
 <li>Benchmark datasets for image classification (following the ConvNent literature requires familiarity with the benchmarks)</li>
 <li>Image classification with a linear classifier (and its shortcomings)</li>
-<li>CNN architectures    <ul>
+<li>CNN architectures
+<ul>
 <li>AlexNet</li>
 <li>VGG</li>
 <li>GoogLeNet</li>
 <li>ResNet</li>
 <li>ResNext</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h2 id="Lecture-5-Image-Classification-Training-Neural-Nets"><a href="#Lecture-5-Image-Classification-Training-Neural-Nets" class="headerlink" title="Lecture 5 - Image Classification; Training Neural Nets"></a>Lecture 5 - Image Classification; Training Neural Nets</h2><p>This post covers two topics: using CNNs for image classification (a  very useful task) and training neural networks in practice. Much of the  information about training neural nets is essential to implementing deep learning-based approaches, whether with CNNs or with some other  architecture.</p>
-<h3 id="Image-Classification"><a href="#Image-Classification" class="headerlink" title="Image Classification"></a>Image Classification</h3><ul>
-<li>Loss functions for classification    <ul>
+<h2 id="lecture-5---image-classification-training-neural-nets">Lecture 5 - Image Classification; Training Neural Nets</h2>
+<p>This post covers two topics: using CNNs for image classification (a very useful task) and training neural networks in practice. Much of the information about training neural nets is essential to implementing deep learning-based approaches, whether with CNNs or with some other architecture.</p>
+<h3 id="image-classification">Image Classification</h3>
+<ul>
+<li>Loss functions for classification
+<ul>
 <li>SVM</li>
 <li>Softmax</li>
-</ul>
-</li>
+</ul></li>
 <li>Deep document classification</li>
 </ul>
-<h3 id="Training-Neural-Nets"><a href="#Training-Neural-Nets" class="headerlink" title="Training Neural Nets"></a>Training Neural Nets</h3><ul>
+<h3 id="training-neural-nets">Training Neural Nets</h3>
+<ul>
 <li>Activation functions</li>
 <li>Data pre-processing</li>
 <li>Initialization</li>
@@ -247,119 +299,120 @@
 <li>Setting hyperparameters</li>
 <li>Monitoring the learning process</li>
 </ul>
-<h2 id="Lecture-6-Other-Computer-Vision-Problems-Including-Object-Detection"><a href="#Lecture-6-Other-Computer-Vision-Problems-Including-Object-Detection" class="headerlink" title="Lecture 6 - Other Computer Vision Problems (Including Object Detection)"></a>Lecture 6 - Other Computer Vision Problems (Including Object Detection)</h2><p>This post covers object detection as well as the related problems of  semantic segmentation, localization, and instance segmentation. Object  detection is core to document image analysis, as it is used to determine the coordinates and classes of different document layout regions. The  other problems covered are closely related.</p>
+<h2 id="lecture-6---other-computer-vision-problems-including-object-detection">Lecture 6 - Other Computer Vision Problems (Including Object Detection)</h2>
+<p>This post covers object detection as well as the related problems of semantic segmentation, localization, and instance segmentation. Object detection is core to document image analysis, as it is used to determine the coordinates and classes of different document layout regions. The other problems covered are closely related.</p>
 <ul>
 <li>Semantic segmentation</li>
 <li>Localization</li>
-<li>Object detection    <ul>
+<li>Object detection
+<ul>
 <li>Region CNNs</li>
 <li>Fast R-CNN</li>
 <li>Faster R-CNN</li>
 <li>Mask R-CNN</li>
 <li>Features pyramids</li>
-</ul>
-</li>
+</ul></li>
 <li>Instance segmentation</li>
 <li>Other frameworks (YOLO)</li>
 </ul>
-<h2 id="Lecture-7-Object-Detection-in-Practice"><a href="#Lecture-7-Object-Detection-in-Practice" class="headerlink" title="Lecture 7 - Object Detection in Practice"></a>Lecture 7 - Object Detection in Practice</h2><ul>
+<h2 id="lecture-7---object-detection-in-practice">Lecture 7 - Object Detection in Practice</h2>
+<ul>
 <li>Selecting an object detection model</li>
 <li>Overview of Detectron2</li>
 <li>How-to in D2</li>
 </ul>
-<h2 id="Lecture-8-Labeling-and-Deep-Visualization"><a href="#Lecture-8-Labeling-and-Deep-Visualization" class="headerlink" title="Lecture 8 - Labeling and Deep Visualization"></a>Lecture 8 - Labeling and Deep Visualization</h2><h3 id="Labeling"><a href="#Labeling" class="headerlink" title="Labeling"></a>Labeling</h3><ul>
+<h2 id="lecture-8---labeling-and-deep-visualization">Lecture 8 - Labeling and Deep Visualization</h2>
+<h3 id="labeling">Labeling</h3>
+<ul>
 <li>Active learning for layout annotation</li>
 <li>Labeling hacks</li>
 </ul>
-<h3 id="Deep-visualization"><a href="#Deep-visualization" class="headerlink" title="Deep visualization"></a>Deep visualization</h3><ul>
+<h3 id="deep-visualization">Deep visualization</h3>
+<ul>
 <li>Basic visualization approaches</li>
 <li>Gradient based ascent</li>
 <li>Deep Dream</li>
 </ul>
-<h2 id="Lecture-9-Generative-Adversarial-Networks"><a href="#Lecture-9-Generative-Adversarial-Networks" class="headerlink" title="Lecture 9 - Generative Adversarial Networks"></a>Lecture 9 - Generative Adversarial Networks</h2><ul>
+<h2 id="lecture-9---generative-adversarial-networks">Lecture 9 - Generative Adversarial Networks</h2>
+<ul>
 <li>Overview: supervised and unsupervised learning; generative models</li>
 <li>Generative adversarial networks</li>
 <li>CycleGAN</li>
 </ul>
-<h2 id="Lecture-10-OCR-Architecture"><a href="#Lecture-10-OCR-Architecture" class="headerlink" title="Lecture 10 - OCR Architecture"></a>Lecture 10 - OCR Architecture</h2><ul>
+<h2 id="lecture-10---ocr-architecture">Lecture 10 - OCR Architecture</h2>
+<ul>
 <li>Overview of the OCR problem</li>
 <li>Recurrent neural networks</li>
 <li>LSTMs</li>
 <li>Connectionist temporal classification</li>
 <li>Putting it together</li>
 </ul>
-<h2 id="Lecture-11-OCR-and-Post-Processing-in-Practice"><a href="#Lecture-11-OCR-and-Post-Processing-in-Practice" class="headerlink" title="Lecture 11 - OCR and Post-Processing in Practice"></a>Lecture 11 - OCR and Post-Processing in Practice</h2><p>This post discusses OCR, both off-the-shelf and how to implement a  customized OCR model. It discusses how Layout Parser can be used for  end-to-end document image analysis, and provides concrete examples of  creating variable domains during post-processing. It also provides an  overview of the second half of the knowledge base, which covers NLP.</p>
+<h2 id="lecture-11---ocr-and-post-processing-in-practice">Lecture 11 - OCR and Post-Processing in Practice</h2>
+<p>This post discusses OCR, both off-the-shelf and how to implement a customized OCR model. It discusses how Layout Parser can be used for end-to-end document image analysis, and provides concrete examples of creating variable domains during post-processing. It also provides an overview of the second half of the knowledge base, which covers NLP.</p>
 <ul>
-<li><p>Off-the-shelf OCR</p>
-</li>
-<li><p>Designing customized OCR</p>
-</li>
-<li><p>Putting it altogether (and Layout Parser)</p>
-</li>
-<li><p>Creating variable domains</p>
-</li>
-<li><p>An overview of the second half of the course (NLP)</p>
-</li>
+<li><p>Off-the-shelf OCR</p></li>
+<li><p>Designing customized OCR</p></li>
+<li><p>Putting it altogether (and Layout Parser)</p></li>
+<li><p>Creating variable domains</p></li>
+<li><p>An overview of the second half of the course (NLP)</p></li>
 </ul>
-<h2 id="Lecture-12-Models-of-Words"><a href="#Lecture-12-Models-of-Words" class="headerlink" title="Lecture 12 - Models of Words"></a>Lecture 12 - Models of Words</h2><ul>
-<li><p>Traditional models of words</p>
-</li>
-<li><p>Word2Vec</p>
-</li>
-<li><p>GloVe</p>
-</li>
-<li><p>Evaluation</p>
-</li>
-<li><p>Interpreting word vectors</p>
-</li>
-<li><p>Problems with word vectors</p>
-</li>
-</ul>
-<h2 id="Lecture-13-Language-Modeling-and-Other-Topics-in-NLP"><a href="#Lecture-13-Language-Modeling-and-Other-Topics-in-NLP" class="headerlink" title="Lecture 13 - Language Modeling and Other Topics in NLP"></a>Lecture 13 - Language Modeling and Other Topics in NLP</h2><p>This post provides an introduction to language modeling, as well as  several other important topics: dependency parsing, named entity  recognition (NER), and labeling for NLP. Due to time constraints, the  course is able to provide only a very brief introduction to topics like  dependency parsing and NER, which have traditionally been quite central  questions in NLP research.</p>
+<h2 id="lecture-12---models-of-words">Lecture 12 - Models of Words</h2>
 <ul>
-<li>Language Modeling    <ul>
+<li><p>Traditional models of words</p></li>
+<li><p>Word2Vec</p></li>
+<li><p>GloVe</p></li>
+<li><p>Evaluation</p></li>
+<li><p>Interpreting word vectors</p></li>
+<li><p>Problems with word vectors</p></li>
+</ul>
+<h2 id="lecture-13---language-modeling-and-other-topics-in-nlp">Lecture 13 - Language Modeling and Other Topics in NLP</h2>
+<p>This post provides an introduction to language modeling, as well as several other important topics: dependency parsing, named entity recognition (NER), and labeling for NLP. Due to time constraints, the course is able to provide only a very brief introduction to topics like dependency parsing and NER, which have traditionally been quite central questions in NLP research.</p>
+<ul>
+<li>Language Modeling
+<ul>
 <li>Count based models</li>
 <li>Bag of words</li>
 <li>RNN (review)</li>
 <li>LSTM (review)</li>
-</ul>
-</li>
+</ul></li>
 <li>Dependency parsing</li>
 <li>Named entity recognition</li>
 <li>Labeling for NLP</li>
 </ul>
-<h2 id="Lecture-14-Seq2Seq-and-Machine-Translation"><a href="#Lecture-14-Seq2Seq-and-Machine-Translation" class="headerlink" title="Lecture 14 - Seq2Seq and Machine Translation"></a>Lecture 14 - Seq2Seq and Machine Translation</h2><p>Machine translation has pioneered some of the most productive  innovations in neural-based NLP and hence is useful to study even for  those who care little about machine translation per se. We will focus in particular on seq2seq and attention.</p>
+<h2 id="lecture-14---seq2seq-and-machine-translation">Lecture 14 - Seq2Seq and Machine Translation</h2>
+<p>Machine translation has pioneered some of the most productive innovations in neural-based NLP and hence is useful to study even for those who care little about machine translation per se. We will focus in particular on seq2seq and attention.</p>
 <ul>
 <li>Statistical machine translation</li>
 <li>Neural machine translation</li>
 </ul>
-<h2 id="Lecture-15-Attention-is-All-You-Need"><a href="#Lecture-15-Attention-is-All-You-Need" class="headerlink" title="Lecture 15 - Attention is All You Need"></a>Lecture 15 - Attention is All You Need</h2><p>This post introduces the Transformer, a seq2seq model based entirely  on attention that has transformed NLP. Given the importance of this  paper, there are a bunch of very well-done web resources about it, cited in the lecture and below, that I recommend checking out directly (there are others who have much more of a comparative advantage in presenting  seminal NLP papers than I do!).</p>
+<h2 id="lecture-15---attention-is-all-you-need">Lecture 15 - Attention is All You Need</h2>
+<p>This post introduces the Transformer, a seq2seq model based entirely on attention that has transformed NLP. Given the importance of this paper, there are a bunch of very well-done web resources about it, cited in the lecture and below, that I recommend checking out directly (there are others who have much more of a comparative advantage in presenting seminal NLP papers than I do!).</p>
 <ul>
-<li><p>A recap of attention</p>
-</li>
-<li><p>The Transformer    </p>
+<li><p>A recap of attention</p></li>
+<li><p>The Transformer</p>
 <ul>
-<li>The encoder        <ul>
+<li>The encoder
+<ul>
 <li>Encoder self-attention</li>
 <li>Positional embeddings</li>
 <li>Add and normalize</li>
-</ul>
-</li>
-<li>The decoder        <ul>
+</ul></li>
+<li>The decoder
+<ul>
 <li>Encoder-decoder attention</li>
 <li>Decoder self-attention</li>
-</ul>
-</li>
+</ul></li>
 <li>Linear and softmax layers</li>
 <li>Training</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h2 id="Lecture-16-Transformer-Based-Language-Models"><a href="#Lecture-16-Transformer-Based-Language-Models" class="headerlink" title="Lecture 16 - Transformer-Based Language Models"></a>Lecture 16 - Transformer-Based Language Models</h2><p>This post provides an overview of various Transformer-based language  models, discussing their architectures and which are best-suited for  different contexts.</p>
+<h2 id="lecture-16---transformer-based-language-models">Lecture 16 - Transformer-Based Language Models</h2>
+<p>This post provides an overview of various Transformer-based language models, discussing their architectures and which are best-suited for different contexts.</p>
 <ul>
 <li>Overview</li>
 <li>Contextualized word embeddings</li>
-<li>Models    <ul>
+<li>Models
+<ul>
 <li>GPT</li>
 <li>BERT</li>
 <li>RoBERTa</li>
@@ -371,38 +424,36 @@
 <li>XLNet</li>
 <li>Longformer</li>
 <li>BigBird</li>
-</ul>
-</li>
+</ul></li>
 <li>Recap and what to use</li>
 </ul>
-<h2 id="Lecture-17-Understanding-Transformers-Visualization-and-Sentiment-Analysis"><a href="#Lecture-17-Understanding-Transformers-Visualization-and-Sentiment-Analysis" class="headerlink" title="Lecture 17 - Understanding Transformers, Visualization, and Sentiment Analysis"></a>Lecture 17 - Understanding Transformers, Visualization, and Sentiment Analysis</h2><p>This post covers a variety of topics around Transformer-based  language models: understanding how Transformer attention works,  understanding what information is contained in their embeddings,  visualizing embeddings, and using Transformer-based models to conduct  sentiment analysis.</p>
+<h2 id="lecture-17---understanding-transformers-visualization-and-sentiment-analysis">Lecture 17 - Understanding Transformers, Visualization, and Sentiment Analysis</h2>
+<p>This post covers a variety of topics around Transformer-based language models: understanding how Transformer attention works, understanding what information is contained in their embeddings, visualizing embeddings, and using Transformer-based models to conduct sentiment analysis.</p>
 <ul>
-<li><p>What do Transformer-based models attend to?</p>
-</li>
-<li><p>What’s in an embedding?</p>
-</li>
-<li><p>Visualizing embeddings</p>
-</li>
-<li><p>Sentiment analysis</p>
-</li>
+<li><p>What do Transformer-based models attend to?</p></li>
+<li><p>What’s in an embedding?</p></li>
+<li><p>Visualizing embeddings</p></li>
+<li><p>Sentiment analysis</p></li>
 </ul>
-<h2 id="Lecture-18-NLP-with-Noisy-Text"><a href="#Lecture-18-NLP-with-Noisy-Text" class="headerlink" title="Lecture 18 - NLP with Noisy Text"></a>Lecture 18 - NLP with Noisy Text</h2><ul>
+<h2 id="lecture-18---nlp-with-noisy-text">Lecture 18 - NLP with Noisy Text</h2>
+<ul>
 <li>The Canonical Deep NLP Training Corpus</li>
 <li>A definition of noise</li>
 <li>The problem with noise</li>
 <li>Approaches for denoising</li>
 </ul>
-<h2 id="Lecture-19-Retrieval-and-Question-Answering"><a href="#Lecture-19-Retrieval-and-Question-Answering" class="headerlink" title="Lecture 19 - Retrieval and Question Answering"></a>Lecture 19 - Retrieval and Question Answering</h2><ul>
+<h2 id="lecture-19---retrieval-and-question-answering">Lecture 19 - Retrieval and Question Answering</h2>
+<ul>
 <li>Reading comprehension</li>
 <li>Open-domain question answering</li>
 </ul>
-<h2 id="Lecture-20-Zero-Shot-and-Few-Shot-Learning-in-NLP"><a href="#Lecture-20-Zero-Shot-and-Few-Shot-Learning-in-NLP" class="headerlink" title="Lecture 20 - Zero-Shot and Few-Shot Learning in NLP"></a>Lecture 20 - Zero-Shot and Few-Shot Learning in NLP</h2><ul>
-<li><p>What it means to learn in just a few shots</p>
-</li>
-<li><p>Zero-shot and few-shot learning in practice</p>
-</li>
+<h2 id="lecture-20---zero-shot-and-few-shot-learning-in-nlp">Lecture 20 - Zero-Shot and Few-Shot Learning in NLP</h2>
+<ul>
+<li><p>What it means to learn in just a few shots</p></li>
+<li><p>Zero-shot and few-shot learning in practice</p></li>
 </ul>
-<h2 id="Lecture-21-Transformers-for-Computer-Vision"><a href="#Lecture-21-Transformers-for-Computer-Vision" class="headerlink" title="Lecture 21 - Transformers for Computer Vision"></a>Lecture 21 - Transformers for Computer Vision</h2><ul>
+<h2 id="lecture-21---transformers-for-computer-vision">Lecture 21 - Transformers for Computer Vision</h2>
+<ul>
 <li>Transformers for computer vision</li>
 <li>Transformers for image classification</li>
 <li>Transformers for object detection</li>
@@ -417,11 +468,63 @@
 
 
 
+
+
+
+
     
         <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/2020/11/zh/share-rl-bootcamp-berkeley-2017/" itemprop="url">分享课程 Berkeley Deep Reinforcement Learning Bootcamp 2017</a>
+            <a href="/zh/2020/share-rl-bootcamp-berkeley-2017/" itemprop="url">分享课程 Berkeley Deep Reinforcement Learning Bootcamp 2017</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -450,59 +553,58 @@
 <p><strong>如果没有耐心的同学可以直接跳到文末的百度云盘下载链接，内容涵盖所有视频和slide</strong>。</p>
 <p>此次训练营主讲的强化学习领域专家包括</p>
 <ul>
-<li><p>Pieter Abbeel，前Berkeley 机器人学习实验室主任，伯克利人工智能研究(BAIR)实验室联合主任</p>
-</li>
-<li><p>Andrej Karpathy，前 OpenAI研究科学家、现特斯拉AI总监</p>
-</li>
-<li><p>Vlad Mnih，Deepmind 研究科学家</p>
-</li>
-<li><p>John Schulman，Deepmind 研究科学家，OpenAI共同创建人</p>
-</li>
-<li><p>Sergey Levine，Berkeley 计算机副教授</p>
-</li>
+<li><p>Pieter Abbeel，前Berkeley 机器人学习实验室主任，伯克利人工智能研究(BAIR)实验室联合主任</p></li>
+<li><p>Andrej Karpathy，前 OpenAI研究科学家、现特斯拉AI总监</p></li>
+<li><p>Vlad Mnih，Deepmind 研究科学家</p></li>
+<li><p>John Schulman，Deepmind 研究科学家，OpenAI共同创建人</p></li>
+<li><p>Sergey Levine，Berkeley 计算机副教授</p></li>
 </ul>
 <figure>
-  <img src="deep-rl-bootcamp.png">
-  <figcaption></figcaption>
+<img src="/zh/2020/share-rl-bootcamp-berkeley-2017/deep-rl-bootcamp.png">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<h1 id="课程列表"><a href="#课程列表" class="headerlink" title="课程列表"></a>课程列表</h1><ul>
-<li>Core Lecture 1 Intro to MDPs and Exact Solution Methods – Pieter Abbeel</li>
-<li>Core Lecture 2 Sample-based Approximations and Fitted Learning – Rocky Duan</li>
-<li>Core Lecture 3 DQN + Variants – Vlad Mnih</li>
-<li>Core Lecture 4a Policy Gradients and Actor Critic – Pieter Abbeel</li>
-<li>Core Lecture 4b Pong from Pixels – Andrej Karpathy</li>
-<li>Core Lecture 5 Natural Policy Gradients, TRPO, and PPO – John Schulman</li>
-<li>Core Lecture 6 Nuts and Bolts of Deep RL Experimentation  – John Schulman</li>
-<li>Core Lecture 7 SVG, DDPG, and Stochastic Computation Graphs – John Schulman</li>
-<li>Core Lecture 8 Derivative-free Methods – Peter Chen</li>
-<li>Core Lecture 9 Model-based RL – Chelsea Finn</li>
-<li>Core Lecture 10a Utilities  – Pieter Abbeel</li>
-<li>Core Lecture 10b Inverse RL – Chelsea Finn</li>
-<li>Frontiers Lecture I: Recent Advances, Frontiers and Future of Deep RL – Vlad Mnih</li>
-<li>Frontiers Lecture II: Recent Advances, Frontiers and Future of Deep RL – Sergey Levine</li>
+<h1 id="课程列表">课程列表</h1>
+<ul>
+<li>Core Lecture 1 Intro to MDPs and Exact Solution Methods -- Pieter Abbeel</li>
+<li>Core Lecture 2 Sample-based Approximations and Fitted Learning -- Rocky Duan</li>
+<li>Core Lecture 3 DQN + Variants -- Vlad Mnih</li>
+<li>Core Lecture 4a Policy Gradients and Actor Critic -- Pieter Abbeel</li>
+<li>Core Lecture 4b Pong from Pixels -- Andrej Karpathy</li>
+<li>Core Lecture 5 Natural Policy Gradients, TRPO, and PPO -- John Schulman</li>
+<li>Core Lecture 6 Nuts and Bolts of Deep RL Experimentation -- John Schulman</li>
+<li>Core Lecture 7 SVG, DDPG, and Stochastic Computation Graphs -- John Schulman</li>
+<li>Core Lecture 8 Derivative-free Methods -- Peter Chen</li>
+<li>Core Lecture 9 Model-based RL -- Chelsea Finn</li>
+<li>Core Lecture 10a Utilities -- Pieter Abbeel</li>
+<li>Core Lecture 10b Inverse RL -- Chelsea Finn</li>
+<li>Frontiers Lecture I: Recent Advances, Frontiers and Future of Deep RL -- Vlad Mnih</li>
+<li>Frontiers Lecture II: Recent Advances, Frontiers and Future of Deep RL -- Sergey Levine</li>
 <li>TAs Research Overviews</li>
 </ul>
 <p>前两讲总结了强化学习基础理论方面，包括用动态规划求精确解，采样与环境交互的传统基本方法。第三四讲覆盖了主流的深度强化学习的几种模式：DQN，PG和AC。第五到七讲深入了深度强化学习的各种前沿方法。值得一提的是第六讲，很好的从实践中总结了各种调试诊断方法。余下的若干讲涉及到了非主流的剩余强化学习领域。</p>
 <figure>
-  <img src="landscape.png">
-  <figcaption></figcaption>
+<img src="/zh/2020/share-rl-bootcamp-berkeley-2017/landscape.png">
+<figcaption>
+</figcaption>
 </figure>
-
 <figure>
-  <img src="rl-hierarchy.png">
-  <figcaption></figcaption>
+<img src="/zh/2020/share-rl-bootcamp-berkeley-2017/rl-hierarchy.png">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<h2 id="下载方法"><a href="#下载方法" class="headerlink" title="下载方法"></a>下载方法</h2><p>关注 MyEncyclopedia 公众号，输入 <strong>rl-bootcamp-ucb-2017</strong> 即可获得百度云盘链接</p>
+<h2 id="下载方法">下载方法</h2>
+<p>关注 MyEncyclopedia 公众号，输入 <strong>rl-bootcamp-ucb-2017</strong> 即可获得百度云盘链接</p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
     
 </article>
+
+
+
+
 
 
 
@@ -536,6 +638,35 @@
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/Course/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/Course/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -570,7 +701,7 @@
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
         "HTML-CSS": {
@@ -583,6 +714,7 @@
             matchFontHeight: false
         },
         tex2jax: {
+            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']

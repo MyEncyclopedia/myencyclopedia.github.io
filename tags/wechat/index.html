@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/en/tags/wechat/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -88,9 +90,6 @@
                href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
-            
-            <a class="navbar-item "
                href="/about">About</a>
             
         </div>
@@ -103,7 +102,7 @@
             
             
             
-            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
                 
                 <i class="fab fa-github"></i>
                 
@@ -125,9 +124,57 @@
     <div class="container">
     
         <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/2021/08/zh/share-wechat-resources/" itemprop="url">公众号共享资源</a>
+            <a href="/zh/2021/share-wechat-resources/" itemprop="url">公众号共享资源</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -154,26 +201,16 @@
     
         <html><head></head><body><ul>
 <li><p>docker 环境，conda X Window</p>
-<p> 公众号回复 <code>docker-conda-x</code></p>
-</li>
-</ul>
-<ul>
+<p>公众号回复 <code>docker-conda-x</code></p></li>
 <li><p>docker 环境，Pytorch OpenNE</p>
-<p>公众号回复 <code>docker-openne</code></p>
-</li>
-</ul>
-<ul>
+<p>公众号回复 <code>docker-openne</code></p></li>
 <li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0mbQggMo3ynwsJ51JvnzFQ">图神经网络 GCN Pytorch 版实现代码讲解</a></p>
-<p> docker 环境，公众号回复 <code>docker-pygcn</code></p>
-</li>
+<p>docker 环境，公众号回复 <code>docker-pygcn</code></p></li>
 <li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/l1W0CUqsO2-aRUbU8J-_vA">新书推荐&amp;课程视频网盘下载：强化学习与最优控制</a></p>
-<p>公众号回复 <code>adp</code></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/COQhJe-ffSkdz5HMXwdr6A">课程视频共享：Illinois大学 CS598 统计强化学习</a><br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av929950486">B站链接</a></p>
-</li>
+<p>公众号回复 <code>adp</code></p></li>
+<li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/COQhJe-ffSkdz5HMXwdr6A">课程视频共享：Illinois大学 CS598 统计强化学习</a> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av929950486">B站链接</a></p></li>
 <li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vMlNwCYJqcZTjxCMTMkTdw">分享精品深度强化学习讲座 Berkeley Deep RL Bootcamp 2017</a></p>
-<p> 公众号回复 <code>rl-bootcamp-ucb-2017</code></p>
-</li>
+<p>公众号回复 <code>rl-bootcamp-ucb-2017</code></p></li>
 </ul>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
@@ -181,6 +218,10 @@
     
     
 </article>
+
+
+
+
 
 
 
@@ -214,6 +255,35 @@
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/wechat/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/wechat/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -248,7 +318,7 @@
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
         "HTML-CSS": {
@@ -261,6 +331,7 @@
             matchFontHeight: false
         },
         tex2jax: {
+            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']

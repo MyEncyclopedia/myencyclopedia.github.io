@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/en/tags/Machine-Learning/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -88,9 +90,6 @@
                href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
-            
-            <a class="navbar-item "
                href="/about">About</a>
             
         </div>
@@ -103,7 +102,7 @@
             
             
             
-            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
                 
                 <i class="fab fa-github"></i>
                 
@@ -125,9 +124,57 @@
     <div class="container">
     
         <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/2021/04/zh/stat-ml-mle-1/" itemprop="url">深入形象地理解极大似然估计(MLE) 1: 引入问题</a>
+            <a href="/zh/2021/stat-ml-mle-1/" itemprop="url">深入形象地理解极大似然估计(MLE) 1: 引入问题</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -154,175 +201,206 @@
     
         <html><head></head><body><p>导读：极大似然估计(MLE) 是统计机器学习中最基本的概念，但是能真正全面深入地理解它的性质和背后和其他基本理论的关系不是件容易的事情。极大似然估计和以下概念都有着紧密的联系：随机变量，无偏性质（unbiasedness），一致估计（consistent），asymptotic normality，最优化（optimization），Fisher Information，MAP（最大后验估计），KL-Divergence，sufficient statistics等。在众多阐述 MLE 的文章或者课程中，总体来说都比较抽象，注重公式推导。本系列文章受3blue1brown 可视化教学的启发，坚持从第一性原理出发，通过数学原理结合模拟和动画，深入浅出地让读者理解极大似然估计。</p>
 <p>相关链接</p>
-<h2 id="抛硬币问题"><a href="#抛硬币问题" class="headerlink" title="抛硬币问题"></a>抛硬币问题</h2><p>我们来思考这个老套问题，考虑手上有一枚硬币，旋转（抛）硬币得到正反面的概率固定（令正面概率为$\theta^{\star}$）但未知，我们如何能通过实验推测出 $\theta^{\star}$</p>
+<h2 id="抛硬币问题">抛硬币问题</h2>
+<p>我们来思考这个老套问题，考虑手上有一枚硬币，旋转（抛）硬币得到正反面的概率固定（令正面概率为<span class="math inline">\(\theta^{\star}\)</span>）但未知，我们如何能通过实验推测出 <span class="math inline">\(\theta^{\star}\)</span></p>
 <figure>
-  <img src="toss.gif">
-  <figcaption></figcaption>
+<img src="/zh/2021/stat-ml-mle-1/toss.gif">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<p>朴素的想法是，不断尝试抛硬币，随着次数 n 的增多，正面的比例会趋近于 $\theta^{\star}$</p>
-<p>对应到数学形式上，令我们对于 $\theta^{\star}$ 的估计为 $\hat{\theta}_{n}$，则希望<br>$$<br>\hat{\theta}<em>n = {n</em>{head} \over n} \to \theta^{\star} \text{  as n } \to \infty<br>$$</p>
-<h2 id="模拟试验代码"><a href="#模拟试验代码" class="headerlink" title="模拟试验代码"></a>模拟试验代码</h2><p>假设我们尝试了n次，每次的结果为 $x_i$，$x_i$为1（正面） 或 0（反面）。比如试了三次的结果是 [1, 0, 1]，则 $x_1=1, x_2=0, x_3=1$。一般，我们将观察到的数据写成向量形式</p>
-<p>$$X=[x_1, x_2, x_3]^T=[1, 0, 1]^{T}$$</p>
-<p>我们知道硬币的正反结果符合伯努利分布，也就是<br>$$<br>\begin{align*}<br>P_{ber}(x;\theta) =<br>\left\lbrace<br>  \begin{array}{r@{}l}<br>   \theta &amp;\text{  if x=1} \<br>   1-\theta &amp;\text{  if x=0}<br>\end{array}<br>\right.<br>\end{align*}<br>$$</p>
-<p>因为 x 只有0，1两种取值，因此上式也可以写成等价如下的不含条件分支的形式<br>$$<br>P_{ber} = \theta^x \cdot (1-\theta)^x<br>$$</p>
-<p>假设 $\theta^{\star} = 0.7$，如果做 n=10 次试验，结果应该比较接近7个1，3个0。</p>
+<p>朴素的想法是，不断尝试抛硬币，随着次数 n 的增多，正面的比例会趋近于 <span class="math inline">\(\theta^{\star}\)</span></p>
+<p>对应到数学形式上，令我们对于 <span class="math inline">\(\theta^{\star}\)</span> 的估计为 <span class="math inline">\(\hat{\theta}_{n}\)</span>，则希望 <span class="math display">\[
+\hat{\theta}_n = {n_{head} \over n} \to \theta^{\star} \text{  as n } \to \infty
+\]</span></p>
+<h2 id="模拟试验代码">模拟试验代码</h2>
+<p>假设我们尝试了n次，每次的结果为 <span class="math inline">\(x_i\)</span>，<span class="math inline">\(x_i\)</span>为1（正面） 或 0（反面）。比如试了三次的结果是 [1, 0, 1]，则 <span class="math inline">\(x_1=1, x_2=0, x_3=1\)</span>。一般，我们将观察到的数据写成向量形式</p>
+<p><span class="math display">\[X=[x_1, x_2, x_3]^T=[1, 0, 1]^{T}\]</span></p>
+<p>我们知道硬币的正反结果符合伯努利分布，也就是 <span class="math display">\[
+\begin{align*}
+P_{ber}(x;\theta) = 
+\left\lbrace 
+  \begin{array}{r@{}l}
+   \theta &amp;\text{  if x=1} \\
+   1-\theta &amp;\text{  if x=0} 
+\end{array} 
+\right.
+\end{align*}
+\]</span></p>
+<p>因为 x 只有0，1两种取值，因此上式也可以写成等价如下的不含条件分支的形式 <span class="math display">\[
+P_{ber} = \theta^x \cdot (1-\theta)^x
+\]</span></p>
+<p>假设 <span class="math inline">\(\theta^{\star} = 0.7\)</span>，如果做 n=10 次试验，结果应该比较接近7个1，3个0。</p>
 <p>下面我们来模拟一下 n=10，看看结果如何。</p>
-<p>下面代码的实现上我们直接使用了pytorch 内置的 bernoulli 函数生成 n 个随机变量实例</p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_coins</span>(<span class="hljs-params">theta, n=<span class="hljs-number">1</span></span>):</span></span><br><span class="line">    <span class="hljs-keyword">import</span> torch</span><br><span class="line">    theta_vec = torch.tensor(n*[theta])</span><br><span class="line">    random_values = torch.bernoulli(theta_vec)</span><br><span class="line">    <span class="hljs-keyword">return</span> random_values</span><br></pre></td></tr></tbody></table></figure>
-
+<p>下面代码的实现上我们直接使用了pytorch 内置的 bernoulli 函数生成 n 个随机变量实例 </p><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_coins</span>(<span class="hljs-params">theta, n=<span class="hljs-number">1</span></span>):</span></span><br><span class="line">    <span class="hljs-keyword">import</span> torch</span><br><span class="line">    theta_vec = torch.tensor(n*[theta])</span><br><span class="line">    random_values = torch.bernoulli(theta_vec)</span><br><span class="line">    <span class="hljs-keyword">return</span> random_values</span><br></pre></td></tr></tbody></table></figure><p></p>
 <p>让我们来做三次 n=10 的试验</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):</span><br><span class="line">    coins = gen_coins(theta=<span class="hljs-number">0.7</span>, n=<span class="hljs-number">10</span>)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">f'trial <span class="hljs-subst">{i}</span>'</span>)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">f'head #: <span class="hljs-subst">{<span class="hljs-built_in">sum</span>(coins)}</span>'</span>)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">f'tail #: <span class="hljs-subst">{<span class="hljs-built_in">sum</span>(<span class="hljs-number">1</span>-coins)}</span>'</span>)</span><br><span class="line">    <span class="hljs-built_in">print</span>()</span><br></pre></td></tr></tbody></table></figure>
-
-<p>能发现 7个1，3个0 确实是比较可能的结果。</p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">trial 0</span><br><span class="line">head <span class="hljs-comment">#: 7.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 3.0</span></span><br><span class="line"></span><br><span class="line">trial 1</span><br><span class="line">head <span class="hljs-comment">#: 9.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 1.0</span></span><br><span class="line"></span><br><span class="line">trial 2</span><br><span class="line">head <span class="hljs-comment">#: 7.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 3.0</span></span><br></pre></td></tr></tbody></table></figure>
-
-
-
-<h2 id="生成概率"><a href="#生成概率" class="headerlink" title="生成概率"></a>生成概率</h2><p>直觉告诉我们，当 $\theta^{\star}=0.7$ 时，根据 $P_{ber}(x;\theta) $，7个1，3个0 出现的概率应该是最大，6个1，4个0 或者 8个1，2个0 这两种情况出现概率稍小，其他的情况概率更小。通过基本概率和伯努利公式，重复 n 次试验 1和0出现的概率可以由下面公式算出。（注：7个1，3个0不是单一事件，需要乘以组合数算出实际概率）</p>
-<p>$$<br>P_{X} = \theta^{heads} \cdot (1-\theta)^{tails} \cdot {n \choose heads}<br>$$</p>
+<p>能发现 7个1，3个0 确实是比较可能的结果。 </p><figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">trial 0</span><br><span class="line">head <span class="hljs-comment">#: 7.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 3.0</span></span><br><span class="line"></span><br><span class="line">trial 1</span><br><span class="line">head <span class="hljs-comment">#: 9.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 1.0</span></span><br><span class="line"></span><br><span class="line">trial 2</span><br><span class="line">head <span class="hljs-comment">#: 7.0</span></span><br><span class="line">tail <span class="hljs-comment">#: 3.0</span></span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="生成概率">生成概率</h2>
+<p>直觉告诉我们，当 <span class="math inline">\(\theta^{\star}=0.7\)</span> 时，根据 $P_{ber}(x;) $，7个1，3个0 出现的概率应该是最大，6个1，4个0 或者 8个1，2个0 这两种情况出现概率稍小，其他的情况概率更小。通过基本概率和伯努利公式，重复 n 次试验 1和0出现的概率可以由下面公式算出。（注：7个1，3个0不是单一事件，需要乘以组合数算出实际概率）</p>
+<p><span class="math display">\[
+P_{X} = \theta^{heads} \cdot (1-\theta)^{tails} \cdot {n \choose heads}
+\]</span></p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th>P(X)</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr class="odd">
 <td>head=0</td>
 <td>0.000006</td>
 </tr>
-<tr>
+<tr class="even">
 <td>head=1</td>
 <td>0.000138</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>head=2</td>
 <td>0.000032</td>
 </tr>
-<tr>
+<tr class="even">
 <td>head=3</td>
 <td>0.001447</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>head=4</td>
 <td>0.036757</td>
 </tr>
-<tr>
+<tr class="even">
 <td>head=5</td>
 <td>0.102919</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>head=6</td>
 <td>0.200121</td>
 </tr>
-<tr>
+<tr class="even">
 <td>head=7</td>
 <td>0.266828</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>head=8</td>
 <td>0.233474</td>
 </tr>
-<tr>
+<tr class="even">
 <td>head=9</td>
 <td>0.121061</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>head=10</td>
 <td>0.028248</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>画出图看的很明显，1出现7次的概率确实最大。</p>
 <figure>
-  <img src="joint_prob.png">
-  <figcaption></figcaption>
+<img src="/zh/2021/stat-ml-mle-1/joint_prob.png">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<p>回到我们的问题，我们先假定 $\theta^{\star} = 0.7$ 的硬币做 n=10 次试验的结果就是 7个1，3个0，或者具体序列为 [1, 0, 0, 1, 0, 1, 1, 1, 1, 1]。那么我们希望按照某种方法推测的估计值 $\hat\theta$ 也为 0.7。</p>
-<p>若将这个方法也记做 $\hat\theta$，它是$X$ 的函数，即 $\hat\theta(X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1]^T)=0.7$ </p>
-<p>我们如何构建这个方法呢？很显然，$X$ 中 1 的个数就可以胜任，$\hat\theta=\bar X$。这个方式确实是正确的，后面的文章我们也会证明它是MLE在伯努利分布参数估计时的计算方法。</p>
-<p>但是伯努利分布参数估计的问题中是最简单的情况，背后对应的更一般的问题是：假设我们知道某个过程或者实验生成了某种分布 P，但是不知道它的参数 $\theta$，如何能通过反复的试验来推断 $\theta$，同时，我们希望随着试验次数的增多，$\hat\theta$ 能逼近 $\theta$。</p>
-<p>由于过程是有随机性，试验结果 $X$ 并不能确定一定是从 $\hat\theta$ 生成的，因此我们需要对所有 $\theta$ 打分。对于抛硬币试验来说，我们穷举所有在 [0, 1] 范围内的 $\theta$，定义它的打分函数 $f(\theta)$，并且希望我们定义的 $f(\theta;X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1]^T)$  在 $\theta=0.7$ 时得分最高。推广到一般场景，有如下性质<br>$$<br>f(\theta^\star;X) &gt;= f(\theta;X)<br>$$</p>
-<p>如此，我们将推测参数问题转换成了优化问题<br>$$<br>\hat\theta = \theta^{\star} = \operatorname{argmax}_{\theta} f(\theta; X) = 0.7<br>$$</p>
-<h2 id="朴素方法"><a href="#朴素方法" class="headerlink" title="朴素方法"></a>朴素方法</h2><p>一种朴素的想法是，由于 $\theta^\star=0.7$，因此我们每次的结果应该稍微偏向 1，如果出现了 1，就记0.7分，出现了0，记0.3分，那么我们可以用10个结果的总分来定义总得分，即最大化函数 </p>
-<p>$$<br>\begin{equation*}<br>\begin{aligned}<br>&amp;\operatorname{argmax}<em>{\theta} f(\theta) \<br>=&amp; \operatorname{argmax}</em>{\theta} P(x_1) + P(x_2) + … + P(x_n) \<br>=&amp; \operatorname{argmax}<em>{\theta} P(x_1|\theta) + P(x_2|\theta) + … + P(x_n|\theta) \<br>=&amp; \operatorname{argmax}</em>{\theta} \sum P(x_i|\theta) \<br>\end{aligned}<br>\end{equation*}<br>$$</p>
-<p>很可惜，我们定义的 f 并不符合 $\theta=0.7$ 时取到最大的原则。下面画出了 $\theta$ 在 [0, 1] 范围内 f 值，X 固定为 [1, 0, 0, 1, 0, 1, 1, 1, 1, 1]。显然，极值在 0.5 左右。</p>
+<p>回到我们的问题，我们先假定 <span class="math inline">\(\theta^{\star} = 0.7\)</span> 的硬币做 n=10 次试验的结果就是 7个1，3个0，或者具体序列为 [1, 0, 0, 1, 0, 1, 1, 1, 1, 1]。那么我们希望按照某种方法推测的估计值 <span class="math inline">\(\hat\theta\)</span> 也为 0.7。</p>
+<p>若将这个方法也记做 <span class="math inline">\(\hat\theta\)</span>，它是<span class="math inline">\(X\)</span> 的函数，即 <span class="math inline">\(\hat\theta(X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1]^T)=0.7\)</span></p>
+<p>我们如何构建这个方法呢？很显然，<span class="math inline">\(X\)</span> 中 1 的个数就可以胜任，<span class="math inline">\(\hat\theta=\bar X\)</span>。这个方式确实是正确的，后面的文章我们也会证明它是MLE在伯努利分布参数估计时的计算方法。</p>
+<p>但是伯努利分布参数估计的问题中是最简单的情况，背后对应的更一般的问题是：假设我们知道某个过程或者实验生成了某种分布 P，但是不知道它的参数 <span class="math inline">\(\theta\)</span>，如何能通过反复的试验来推断 <span class="math inline">\(\theta\)</span>，同时，我们希望随着试验次数的增多，<span class="math inline">\(\hat\theta\)</span> 能逼近 <span class="math inline">\(\theta\)</span>。</p>
+<p>由于过程是有随机性，试验结果 <span class="math inline">\(X\)</span> 并不能确定一定是从 <span class="math inline">\(\hat\theta\)</span> 生成的，因此我们需要对所有 <span class="math inline">\(\theta\)</span> 打分。对于抛硬币试验来说，我们穷举所有在 [0, 1] 范围内的 <span class="math inline">\(\theta\)</span>，定义它的打分函数 <span class="math inline">\(f(\theta)\)</span>，并且希望我们定义的 <span class="math inline">\(f(\theta;X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1]^T)\)</span> 在 <span class="math inline">\(\theta=0.7\)</span> 时得分最高。推广到一般场景，有如下性质 <span class="math display">\[
+f(\theta^\star;X) &gt;= f(\theta;X)
+\]</span></p>
+<p>如此，我们将推测参数问题转换成了优化问题 <span class="math display">\[
+\hat\theta = \theta^{\star} = \operatorname{argmax}_{\theta} f(\theta; X) = 0.7
+\]</span></p>
+<h2 id="朴素方法">朴素方法</h2>
+<p>一种朴素的想法是，由于 <span class="math inline">\(\theta^\star=0.7\)</span>，因此我们每次的结果应该稍微偏向 1，如果出现了 1，就记0.7分，出现了0，记0.3分，那么我们可以用10个结果的总分来定义总得分，即最大化函数</p>
+<p><span class="math display">\[
+\begin{equation*}
+\begin{aligned}
+&amp;\operatorname{argmax}_{\theta} f(\theta) \\
+=&amp; \operatorname{argmax}_{\theta} P(x_1) + P(x_2) + ... + P(x_n) \\
+=&amp; \operatorname{argmax}_{\theta} P(x_1|\theta) + P(x_2|\theta) + ... + P(x_n|\theta) \\
+=&amp; \operatorname{argmax}_{\theta} \sum P(x_i|\theta) \\
+\end{aligned}
+\end{equation*}
+\]</span></p>
+<p>很可惜，我们定义的 f 并不符合 <span class="math inline">\(\theta=0.7\)</span> 时取到最大的原则。下面画出了 <span class="math inline">\(\theta\)</span> 在 [0, 1] 范围内 f 值，X 固定为 [1, 0, 0, 1, 0, 1, 1, 1, 1, 1]。显然，极值在 0.5 左右。</p>
 <figure>
-  <img src="sum-likelihood_w.gif">
-  <figcaption></figcaption>
+<img src="/zh/2021/stat-ml-mle-1/sum-likelihood_w.gif">
+<figcaption>
+</figcaption>
 </figure>
-
-
-
-
-<p>这种对于观察到的变量实例在整个参数空间打分的方法是最大似然方法的雏形。我们将每次试验结果对于不同 $\theta$ 的打分就是似然函数的概念。 </p>
-<h2 id="伯努利似然函数（Likelihood"><a href="#伯努利似然函数（Likelihood" class="headerlink" title="伯努利似然函数（Likelihood)"></a>伯努利似然函数（Likelihood)</h2><p>伯努利单个结果的似然函数 $l(\theta)$ 视为 $\theta$ 的函数，x视为给定值，它等价于概率质量函数 PMF</p>
-<p>$$<br>l(\theta|x) = \theta^x \cdot (1-\theta)^x<br>$$</p>
-<h2 id="极大似然估计-MLE"><a href="#极大似然估计-MLE" class="headerlink" title="极大似然估计(MLE)"></a>极大似然估计(MLE)</h2><p>有了单个结果的似然函数，我们如何定义 $f(\theta)$ 呢？我们定义的 $f(\theta)$ 需要满足，在  $\theta^\star=0.7$ ，$n=10$ 的情况下，试验最有可能的结果是 7 个1，3个0，此时 f 需要在 $\theta=0.7$ 时取到最大值。</p>
-<p>极大似然估计(MLE) 为我们定义了合理的 $f(\theta)$ ，和朴素的想法类似，但是这次用单个结果的似然函数连乘而非连加<br>$$<br>L(\theta|X) = l(\theta|x_1) \cdot l(\theta|x_2) \cdot …l(\theta|x_n) = \prod l(\theta|x_i)<br>$$</p>
-<p>我们再来看一下当 $X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1] $ 时  $L$ 在 $\theta$ 空间的取值情况，果然，MLE 能在 0.7时取到最大值。</p>
+<p>这种对于观察到的变量实例在整个参数空间打分的方法是最大似然方法的雏形。我们将每次试验结果对于不同 <span class="math inline">\(\theta\)</span> 的打分就是似然函数的概念。</p>
+<h2 id="伯努利似然函数likelihood">伯努利似然函数（Likelihood)</h2>
+<p>伯努利单个结果的似然函数 <span class="math inline">\(l(\theta)\)</span> 视为 <span class="math inline">\(\theta\)</span> 的函数，x视为给定值，它等价于概率质量函数 PMF</p>
+<p><span class="math display">\[
+l(\theta|x) = \theta^x \cdot (1-\theta)^x
+\]</span></p>
+<h2 id="极大似然估计mle">极大似然估计(MLE)</h2>
+<p>有了单个结果的似然函数，我们如何定义 <span class="math inline">\(f(\theta)\)</span> 呢？我们定义的 <span class="math inline">\(f(\theta)\)</span> 需要满足，在 <span class="math inline">\(\theta^\star=0.7\)</span> ，<span class="math inline">\(n=10\)</span> 的情况下，试验最有可能的结果是 7 个1，3个0，此时 f 需要在 <span class="math inline">\(\theta=0.7\)</span> 时取到最大值。</p>
+<p>极大似然估计(MLE) 为我们定义了合理的 <span class="math inline">\(f(\theta)\)</span> ，和朴素的想法类似，但是这次用单个结果的似然函数连乘而非连加 <span class="math display">\[
+L(\theta|X) = l(\theta|x_1) \cdot l(\theta|x_2) \cdot ...l(\theta|x_n) = \prod l(\theta|x_i)
+\]</span></p>
+<p>我们再来看一下当 $X=[1, 0, 0, 1, 0, 1, 1, 1, 1, 1] $ 时 <span class="math inline">\(L\)</span> 在 <span class="math inline">\(\theta\)</span> 空间的取值情况，果然，MLE 能在 0.7时取到最大值。</p>
 <figure>
-  <img src="prod_likelihood_w.gif">
-  <figcaption></figcaption>
+<img src="/zh/2021/stat-ml-mle-1/prod_likelihood_w.gif">
+<figcaption>
+</figcaption>
 </figure>
-
-
-
-
-
-
-<h2 id="对数似然函数"><a href="#对数似然函数" class="headerlink" title="对数似然函数"></a>对数似然函数</h2><p>最大似然函数 $\operatorname{argmax}_{\theta} L(\theta) $ 能让我们找到最可能的 $\theta$，但现实中，我们一般采用最大其 log 的形式。</p>
-<p>$$<br>\begin{equation*}<br>\begin{aligned}<br>&amp;\operatorname{argmax}<em>{\theta} \log L(\theta|X) \<br>=&amp; \operatorname{argmax}</em>{\theta} \log [l(\theta|x_1) \cdot l(\theta|x_2) \cdot … \cdot l(\theta|x_n)]   \<br>=&amp; \operatorname{argmax}_{\theta} \log l(\theta|x_1) + \log l(\theta|x_2) \cdot … + \log l(\theta|x_n)<br>\end{aligned}<br>\end{equation*}<br>$$</p>
+<h2 id="对数似然函数">对数似然函数</h2>
+<p>最大似然函数 $_{} L() $ 能让我们找到最可能的 <span class="math inline">\(\theta\)</span>，但现实中，我们一般采用最大其 log 的形式。</p>
+<p><span class="math display">\[
+\begin{equation*}
+\begin{aligned}
+&amp;\operatorname{argmax}_{\theta} \log L(\theta|X) \\
+=&amp; \operatorname{argmax}_{\theta} \log [l(\theta|x_1) \cdot l(\theta|x_2) \cdot ... \cdot l(\theta|x_n)]   \\
+=&amp; \operatorname{argmax}_{\theta} \log l(\theta|x_1) + \log l(\theta|x_2) \cdot ... + \log l(\theta|x_n)
+\end{aligned}
+\end{equation*}
+\]</span></p>
 <p>理论能证明，最大对数似然函数得到的极值等价于最大似然函数。但这么做有什么额外好处呢？</p>
 <p>我们先将对数似然函数画出来</p>
 <figure>
-  <img src="prod_log_likelihood_w.gif">
-  <figcaption></figcaption>
+<img src="/zh/2021/stat-ml-mle-1/prod_log_likelihood_w.gif">
+<figcaption>
+</figcaption>
 </figure>
-
-
 <p>它的极大值也在 0.7，但是我们发现对数似然函数是个 concave 函数。在优化领域，最大化 concave 函数或者最小化 convex 函数可以有非常高效的解法。再仔细看之前的似然函数，它并不是一个 concave 函数。另一个非常重要的好处是，随着 n 的增大，连乘会导致浮点数 underflow，而单个点的对数似然函数的和的形式就不会有这个问题。</p>
-<h2 id="Pytorch-MLE-代码"><a href="#Pytorch-MLE-代码" class="headerlink" title="Pytorch MLE 代码"></a>Pytorch MLE 代码</h2><p>就让我们来实践一下，通过 pytorch 梯度上升来找到极值点。</p>
+<h2 id="pytorch-mle-代码">Pytorch MLE 代码</h2>
+<p>就让我们来实践一下，通过 pytorch 梯度上升来找到极值点。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> stats.coin <span class="hljs-keyword">import</span> gen_coins</span><br><span class="line"><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> deque</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">num_head: <span class="hljs-built_in">int</span>, num_tail: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">float</span>:</span></span><br><span class="line">    <span class="hljs-keyword">import</span> torch</span><br><span class="line">    theta = torch.tensor(<span class="hljs-number">0.5</span>, requires_grad=<span class="hljs-literal">True</span>)</span><br><span class="line"></span><br><span class="line">    recent = deque(<span class="hljs-number">3</span>*[<span class="hljs-number">100</span>], maxlen=<span class="hljs-number">3</span>)</span><br><span class="line"></span><br><span class="line">    lr = <span class="hljs-number">0.00001</span></span><br><span class="line">    <span class="hljs-keyword">for</span> <span class="hljs-built_in">iter</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2000</span>):</span><br><span class="line">        loss = -(num_head * torch.log(theta) + num_tail * torch.log(<span class="hljs-number">1</span> - theta))</span><br><span class="line">        loss.backward()</span><br><span class="line">        <span class="hljs-keyword">with</span> torch.no_grad():</span><br><span class="line">            theta -= lr * theta.grad</span><br><span class="line">            <span class="hljs-comment"># print(f'{iter}: {theta}, {theta.grad}')</span></span><br><span class="line">            recent.append(theta.grad.item())</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-built_in">all</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">abs</span>(x) &lt; <span class="hljs-number">1</span>, recent)):</span><br><span class="line">                <span class="hljs-keyword">break</span></span><br><span class="line">        theta.grad.zero_()</span><br><span class="line">    <span class="hljs-keyword">return</span> theta.item()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">    data = gen_coins(<span class="hljs-number">0.6</span>, n=<span class="hljs-number">200</span>)</span><br><span class="line"></span><br><span class="line">    num_head = (data.detach() == <span class="hljs-number">1</span>).<span class="hljs-built_in">sum</span>().item()</span><br><span class="line">    num_tail = (data.detach() == <span class="hljs-number">0</span>).<span class="hljs-built_in">sum</span>().item()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-built_in">print</span>(num_head, num_tail)</span><br><span class="line">    <span class="hljs-built_in">print</span>(train(num_head, num_tail))</span><br></pre></td></tr></tbody></table></figure>
-
 <p>一点需要说明的是，在迭代过程中，我们保存最后三个导数的值，当最新的三个导数都很小时就退出迭代。</p>
 <figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if all(map(lambda x: abs(x) &lt; 1, recent))</span><br></pre></td></tr></tbody></table></figure>
-
-<p>运行代码，能发现最大化对数似然函数能很稳定的找到 $\theta$。</p>
-<p>现在大家对于伯努利MLE有了一定了解，接着，我们来思考一下最大化似然函数方法是否随着观察次数的增多能不断逼近真实的 $\theta^\star$呢？</p>
-<h2 id="MLE-theta-估计的收敛性"><a href="#MLE-theta-估计的收敛性" class="headerlink" title="MLE $\theta$ 估计的收敛性"></a>MLE $\theta$ 估计的收敛性</h2><p> $\theta^\star=0.7$  的情况下，我们来这样做试验，第一次做 n=1生成观察数据 $X_{1}$，第二次做 n=2生成观察数据 $X_{2}$<br>$$<br>X_1,X_2, X_3, …, X_N<br>$$<br>对于每个数据集 $X_i$ 通过最大似然方法求得估计的 $\hat\theta$<br>$$<br>\hat\theta_1=MLE(X_1), \hat\theta_2=MLE(X_2), …, \hat\theta_N=MLE(X_N)<br>$$<br>将这些 $\hat\theta_i$ 画出来，可以看到，随着 $n \to \infty$，$\hat\theta_i \to \theta^\star=0.7$  </p>
+<p>运行代码，能发现最大化对数似然函数能很稳定的找到 <span class="math inline">\(\theta\)</span>。</p>
+<p>现在大家对于伯努利MLE有了一定了解，接着，我们来思考一下最大化似然函数方法是否随着观察次数的增多能不断逼近真实的 <span class="math inline">\(\theta^\star\)</span>呢？</p>
+<h2 id="mle-theta-估计的收敛性">MLE <span class="math inline">\(\theta\)</span> 估计的收敛性</h2>
+<p><span class="math inline">\(\theta^\star=0.7\)</span> 的情况下，我们来这样做试验，第一次做 n=1生成观察数据 <span class="math inline">\(X_{1}\)</span>，第二次做 n=2生成观察数据 <span class="math inline">\(X_{2}\)</span> <span class="math display">\[
+X_1,X_2, X_3, ..., X_N
+\]</span> 对于每个数据集 <span class="math inline">\(X_i\)</span> 通过最大似然方法求得估计的 <span class="math inline">\(\hat\theta\)</span> <span class="math display">\[
+\hat\theta_1=MLE(X_1), \hat\theta_2=MLE(X_2), ..., \hat\theta_N=MLE(X_N)
+\]</span> 将这些 <span class="math inline">\(\hat\theta_i\)</span> 画出来，可以看到，随着 <span class="math inline">\(n \to \infty\)</span>，<span class="math inline">\(\hat\theta_i \to \theta^\star=0.7\)</span></p>
 <figure>
-  <img src="bias_w.gif">
-  <figcaption></figcaption>
+<img src="/zh/2021/stat-ml-mle-1/bias_w.gif">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<p>换一个角度来看一下，我们将 $\hat\theta_i$ 数列按照顺序，离散化后再归一化比例，如下图画出来，红色的柱代表了最新的值 $\hat\theta$。可以发现，初始时候，$\hat\theta$ 在较远离 0.7 的地方出现，随着 n 的增大，出现的位置比较接近 0.7。</p>
+<p>换一个角度来看一下，我们将 <span class="math inline">\(\hat\theta_i\)</span> 数列按照顺序，离散化后再归一化比例，如下图画出来，红色的柱代表了最新的值 <span class="math inline">\(\hat\theta\)</span>。可以发现，初始时候，<span class="math inline">\(\hat\theta\)</span> 在较远离 0.7 的地方出现，随着 n 的增大，出现的位置比较接近 0.7。</p>
 <figure>
-  <img src="converge_w.gif">
-  <figcaption></figcaption>
+<img src="/zh/2021/stat-ml-mle-1/converge_w.gif">
+<figcaption>
+</figcaption>
 </figure>
-
-
-
-<h2 id="MLE-theta-估计的偏差和方差"><a href="#MLE-theta-估计的偏差和方差" class="headerlink" title="MLE $\theta$ 估计的偏差和方差"></a>MLE $\theta$ 估计的偏差和方差</h2><p>我们已经知道 MLE 方法可以通过观察数据推测出最有可能的 $\hat\theta$，由于观察数据 $X$ 是伯努利过程产生的，具有随机性，那么 $\hat\theta$ 可以看成是 $\theta^\star$ 的随机变量。我们已经通过上面的试验知道随着试验次数的增大，我们的估计会越来越逼近真实值，现在的问题是对于<strong>固定的n</strong>，$\hat\theta$ 的方差是多少，它的均值是否是无偏的呢？</p>
+<h2 id="mle-theta-估计的偏差和方差">MLE <span class="math inline">\(\theta\)</span> 估计的偏差和方差</h2>
+<p>我们已经知道 MLE 方法可以通过观察数据推测出最有可能的 <span class="math inline">\(\hat\theta\)</span>，由于观察数据 <span class="math inline">\(X\)</span> 是伯努利过程产生的，具有随机性，那么 <span class="math inline">\(\hat\theta\)</span> 可以看成是 <span class="math inline">\(\theta^\star\)</span> 的随机变量。我们已经通过上面的试验知道随着试验次数的增大，我们的估计会越来越逼近真实值，现在的问题是对于<strong>固定的n</strong>，<span class="math inline">\(\hat\theta\)</span> 的方差是多少，它的均值是否是无偏的呢？</p>
 <p>带着这样的疑问，我们现在做如下试验：</p>
-<p>固定 n=10，重复做实验，画出随着次数增多 $\hat\theta$ 的分布，见图中绿色部分。同样的，红色是 n=80 不断试验的分布变换。</p>
+<p>固定 n=10，重复做实验，画出随着次数增多 <span class="math inline">\(\hat\theta\)</span> 的分布，见图中绿色部分。同样的，红色是 n=80 不断试验的分布变换。</p>
 <figure>
-  <img src="theta_variance_w.gif">
-  <figcaption></figcaption>
+<img src="/zh/2021/stat-ml-mle-1/theta_variance_w.gif">
+<figcaption>
+</figcaption>
 </figure>
-看的出来，随着试验次数的增多
-- $\hat\theta_{10}, \hat\theta_{80}$ 都趋近于正态分布
-
+<p>看的出来，随着试验次数的增多 - <span class="math inline">\(\hat\theta_{10}, \hat\theta_{80}\)</span> 都趋近于正态分布</p>
 <ul>
-<li><p>$\hat\theta_{10}$ 的分散度比 $ \hat\theta_{80}$ 要大，即方差要大</p>
-</li>
-<li><p>$\hat\theta_{10}, \hat\theta_{80}$ 的均值都在 0.7</p>
-</li>
+<li><p><span class="math inline">\(\hat\theta_{10}\)</span> 的分散度比 $ _{80}$ 要大，即方差要大</p></li>
+<li><p><span class="math inline">\(\hat\theta_{10}, \hat\theta_{80}\)</span> 的均值都在 0.7</p></li>
 </ul>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
@@ -330,6 +408,10 @@
     
     
 </article>
+
+
+
+
 
 
 
@@ -363,6 +445,35 @@
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/Machine-Learning/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/Machine-Learning/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -397,7 +508,7 @@
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
         "HTML-CSS": {
@@ -410,6 +521,7 @@
             matchFontHeight: false
         },
         tex2jax: {
+            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']

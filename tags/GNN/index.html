@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/en/tags/GNN/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -88,9 +90,6 @@
                href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
-            
-            <a class="navbar-item "
                href="/about">About</a>
             
         </div>
@@ -103,7 +102,7 @@
             
             
             
-            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
                 
                 <i class="fab fa-github"></i>
                 
@@ -125,9 +124,57 @@
     <div class="container">
     
         <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/2021/10/zh/course-pytorch-geometric/" itemprop="url">Pytorch Geometric (pyg) 系列教程</a>
+            <a href="/zh/2021/course-pytorch-geometric/" itemprop="url">Pytorch Geometric (pyg) 系列教程</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -153,22 +200,27 @@
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
         <html><head></head><body><p>请在桌面浏览器中打开此链接，保证最好的浏览体验</p>
-<h2 id="关注公众号后回复-docker-geometric，获取-Docker-Image"><a href="#关注公众号后回复-docker-geometric，获取-Docker-Image" class="headerlink" title="关注公众号后回复 docker-geometric，获取 Docker Image"></a>关注公众号后回复 <code>docker-geometric</code>，获取 Docker Image</h2><img src="https://myencyclopedia.top/en/img/me_gzh.jpg" width="120px">
-
-
+<h2 id="关注公众号后回复-docker-geometric获取-docker-image">关注公众号后回复 <code>docker-geometric</code>，获取 Docker Image</h2>
+<p><img src="https://myencyclopedia.top/en/img/me_gzh.jpg" width="120px"></p>
 <figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># 导入image</span></span><br><span class="line">docker load &lt; env-torch1.8-geometric.tar</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 运行 jupyter notebook</span></span><br><span class="line">docker run  -p 8888:8888 -it env-torch1.8-geometric jupyter notebook --allow-root --ip <span class="hljs-string">'0.0.0.0'</span> --notebook-dir=/proj</span><br></pre></td></tr></tbody></table></figure>
-
-<h2 id="在线代码"><a href="#在线代码" class="headerlink" title="在线代码"></a>在线代码</h2><ul>
+<h2 id="在线代码">在线代码</h2>
+<ul>
 <li><a target="_blank" rel="noopener" href="https://mydoc.myencyclopedia.top/pub-html/01_plot_cora.html">01 Plot Cora</a></li>
 <li><a target="_blank" rel="noopener" href="https://mydoc.myencyclopedia.top/pub-html/02_data_interface.html">02 Geometric Graph Data Representation</a></li>
 <li><a target="_blank" rel="noopener" href="https://mydoc.myencyclopedia.top/pub-html/03_gcn.html">03 GCN</a></li>
 </ul>
-<h2 id="公众号系列视频链接"><a href="#公众号系列视频链接" class="headerlink" title="公众号系列视频链接"></a><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA4NzkxNzM3Nw==&amp;action=getalbum&amp;album_id=2055350201493585920#wechat_redirect">公众号系列视频链接</a></h2><h2 id="B站视频系列链接"><a href="#B站视频系列链接" class="headerlink" title="B站视频系列链接"></a><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1f3411i7MQ">B站视频系列链接</a></h2><link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+<h2 id="公众号系列视频链接"><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA4NzkxNzM3Nw==&amp;action=getalbum&amp;album_id=2055350201493585920#wechat_redirect">公众号系列视频链接</a></h2>
+<h2 id="b站视频系列链接"><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1f3411i7MQ">B站视频系列链接</a></h2>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
     
 </article>
+
+
+
+
 
 
 
@@ -202,6 +254,35 @@
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/GNN/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/GNN/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -236,7 +317,7 @@
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
         "HTML-CSS": {
@@ -249,6 +330,7 @@
             matchFontHeight: false
         },
         tex2jax: {
+            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']

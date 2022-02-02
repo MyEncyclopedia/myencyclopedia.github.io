@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/en/tags/sharing/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -88,9 +90,6 @@
                href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
-            
-            <a class="navbar-item "
                href="/about">About</a>
             
         </div>
@@ -103,7 +102,7 @@
             
             
             
-            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
                 
                 <i class="fab fa-github"></i>
                 
@@ -125,9 +124,57 @@
     <div class="container">
     
         <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/2020/11/zh/share-rl-bootcamp-berkeley-2017/" itemprop="url">分享课程 Berkeley Deep Reinforcement Learning Bootcamp 2017</a>
+            <a href="/zh/2020/share-rl-bootcamp-berkeley-2017/" itemprop="url">分享课程 Berkeley Deep Reinforcement Learning Bootcamp 2017</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -156,59 +203,58 @@
 <p><strong>如果没有耐心的同学可以直接跳到文末的百度云盘下载链接，内容涵盖所有视频和slide</strong>。</p>
 <p>此次训练营主讲的强化学习领域专家包括</p>
 <ul>
-<li><p>Pieter Abbeel，前Berkeley 机器人学习实验室主任，伯克利人工智能研究(BAIR)实验室联合主任</p>
-</li>
-<li><p>Andrej Karpathy，前 OpenAI研究科学家、现特斯拉AI总监</p>
-</li>
-<li><p>Vlad Mnih，Deepmind 研究科学家</p>
-</li>
-<li><p>John Schulman，Deepmind 研究科学家，OpenAI共同创建人</p>
-</li>
-<li><p>Sergey Levine，Berkeley 计算机副教授</p>
-</li>
+<li><p>Pieter Abbeel，前Berkeley 机器人学习实验室主任，伯克利人工智能研究(BAIR)实验室联合主任</p></li>
+<li><p>Andrej Karpathy，前 OpenAI研究科学家、现特斯拉AI总监</p></li>
+<li><p>Vlad Mnih，Deepmind 研究科学家</p></li>
+<li><p>John Schulman，Deepmind 研究科学家，OpenAI共同创建人</p></li>
+<li><p>Sergey Levine，Berkeley 计算机副教授</p></li>
 </ul>
 <figure>
-  <img src="deep-rl-bootcamp.png">
-  <figcaption></figcaption>
+<img src="/zh/2020/share-rl-bootcamp-berkeley-2017/deep-rl-bootcamp.png">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<h1 id="课程列表"><a href="#课程列表" class="headerlink" title="课程列表"></a>课程列表</h1><ul>
-<li>Core Lecture 1 Intro to MDPs and Exact Solution Methods – Pieter Abbeel</li>
-<li>Core Lecture 2 Sample-based Approximations and Fitted Learning – Rocky Duan</li>
-<li>Core Lecture 3 DQN + Variants – Vlad Mnih</li>
-<li>Core Lecture 4a Policy Gradients and Actor Critic – Pieter Abbeel</li>
-<li>Core Lecture 4b Pong from Pixels – Andrej Karpathy</li>
-<li>Core Lecture 5 Natural Policy Gradients, TRPO, and PPO – John Schulman</li>
-<li>Core Lecture 6 Nuts and Bolts of Deep RL Experimentation  – John Schulman</li>
-<li>Core Lecture 7 SVG, DDPG, and Stochastic Computation Graphs – John Schulman</li>
-<li>Core Lecture 8 Derivative-free Methods – Peter Chen</li>
-<li>Core Lecture 9 Model-based RL – Chelsea Finn</li>
-<li>Core Lecture 10a Utilities  – Pieter Abbeel</li>
-<li>Core Lecture 10b Inverse RL – Chelsea Finn</li>
-<li>Frontiers Lecture I: Recent Advances, Frontiers and Future of Deep RL – Vlad Mnih</li>
-<li>Frontiers Lecture II: Recent Advances, Frontiers and Future of Deep RL – Sergey Levine</li>
+<h1 id="课程列表">课程列表</h1>
+<ul>
+<li>Core Lecture 1 Intro to MDPs and Exact Solution Methods -- Pieter Abbeel</li>
+<li>Core Lecture 2 Sample-based Approximations and Fitted Learning -- Rocky Duan</li>
+<li>Core Lecture 3 DQN + Variants -- Vlad Mnih</li>
+<li>Core Lecture 4a Policy Gradients and Actor Critic -- Pieter Abbeel</li>
+<li>Core Lecture 4b Pong from Pixels -- Andrej Karpathy</li>
+<li>Core Lecture 5 Natural Policy Gradients, TRPO, and PPO -- John Schulman</li>
+<li>Core Lecture 6 Nuts and Bolts of Deep RL Experimentation -- John Schulman</li>
+<li>Core Lecture 7 SVG, DDPG, and Stochastic Computation Graphs -- John Schulman</li>
+<li>Core Lecture 8 Derivative-free Methods -- Peter Chen</li>
+<li>Core Lecture 9 Model-based RL -- Chelsea Finn</li>
+<li>Core Lecture 10a Utilities -- Pieter Abbeel</li>
+<li>Core Lecture 10b Inverse RL -- Chelsea Finn</li>
+<li>Frontiers Lecture I: Recent Advances, Frontiers and Future of Deep RL -- Vlad Mnih</li>
+<li>Frontiers Lecture II: Recent Advances, Frontiers and Future of Deep RL -- Sergey Levine</li>
 <li>TAs Research Overviews</li>
 </ul>
 <p>前两讲总结了强化学习基础理论方面，包括用动态规划求精确解，采样与环境交互的传统基本方法。第三四讲覆盖了主流的深度强化学习的几种模式：DQN，PG和AC。第五到七讲深入了深度强化学习的各种前沿方法。值得一提的是第六讲，很好的从实践中总结了各种调试诊断方法。余下的若干讲涉及到了非主流的剩余强化学习领域。</p>
 <figure>
-  <img src="landscape.png">
-  <figcaption></figcaption>
+<img src="/zh/2020/share-rl-bootcamp-berkeley-2017/landscape.png">
+<figcaption>
+</figcaption>
 </figure>
-
 <figure>
-  <img src="rl-hierarchy.png">
-  <figcaption></figcaption>
+<img src="/zh/2020/share-rl-bootcamp-berkeley-2017/rl-hierarchy.png">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<h2 id="下载方法"><a href="#下载方法" class="headerlink" title="下载方法"></a>下载方法</h2><p>关注 MyEncyclopedia 公众号，输入 <strong>rl-bootcamp-ucb-2017</strong> 即可获得百度云盘链接</p>
+<h2 id="下载方法">下载方法</h2>
+<p>关注 MyEncyclopedia 公众号，输入 <strong>rl-bootcamp-ucb-2017</strong> 即可获得百度云盘链接</p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
     
 </article>
+
+
+
+
 
 
 
@@ -242,6 +288,35 @@
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/sharing/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/sharing/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -276,7 +351,7 @@
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
         "HTML-CSS": {
@@ -289,6 +364,7 @@
             matchFontHeight: false
         },
         tex2jax: {
+            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']

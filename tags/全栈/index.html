@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/en/tags/%E5%85%A8%E6%A0%88/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -88,9 +90,6 @@
                href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
-            
-            <a class="navbar-item "
                href="/about">About</a>
             
         </div>
@@ -103,7 +102,7 @@
             
             
             
-            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
                 
                 <i class="fab fa-github"></i>
                 
@@ -125,9 +124,57 @@
     <div class="container">
     
         <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/2021/12/zh/service-arxiv/" itemprop="url">MyEncyclopedia Arxiv Trending 发现服务</a>
+            <a href="/zh/2021/service-arxiv/" itemprop="url">MyEncyclopedia Arxiv Trending 发现服务</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -152,48 +199,68 @@
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><h2 id="获取服务地址"><a href="#获取服务地址" class="headerlink" title="获取服务地址"></a>获取服务地址</h2><h3 id="1-最直接方式"><a href="#1-最直接方式" class="headerlink" title="1. 最直接方式"></a>1. 最直接方式</h3><p>在桌面版或者手机版浏览器中打开链接</p>
-<p><a target="_blank" rel="noopener" href="https://app.myencyclopedia.top/paper">https://app.myencyclopedia.top/paper</a></p>
-<h3 id="2-微信扫码"><a href="#2-微信扫码" class="headerlink" title="2. 微信扫码"></a>2. 微信扫码</h3><figure>
-  <img src="qr-arxiv.png" width="250px">
-  <figcaption></figcaption>
+        <html><head></head><body><h2 id="获取服务地址">获取服务地址</h2>
+<h3 id="最直接方式">1. 最直接方式</h3>
+<p>在桌面版或者手机版浏览器中打开链接</p>
+<p>https://app.myencyclopedia.top/paper</p>
+<h3 id="微信扫码">2. 微信扫码</h3>
+<figure>
+<img src="/zh/2021/service-arxiv/qr-arxiv.png" width="250px">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<h3 id="3-从公众号中获取"><a href="#3-从公众号中获取" class="headerlink" title="3. 从公众号中获取"></a>3. 从公众号中获取</h3><h4 id="关注-MyEncyclopedia-公众号"><a href="#关注-MyEncyclopedia-公众号" class="headerlink" title="关注 MyEncyclopedia 公众号"></a>关注 <code>MyEncyclopedia</code> 公众号</h4><h4 id="在公众号对话中回复"><a href="#在公众号对话中回复" class="headerlink" title="在公众号对话中回复 ?"></a>在公众号对话中回复 <code>?</code></h4><p>点击 <code>AI在线服务</code></p>
-<h4 id=""><a href="#" class="headerlink" title=""></a></h4><figure>
-  <img src="start.png">
-  <figcaption></figcaption>
+<h3 id="从公众号中获取">3. 从公众号中获取</h3>
+<h4 id="关注-myencyclopedia-公众号">关注 <code>MyEncyclopedia</code> 公众号</h4>
+<h4 id="在公众号对话中回复">在公众号对话中回复 <code>?</code></h4>
+<p>点击 <code>AI在线服务</code></p>
+<h4 id="section"></h4>
+<figure>
+<img src="/zh/2021/service-arxiv/start.png">
+<figcaption>
+</figcaption>
 </figure>
-
-
-<h4 id="在微信浏览器中直接打开"><a href="#在微信浏览器中直接打开" class="headerlink" title="在微信浏览器中直接打开"></a>在微信浏览器中直接打开</h4><h4 id="或者获取链接"><a href="#或者获取链接" class="headerlink" title="或者获取链接"></a>或者获取链接</h4><figure>
-  <img src="open_browser.png">
-  <figcaption></figcaption>
+<h4 id="在微信浏览器中直接打开">在微信浏览器中直接打开</h4>
+<h4 id="或者获取链接">或者获取链接</h4>
+<figure>
+<img src="/zh/2021/service-arxiv/open_browser.png">
+<figcaption>
+</figcaption>
 </figure>
 <div>
 
 
 <p>进入服务后需要首次使用需要登录，见文末附录部分。</p>
-<h2 id="开始搜索主题关键词"><a href="#开始搜索主题关键词" class="headerlink" title="开始搜索主题关键词"></a>开始搜索主题关键词</h2><p>已最常见的 <code>deep learning</code> 为例，在搜索框中输入 <code>deep learning</code> 后稍等片刻，出现如下和其关联的词组对。</p>
-<p><img src="input_phrase.gif"></p>
-<h3 id="点击节点展开更多关联"><a href="#点击节点展开更多关联" class="headerlink" title="点击节点展开更多关联"></a>点击节点展开更多关联</h3><p>由于和 <code>deep learning</code> 关联的概念词语较多，每次只会展现 10 个。单击节点可以加载更多关联词。<br><img src="expand.gif"></p>
-<h3 id="探索其他节点"><a href="#探索其他节点" class="headerlink" title="探索其他节点"></a>探索其他节点</h3><p><img src="more_nodes.gif"></p>
-<h3 id="双击节点增加至查询论文条件"><a href="#双击节点增加至查询论文条件" class="headerlink" title="双击节点增加至查询论文条件"></a>双击节点增加至查询论文条件</h3><p><img src="one_condition.gif"></p>
-<h3 id="查看综述"><a href="#查看综述" class="headerlink" title="查看综述"></a>查看综述</h3><p><img src="abstract.gif"></p>
-<h3 id="增加联合条件"><a href="#增加联合条件" class="headerlink" title="增加联合条件"></a>增加联合条件</h3><p><img src="two_conditions.gif"></p>
-<h2 id="登录流程"><a href="#登录流程" class="headerlink" title="登录流程"></a>登录流程</h2><p>目前提供两种方式。<br>在国内的小伙伴建议使用微信公众号的方式登录，在国外的朋友们可以使用 Google 账号登录。</p>
-<h3 id="微信登录，按提示在为公众号中输入验证码"><a href="#微信登录，按提示在为公众号中输入验证码" class="headerlink" title="微信登录，按提示在为公众号中输入验证码"></a>微信登录，按提示在为公众号中输入验证码</h3><figure>
-  <img src="wechat_code.png">
-  <figcaption></figcaption>
+<h2 id="开始搜索主题关键词">开始搜索主题关键词</h2>
+<p>已最常见的 <code>deep learning</code> 为例，在搜索框中输入 <code>deep learning</code> 后稍等片刻，出现如下和其关联的词组对。</p>
+<p><img src="/zh/2021/service-arxiv/input_phrase.gif"></p>
+<h3 id="点击节点展开更多关联">点击节点展开更多关联</h3>
+<p>由于和 <code>deep learning</code> 关联的概念词语较多，每次只会展现 10 个。单击节点可以加载更多关联词。 <img src="/zh/2021/service-arxiv/expand.gif"></p>
+<h3 id="探索其他节点">探索其他节点</h3>
+<p><img src="/zh/2021/service-arxiv/more_nodes.gif"></p>
+<h3 id="双击节点增加至查询论文条件">双击节点增加至查询论文条件</h3>
+<p><img src="/zh/2021/service-arxiv/one_condition.gif"></p>
+<h3 id="查看综述">查看综述</h3>
+<p><img src="/zh/2021/service-arxiv/abstract.gif"></p>
+<h3 id="增加联合条件">增加联合条件</h3>
+<p><img src="/zh/2021/service-arxiv/two_conditions.gif"></p>
+<h2 id="登录流程">登录流程</h2>
+<p>目前提供两种方式。 在国内的小伙伴建议使用微信公众号的方式登录，在国外的朋友们可以使用 Google 账号登录。</p>
+<h3 id="微信登录按提示在为公众号中输入验证码">微信登录，按提示在为公众号中输入验证码</h3>
+<figure>
+<img src="/zh/2021/service-arxiv/wechat_code.png">
+<figcaption>
+</figcaption>
 </figure>
 <div>
 
-<h3 id="Google登录"><a href="#Google登录" class="headerlink" title="Google登录"></a>Google登录</h3><figure>
-  <img src="google_login.png">
-  <figcaption></figcaption>
+<h3 id="google登录">Google登录</h3>
+<figure>
+<img src="/zh/2021/service-arxiv/google_login.png">
+<figcaption>
+</figcaption>
 </figure>
 <div>
+
 
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></div></div></div></body></html>
     
@@ -201,6 +268,10 @@
     
     
 </article>
+
+
+
+
 
 
 
@@ -234,6 +305,35 @@
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/%E5%85%A8%E6%A0%88/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/%E5%85%A8%E6%A0%88/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -268,7 +368,7 @@
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
         "HTML-CSS": {
@@ -281,6 +381,7 @@
             matchFontHeight: false
         },
         tex2jax: {
+            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']

@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
+<link href="/en/tags/OCR/" rel="alternate" hreflang="en" />
+    
 
 
 <meta name="description" content="">
@@ -88,9 +90,6 @@
                href="/archives">Archives</a>
             
             <a class="navbar-item "
-               href="/categories/Technology">Technology</a>
-            
-            <a class="navbar-item "
                href="/about">About</a>
             
         </div>
@@ -103,7 +102,7 @@
             
             
             
-            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
                 
                 <i class="fab fa-github"></i>
                 
@@ -125,9 +124,57 @@
     <div class="container">
     
         <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/2021/08/zh/service-math2latex/" itemprop="url">MyEncyclopedia 重磅推出 mathpix 服务：图片转换成Latex源码</a>
+            <a href="/zh/2021/service-math2latex/" itemprop="url">MyEncyclopedia 重磅推出 mathpix 服务：图片转换成Latex源码</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -153,49 +200,61 @@
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
         <html><head></head><body><p>大家一定都用过神奇的 mathpix 服务，它可以方便大家将数学公式图片转换成 Latex 数学公式。现在 MyEncyclopedia 也推出了手机版和桌面版的 mathpix 服务啦！</p>
-<iframe src="//player.bilibili.com/player.html?aid=674980364&amp;bvid=BV1BU4y1E7Be&amp;cid=393607422&amp;page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-
-<h2 id="使用流程-登录服务"><a href="#使用流程-登录服务" class="headerlink" title="使用流程 登录服务"></a>使用流程 登录服务</h2><h3 id="1-关注-MyEncyclopedia-公众号"><a href="#1-关注-MyEncyclopedia-公众号" class="headerlink" title="1. 关注 MyEncyclopedia 公众号"></a>1. 关注 <code>MyEncyclopedia</code> 公众号</h3><h3 id="2-在公众号对话中回复"><a href="#2-在公众号对话中回复" class="headerlink" title="2. 在公众号对话中回复 ?"></a>2. 在公众号对话中回复 <code>?</code></h3><figure>
-  <img src="start.png">
-  <figcaption></figcaption>
-</figure>
-
-
-
-<h3 id="3-点击-AI在线服务"><a href="#3-点击-AI在线服务" class="headerlink" title="3. 点击 AI在线服务"></a>3. 点击 <code>AI在线服务</code></h3><h3 id="4-在非微信浏览器中打开链接"><a href="#4-在非微信浏览器中打开链接" class="headerlink" title="4. 在非微信浏览器中打开链接"></a>4. 在非微信浏览器中打开链接</h3><figure>
-  <img src="open_browser.png">
-  <figcaption></figcaption>
-</figure>
-<div>
-
-<h3 id="5-登录"><a href="#5-登录" class="headerlink" title="5. 登录"></a>5. 登录</h3><p>目前提供两种方式。<br>在国内的小伙伴建议使用微信公众号的方式登录，在国外的朋友们可以使用 Google 账号登录。</p>
-<h3 id="5-1-微信登录，按提示在为公众号中输入验证码"><a href="#5-1-微信登录，按提示在为公众号中输入验证码" class="headerlink" title="5.1 微信登录，按提示在为公众号中输入验证码"></a>5.1 微信登录，按提示在为公众号中输入验证码</h3><figure>
-  <img src="wechat_code.png">
-  <figcaption></figcaption>
-</figure>
-<div>
-
-<h3 id="5-2-Google登录"><a href="#5-2-Google登录" class="headerlink" title="5.2 Google登录"></a>5.2 Google登录</h3><figure>
-  <img src="google_login.png">
-  <figcaption></figcaption>
-</figure>
-<div>
-
-<h2 id="使用流程"><a href="#使用流程" class="headerlink" title="使用流程"></a>使用流程</h2><p>点击右上方 <code>+</code> 选择图片 </p>
+<iframe src="//player.bilibili.com/player.html?aid=674980364&amp;bvid=BV1BU4y1E7Be&amp;cid=393607422&amp;page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true">
+</iframe>
+<h2 id="使用流程-登录服务">使用流程 登录服务</h2>
+<h3 id="关注-myencyclopedia-公众号">1. 关注 <code>MyEncyclopedia</code> 公众号</h3>
+<h3 id="在公众号对话中回复">2. 在公众号对话中回复 <code>?</code></h3>
 <figure>
-  <img src="select.png">
-  <figcaption></figcaption>
+<img src="/zh/2021/service-math2latex/start.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="点击-ai在线服务">3. 点击 <code>AI在线服务</code></h3>
+<h3 id="在非微信浏览器中打开链接">4. 在非微信浏览器中打开链接</h3>
+<figure>
+<img src="/zh/2021/service-math2latex/open_browser.png">
+<figcaption>
+</figcaption>
 </figure>
 <div>
-## 等待结果
 
+<h3 id="登录">5. 登录</h3>
+<p>目前提供两种方式。 在国内的小伙伴建议使用微信公众号的方式登录，在国外的朋友们可以使用 Google 账号登录。</p>
+<h3 id="微信登录按提示在为公众号中输入验证码">5.1 微信登录，按提示在为公众号中输入验证码</h3>
+<figure>
+<img src="/zh/2021/service-math2latex/wechat_code.png">
+<figcaption>
+</figcaption>
+</figure>
+<div>
+
+<h3 id="google登录">5.2 Google登录</h3>
+<figure>
+<img src="/zh/2021/service-math2latex/google_login.png">
+<figcaption>
+</figcaption>
+</figure>
+<div>
+
+<h2 id="使用流程">使用流程</h2>
+点击右上方 <code>+</code> 选择图片
+<figure>
+<img src="/zh/2021/service-math2latex/select.png">
+<figcaption>
+</figcaption>
+</figure>
+<div>
+<h2 id="等待结果">等待结果</h2>
 <p>Output Source 为转换的 Latex 源码</p>
 <p>Output Render 为转换源码对应的渲染效果</p>
 <figure>
-  <img src="final.png">
-  <figcaption></figcaption>
+<img src="/zh/2021/service-math2latex/final.png">
+<figcaption>
+</figcaption>
 </figure>
 <div>
+
 
 
 
@@ -205,6 +264,10 @@
     
     
 </article>
+
+
+
+
 
 
 
@@ -238,6 +301,35 @@
             </div>
             
             
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/OCR/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/OCR/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </footer>
@@ -272,7 +364,7 @@
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
         "HTML-CSS": {
@@ -285,6 +377,7 @@
             matchFontHeight: false
         },
         tex2jax: {
+            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']
