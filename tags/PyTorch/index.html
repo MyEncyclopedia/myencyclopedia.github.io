@@ -664,30 +664,68 @@ l=\sum_{t}\left(v_{\theta}\left(s_{t}\right)-z_{t}\right)^{2}-\vec{\pi_{t}} \cdo
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
+        // TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]},
         "HTML-CSS": {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         SVG: {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         CommonHTML: {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         tex2jax: {
-            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']
             ]
         }
     });
-</script>
+</script> -->
+<!-- <script>
+    MathJax = {
+      tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+      svg: {
+        scale: 4,
+        // exFactor: 2,                  // default size of ex in em units
+        minScale: 1,                  // smallest scaling factor to use
+          fontCache: 'local'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script> -->
+    <script>
+        MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        chtml: {
+            scale:3,
+        }
+        };
+        </script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
     
     
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
     
     
 <script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
@@ -813,14 +851,7 @@ l=\sum_{t}\left(v_{\theta}\left(s_{t}\right)-z_{t}\right)^{2}-\vec{\pi_{t}} \cdo
 
     
 </body>
-</html>f.position + <span class="hljs-number">1</span>) % self.capacity</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sample</span>(<span class="hljs-params">self, batch_size</span>):</span></span><br><span class="line">        <span class="hljs-keyword">return</span> random.sample(self.memory, batch_size)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__len__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.memory)</span><br></pre></td></tr></tbody></table></figure>
-<h2 id="dqnagent">DQNAgent</h2>
-<p>我们将 DQN 的逻辑封装在 DQNAgent 类中。DQNAgent 成员变量包括两个 DQNModel，一个ReplayMemory。</p>
-<p>train() 方法中会每隔一定时间将 Target Network 的参数同步成现行Network的参数。在td_loss_backprop()方法中采样 ReplayMemory 中的五元组，通过minimize TD error方式来改进现行 Network 参数 <span class="math inline">\(\theta\)</span>。Loss函数为：</p>
-<p><span class="math display">\[
-L\left(\theta_{i}\right)=\mathbb{E}_{\left(s, a, r, s^{\prime}\right) \sim \mathrm{U}(D)}\left[\left(r+\gamma \max _{a^{\prime}} Q_{target}\left(s^{\prime}, a^{\prime} ; \theta_{i}^{-}\right)-Q\left(s, a ; \theta_{i}\right)\right)^{2}\right]
-\]</span></p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DQNAgent</span>():</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, state, episode_idx</span>):</span></span><br><span class="line">        self.update_epsilon(episode_idx)</span><br><span class="line">        action = self.model.act(state, self.epsilon, self.device)</span><br><span class="line">        <span class="hljs-keyword">return</span> action</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">process</span>(<span class="hljs-params">self, episode_idx, state, action, reward, next_state, done</span>):</span></span><br><span class="line">        self.replay_mem.push(state, action, reward, next_state, done)</span><br><span class="line">        self.train(episode_idx)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">self, episode_idx</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.replay_mem) &gt; self.initial_learning:</span><br><span class="line">            <span class="hljs-keyword">if</span> episode_idx % self.target_update_frequency == <span class="hljs-number">0</span>:</span><br><span class="line">                self.target_model.load_state_dict(self.model.state_dict())</span><br><span class="line">            self.optimizer.zero_grad()</span><br><span class="line">            self.td_loss_backprop()</span><br><span class="line">            self.optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">td_loss_backprop</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        transitions = self.replay_mem.sample(self.batch_size)</span><br><span class="line">        batch = Transition(*<span class="hljs-built_in">zip</span>(*transitions))</span><br><span class="line"></span><br><span class="line">        state = Variable(FloatTensor(np.float32(batch.state))).to(self.device)</span><br><span class="line">        action = Variable(LongTensor(batch.action)).to(self.device)</span><br><span class="line">        reward = Variable(FloatTensor(batch.reward)).to(self.device)</span><br><span class="line">        next_state = Variable(FloatTensor(np.float32(batch.next_state))).to(self.device)</span><br><span class="line">        done = Variable(FloatTensor(batch.done)).to(self.device)</span><br><span class="line"></span><br><span class="line">        q_values = self.model(state)</span><br><span class="line">        next_q_values = self.target_net(next_state)</span><br><span class="line"></span><br><span class="line">        q_value = q_values.gather(<span class="hljs-number">1</span>, action.unsqueeze(-<span class="hljs-number">1</span>)).squeeze(-<span class="hljs-number">1</span>)</span><br><span class="line">        next_q_value = next_q_values.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]</span><br><span class="line">        expected_q_value = reward + self.gamma * next_q_value * (<span class="hljs-number">1</span> - done)</span><br><span class="line"></span><br><span class="line">        loss = (q_value - expected_q_value.detach()).<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>)</span><br><span class="line">        loss = loss.mean()</span><br><span class="line">        loss.backward()</span><br></pre></td></tr></tbody></table></figure>
+</html>tter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DQNAgent</span>():</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, state, episode_idx</span>):</span></span><br><span class="line">        self.update_epsilon(episode_idx)</span><br><span class="line">        action = self.model.act(state, self.epsilon, self.device)</span><br><span class="line">        <span class="hljs-keyword">return</span> action</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">process</span>(<span class="hljs-params">self, episode_idx, state, action, reward, next_state, done</span>):</span></span><br><span class="line">        self.replay_mem.push(state, action, reward, next_state, done)</span><br><span class="line">        self.train(episode_idx)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">self, episode_idx</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.replay_mem) &gt; self.initial_learning:</span><br><span class="line">            <span class="hljs-keyword">if</span> episode_idx % self.target_update_frequency == <span class="hljs-number">0</span>:</span><br><span class="line">                self.target_model.load_state_dict(self.model.state_dict())</span><br><span class="line">            self.optimizer.zero_grad()</span><br><span class="line">            self.td_loss_backprop()</span><br><span class="line">            self.optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">td_loss_backprop</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        transitions = self.replay_mem.sample(self.batch_size)</span><br><span class="line">        batch = Transition(*<span class="hljs-built_in">zip</span>(*transitions))</span><br><span class="line"></span><br><span class="line">        state = Variable(FloatTensor(np.float32(batch.state))).to(self.device)</span><br><span class="line">        action = Variable(LongTensor(batch.action)).to(self.device)</span><br><span class="line">        reward = Variable(FloatTensor(batch.reward)).to(self.device)</span><br><span class="line">        next_state = Variable(FloatTensor(np.float32(batch.next_state))).to(self.device)</span><br><span class="line">        done = Variable(FloatTensor(batch.done)).to(self.device)</span><br><span class="line"></span><br><span class="line">        q_values = self.model(state)</span><br><span class="line">        next_q_values = self.target_net(next_state)</span><br><span class="line"></span><br><span class="line">        q_value = q_values.gather(<span class="hljs-number">1</span>, action.unsqueeze(-<span class="hljs-number">1</span>)).squeeze(-<span class="hljs-number">1</span>)</span><br><span class="line">        next_q_value = next_q_values.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]</span><br><span class="line">        expected_q_value = reward + self.gamma * next_q_value * (<span class="hljs-number">1</span> - done)</span><br><span class="line"></span><br><span class="line">        loss = (q_value - expected_q_value.detach()).<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>)</span><br><span class="line">        loss = loss.mean()</span><br><span class="line">        loss.backward()</span><br></pre></td></tr></tbody></table></figure>
 <h2 id="外层-training-代码">外层 Training 代码</h2>
 <p>最后是外层调用代码，基本和以前文章一样。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">env, args, agent</span>):</span></span><br><span class="line">    <span class="hljs-keyword">for</span> episode_idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(args.num_episodes):</span><br><span class="line">        episode_reward = <span class="hljs-number">0.0</span></span><br><span class="line">        state = env.reset()</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            action = agent.act(state, episode_idx)</span><br><span class="line">            <span class="hljs-keyword">if</span> args.render:</span><br><span class="line">                env.render()</span><br><span class="line">            next_state, reward, done, stats = env.step(action)</span><br><span class="line">            agent.process(episode_idx, state, action, reward, next_state, done)</span><br><span class="line">            state = next_state</span><br><span class="line">            episode_reward += reward</span><br><span class="line">            <span class="hljs-keyword">if</span> done:</span><br><span class="line">                <span class="hljs-built_in">print</span>(<span class="hljs-string">f'<span class="hljs-subst">{episode_idx}</span>: <span class="hljs-subst">{episode_reward}</span>'</span>)</span><br><span class="line">                <span class="hljs-keyword">break</span></span><br></pre></td></tr></tbody></table></figure>
@@ -1131,30 +1162,68 @@ v_a^{\top} \tanh \left( W_a \left[ d_i ; e_j \right] \right) &amp; \text { conca
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
+        // TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]},
         "HTML-CSS": {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         SVG: {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         CommonHTML: {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         tex2jax: {
-            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']
             ]
         }
     });
-</script>
+</script> -->
+<!-- <script>
+    MathJax = {
+      tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+      svg: {
+        scale: 4,
+        // exFactor: 2,                  // default size of ex in em units
+        minScale: 1,                  // smallest scaling factor to use
+          fontCache: 'local'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script> -->
+    <script>
+        MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        chtml: {
+            scale:3,
+        }
+        };
+        </script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
     
     
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
     
     
 <script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>

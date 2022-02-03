@@ -200,7 +200,8 @@
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
         <html><head></head><body><p>在 MIT Gilbert Strang 教授经典的线性代数课程第三节中详细解释了矩阵相乘的5种方法及其理解，本文用彩色的 Latex 公式呈现出来，便于大家回顾复习。</p>
-<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-01-matrix-product">01 - 矩阵乘法的五种理解</a></strong> <strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-02-solving-equations">02 - 解方程组的意义和过程</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-01-matrix-product">01 - 矩阵乘法的五种理解</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-02-solving-equations">02 - 解方程组的意义和过程</a></strong></p>
 <h2 id="方程组两种几何解释">方程组两种几何解释</h2>
 <h3 id="二元方程组">二元方程组</h3>
 <p>来看一个具体的二元线性方程组</p>
@@ -229,7 +230,7 @@ x \\ y
 <p>$ -x + 2y = 3$ 则对应绿线。</p>
 <p>因此方程组的解 x = 1, y = 2 为两条直线的交点，这就是方程组的行视角：将系数矩阵按行切分，则每一行表示一个约束条件，几何意义是N维空间的一个子空间。在二元方程中，一行表示一条线，三元方程中，一行表示一个平面（详见后一小结）。 <span class="math display">\[
 \begin{bmatrix}
-\color{blue} 2 x &amp; \color{blue} -1 y \\
+\color{blue} 2 x &amp; {\color{blue} -1 y} \\
 \color{green} -1 x &amp; \color{green} 2 y
 \end{bmatrix}
 =
@@ -473,14 +474,15 @@ z=-2
         <span class="column is-narrow">
             
             
-            4 分钟 读完 (约 649 字)
+            5 分钟 读完 (约 763 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
         <html><head></head><body><p>在 MIT Gilbert Strang 教授经典的线性代数课程第三节中详细解释了矩阵相乘的5种方法及其理解，本文用彩色的 Latex 公式呈现出来，便于大家回顾复习。</p>
-<p><strong><a href="/zh/2022/linear-algebra-strang-01-matrix-product/../linear-algebra-strang-01-matrix-product">01 - 矩阵乘法的五种理解</a></strong> <strong><a href="/zh/2022/linear-algebra-strang-01-matrix-product/../linear-algebra-strang-02-solving-equations">02 - 解方程组的意义和过程</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-01-matrix-product/../linear-algebra-strang-01-matrix-product">01 - 矩阵乘法的五种理解</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-01-matrix-product/../linear-algebra-strang-02-solving-equations">02 - 解方程组的意义和过程</a></strong></p>
 <p>假定 <span class="math inline">\(A \times B =C\)</span> 中， A 是 <span class="math inline">\(m\)</span> 行 <span class="math inline">\(n\)</span> 列的矩阵， <span class="math inline">\(B\)</span> 是 <span class="math inline">\(n\)</span> 行 <span class="math inline">\(p\)</span> 列的矩阵，<span class="math inline">\(C\)</span> 为 <span class="math inline">\(m\)</span> 行 <span class="math inline">\(p\)</span> 列矩阵：</p>
 <p><span class="math display">\[
 A_{m \cdot n} \times B_{n \cdot p} = C_{m \cdot p}
@@ -507,8 +509,47 @@ A = \begin{bmatrix} A_{row_1} \\  A_{row_2}\\ \vdots \\ A_{row_m} \end{bmatrix}
 <p>这种方式可以助记成 <strong>行行</strong> 切分。</p>
 <h2 id="a行-x-b列-点乘行列切分">A行 x B列 点乘：行列切分</h2>
 <p>如 <span class="math inline">\(A\)</span> 矩阵按行切，<span class="math inline">\(B\)</span> 矩阵按列切，即住记成 <strong>行列</strong> 切分时如下所示。</p>
-<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/dot.png"></p>
-<p>行乘以列即列向量点乘，结果是一个标量。因此 <span class="math inline">\(c_{ij}\)</span> 为结果矩阵 <span class="math inline">\(C\)</span> 的第 <span class="math inline">\(i\)</span> 行 <span class="math inline">\(j\)</span> 列的值。 <img src="/zh/2022/linear-algebra-strang-01-matrix-product/dot_cij.png"></p>
+<p><span class="math display">\[
+\begin{eqnarray*} 
+&amp;&amp; A_{m \cdot n} \times B_{n \cdot p} \\
+&amp;=&amp;
+\begin{bmatrix}
+A_{row_1} \\
+A_{row_2} \\
+\vdots \\
+A_{row_i} \\
+\vdots \\
+\end{bmatrix}_{m \cdot n}
+\begin{bmatrix}
+ B_{col_1} &amp;  B_{col_2} &amp; \cdots &amp; B_{col_p}
+\end{bmatrix}_{n \cdot p} \\
+&amp;=&amp;
+\begin{bmatrix}
+&amp;\vdots&amp;\\&amp;
+A_{row_i}&amp;\\&amp;\vdots&amp;
+\end{bmatrix}_{m \cdot n}
+\begin{bmatrix}
+&amp;&amp;\\\cdots&amp; B_{col_j} &amp; \cdots\\&amp;&amp;
+\end{bmatrix}_{n \cdot p} \\
+&amp;=&amp;
+\begin{bmatrix}
+&amp;\vdots&amp;\\\cdots&amp;c_{ij}&amp;\cdots\\&amp;
+\vdots
+\end{bmatrix}_{m \cdot p}
+\end{eqnarray*}
+\]</span></p>
+<p>行乘以列即列向量点乘，结果是一个标量。因此 <span class="math inline">\(c_{ij}\)</span> 为结果矩阵 <span class="math inline">\(C\)</span> 的第 <span class="math inline">\(i\)</span> 行 <span class="math inline">\(j\)</span> 列的值。</p>
+<p><span class="math display">\[
+c_{ij}=A_{row_i} \cdot B_{col_j}
+=
+\begin{bmatrix}
+a_{i1} &amp; a_{i2} &amp; \cdots &amp; a_{in}
+\end{bmatrix}
+\begin{bmatrix}
+b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
+\end{bmatrix}
+=\sum_{k=i}^na_{ik}b_{kj}
+\]</span></p>
 <h2 id="a列-x-b行-矩阵和列行切分">A列 x B行 矩阵和：列行切分</h2>
 <p>最后，也可也按<strong>列行</strong>来切分。注意列乘以行时的结果是一个矩阵。</p>
 <p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/matrix_sum_w.png"></p>
@@ -853,30 +894,68 @@ dp3[i-1] -&gt; dp2[i]
 
     
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
+        // TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]},
         "HTML-CSS": {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         SVG: {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         CommonHTML: {
-            matchFontHeight: false
+            matchFontHeight: true
         },
         tex2jax: {
-            processEscapes: true,
             inlineMath: [
                 ['$','$'],
                 ['\\(','\\)']
             ]
         }
     });
-</script>
+</script> -->
+<!-- <script>
+    MathJax = {
+      tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+      svg: {
+        scale: 4,
+        // exFactor: 2,                  // default size of ex in em units
+        minScale: 1,                  // smallest scaling factor to use
+          fontCache: 'local'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script> -->
+    <script>
+        MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        chtml: {
+            scale:3,
+        }
+        };
+        </script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
     
     
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
     
     
 <script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
