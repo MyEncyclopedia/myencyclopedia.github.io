@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="本系列用彩色的 Latex 公式呈现总结 MIT Gilbert Strang 教授经典的线性代数课程18.06之精华，便于大家回顾复习。 本文在矩阵乘法和解方程组的基础上引入消元对应的矩阵乘法和矩阵的逆。 消元操作的矩阵表示 回顾上一节，解方程组的意义和过程 中，在消元步骤时，将矩阵 A 依行顺序向下，每一行通过减去上面行的若干倍，将矩阵 A 逐行规范成上三角矩阵形式。 \[ A &#x3D; \begi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="本系列用彩色的 Latex 公式呈现总结 MIT Gilbert Strang 教授经典的线性代数课程18.06之精华，便于大家回顾复习。 本文在矩阵乘法和解方程组的基础上引入消元对应的矩阵乘法和矩阵的逆。 消元操作的矩阵表示 回顾上一节，解方程组的意义和过程 中，在消元步骤时，将矩阵 A 依行顺序向下，每一行通过减去上面行的若干倍，将矩阵 A 逐行规范成上三角矩阵形式。 \[ A &#x3D; \begi">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-02-25T10:45:01.000Z">
+<meta property="article:modified_time" content="2022-03-17T01:47:36.000Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Maths">
+<meta property="article:tag" content="Linear Algebra">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#消元操作的矩阵表示">1.1&nbsp;&nbsp;消元操作的矩阵表示</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#矩阵的逆">2&nbsp;&nbsp;<b>矩阵的逆</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E5%85%83%E6%93%8D%E4%BD%9C%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA"><span class="toc-text">消元操作的矩阵表示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E7%9A%84%E9%80%86"><span class="toc-text">矩阵的逆</span></a>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-02-25T10:45:01.000Z" itemprop="datePublished">2月 25 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            10 分钟 读完 (约 1506 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>本系列用彩色的 <span style="color:blue">L</span><span style="color:green">a</span><span style="color:red">t</span><span style="color:magenta">e</span><span style="color:orange">x</span> 公式呈现总结 MIT Gilbert Strang 教授经典的线性代数课程18.06之精华，便于大家回顾复习。</p>
+<p>本文在矩阵乘法和解方程组的基础上引入消元对应的矩阵乘法和矩阵的逆。</p>
+<h3 id="消元操作的矩阵表示">消元操作的矩阵表示</h3>
+<p>回顾上一节，解方程组的意义和过程 中，在消元步骤时，将矩阵 A 依行顺序向下，每一行通过减去上面行的若干倍，将矩阵 A 逐行规范成上三角矩阵形式。</p>
+<p><span class="math display">\[
+A
+=
+\begin{bmatrix}
+\rowcolor{pink}
+\color{red} 1&amp;2&amp;1 \\
+\rowcolor{lightgray}
+3&amp;8&amp;1 \\
+\rowcolor{lightgray}
+0&amp;4&amp;1
+\end{bmatrix}
+\xrightarrow{row_2-3row_1}
+\begin{bmatrix}
+\rowcolor{lightgray}
+\color{red} 1&amp;2&amp;1 \\ 
+\rowcolor{pink}
+\color{blue} \boxed{0} &amp; \color{red} 2&amp; \color{blue} -2 \\
+\rowcolor{lightgray}
+0&amp;4&amp;1
+\end{bmatrix}
+\xrightarrow{row_3-2row_2}
+\begin{bmatrix}
+\rowcolor{lightgray}
+\color{red}1&amp;2&amp;1  \\
+\rowcolor{lightgray}
+0&amp; \color{red} 2&amp;-2  \\
+\rowcolor{pink}
+\color{blue} 0 &amp; \color{blue} \boxed{0} &amp; \color{red} 5
+\end{bmatrix}
+\]</span></p>
+<p>那么每一行规范的操作，例如操作 <span class="math inline">\(E_{21}\)</span> （第二行减去三倍第一行）是否可以通过矩阵乘法表示出来呢？ <span class="math display">\[
+E_{21} := {row_2-3\times row_1}
+\]</span></p>
+<p>结合矩阵乘法的五种理解一节中行行切分，我们将 <span class="math inline">\(E_{21}\)</span> 视为三个行相加。 <span class="math display">\[
+\begin{align}
+E_{21} &amp;= \begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\cellcolor{yellow} -3 &amp; \cellcolor{pink} 1&amp; \cellcolor{lightgray} 0 \\\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix}\\
+&amp; =
+\begin{bmatrix}
+\rowcolor{lightblue} 
+\color{black} 1 &amp; \color{black}0 &amp; \color{black} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix}
++
+\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\rowcolor{lightblue} 
+ -3 &amp;  1&amp; 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix}
++
+\begin{bmatrix}
+\color{gray} 0 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\rowcolor{lightblue}  0 &amp;  0 &amp;  1
+\end{bmatrix}
+\end{align}
+\]</span></p>
+<p>如此，第一个矩阵 <span class="math inline">\([1 \quad 0 \quad 0]\)</span> 乘以 <span class="math inline">\(A\)</span> 形成了乘积矩阵的第一行，具体来说， <span class="math inline">\([1 \quad 0 \quad 0]\)</span> 表示取 <span class="math inline">\(A\)</span> 的1个第一行，0个第二行，0个第三行的和组成乘积矩阵第一行。 同样地，乘积矩阵第二行由第二个矩阵 <span class="math inline">\([-3 \quad 1 \quad 0]\)</span> 形成，表示取 <span class="math inline">\(A\)</span> 的-3个第一行，1个第二行，0个第三行之和。</p>
+<p>具体转换如下</p>
+<p>$$ <span class="math display">\[\begin{align}
+&amp;
+\underbrace{
+\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\cellcolor{yellow} -3 &amp; \cellcolor{pink} 1&amp; \cellcolor{lightgray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix}
+}_{E_{21}}
+
+\underbrace{
+\begin{bmatrix}
+\rowcolor{yellow} 
+\color{red} 1 &amp; \color{red} 2 &amp; \color{red} 1 \\
+\rowcolor{pink} 
+\color{blue} 3 &amp; \color{blue} 8 &amp; \color{blue} 1 \\
+\rowcolor{lightgray}
+0&amp;4&amp;1
+\end{bmatrix}
+}_{A} \\
+=&amp;
+\begin{bmatrix}
+\rowcolor{lightblue} 
+\color{black} 1 &amp; \color{black}0 &amp; \color{black} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix} A
++
+\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\cellcolor{yellow} -3 &amp; \cellcolor{pink} 1&amp; \cellcolor{lightgray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix} A
++
+\begin{bmatrix}
+\color{gray} 0 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\rowcolor{lightblue}  0 &amp;  0 &amp;  1
+\end{bmatrix} A \\
+=&amp;
+\begin{bmatrix}
+\rowcolor{lightblue} 
+\color{black} 1 &amp; \color{black} 2 &amp; \color{black} 1 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0
+\end{bmatrix} 
++
+\begin{bmatrix}
+\color{gray} 0 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\rowcolor{lightgreen} 
+\boxed{0} &amp; \boxed{2} &amp; \boxed{-2} \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0
+\end{bmatrix} 
++
+\begin{bmatrix}
+\color{gray} 0 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\rowcolor{lightblue} 
+\color{black} 0 &amp; \color{black} 4 &amp; \color{black} 1
+\end{bmatrix} \\
+=&amp;
+\begin{bmatrix}
+1&amp;2&amp;1 \\
+\rowcolor{lightgreen} 
+\boxed{0} &amp; \boxed{2} &amp; \boxed{-2} \\
+0&amp;4&amp;1
+\end{bmatrix}
+\end{align}\]</span></p>
+<p>$$</p>
+<p>至此，操作 <span class="math inline">\(E_{21}\)</span> 可以用矩阵 <span class="math inline">\(E_{21}\)</span> 右乘以 <span class="math inline">\(A\)</span> 来表示，即</p>
+<p>$$ <em>{E</em>{21}}</p>
+<p>_{A}</p>
+=
+<span class="math display">\[\begin{bmatrix}
+1&amp;2&amp;1 \\
+\rowcolor{lightgreen} 
+\boxed{0} &amp; \boxed{2} &amp; \boxed{-2} \\
+0&amp;4&amp;1
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p>上述矩阵乘法可以用简单地 Python 代码来核实</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line"></span><br><span class="line">A = np.array([</span><br><span class="line">        [<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>, <span class="hljs-number">1.</span>], </span><br><span class="line">        [<span class="hljs-number">3.</span>, <span class="hljs-number">8.</span>, <span class="hljs-number">1.</span>],</span><br><span class="line">        [<span class="hljs-number">0.</span>, <span class="hljs-number">4.</span>, <span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br><span class="line">e_21 = np.array([</span><br><span class="line">    [<span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>], </span><br><span class="line">    [-<span class="hljs-number">3.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>],</span><br><span class="line">    [<span class="hljs-number">0.</span>,<span class="hljs-number">0.</span>,<span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">e_21 @ A</span><br></pre></td></tr></tbody></table></figure>
+<p>运行结果为</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">array([[ <span class="hljs-number">1.</span>,  <span class="hljs-number">2.</span>,  <span class="hljs-number">1.</span>],</span><br><span class="line">       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">2.</span>, -<span class="hljs-number">2.</span>],</span><br><span class="line">       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">4.</span>,  <span class="hljs-number">1.</span>]])</span><br></pre></td></tr></tbody></table></figure>
+<p>将 <span class="math inline">\(A\)</span> 矩阵消元的第二个操作是 <span class="math inline">\(E_{32}\)</span>，第三行减去2倍第二行，这个操作依样画葫芦可以写成</p>
+<p><span class="math display">\[
+E_{32} = 
+\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 1&amp; \color{gray} 0 \\
+\cellcolor{lightgray} 0 &amp; \cellcolor{yellow} -2 &amp; \cellcolor{pink} 1
+\end{bmatrix}
+\]</span></p>
+将 <span class="math inline">\(E_{32}\)</span> 右乘以上面的中间结果可以得到最后的上三角矩阵形式，完成消元步骤。 $$ E_{32} (E_{21}A) =
+<span class="math display">\[\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 1&amp; \color{gray} 0 \\
+\cellcolor{lightgray} 0 &amp; \cellcolor{yellow} -2 &amp; \cellcolor{pink} 1
+\end{bmatrix}
+\begin{bmatrix}
+\rowcolor{lightgray}
+1&amp;2&amp;1 \\
+\rowcolor{yellow}
+0 &amp; 2 &amp; -2 \\ 
+\rowcolor{pink}
+0 &amp; 4 &amp;  1
+\end{bmatrix}\]</span>
+=
+<span class="math display">\[\begin{bmatrix}
+1&amp;2&amp;1 \\
+0&amp;2&amp;-2 \\
+\rowcolor{lightgreen} 
+
+\boxed{0} &amp; \boxed{0} &amp; \boxed{5}
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p>即 <span class="math inline">\(A\)</span> 在两次左乘相应矩阵后变成上三角矩阵 <span class="math inline">\(U\)</span></p>
+<p><span class="math display">\[
+\displaylines{
+E_{32}(E_{21}A)=U \\
+}
+\]</span></p>
+<p>由于乘法结合律，可以将两次操作 <span class="math inline">\(E_{32}, E_{21}\)</span> 视为统一的操作 <span class="math inline">\(E\)</span></p>
+<p><span class="math display">\[
+\underbrace{(E_{32}E_{21})}_{E}A=U
+\]</span></p>
+<p>$$ ( <em>{E</em>{32}}</p>
+<p><em>{E</em>{21}} ) _{A}</p>
+<p>= _{U} $$</p>
+<p>注意上式中， <span class="math inline">\(E_{32},E_{21}\)</span> 为下三角矩阵。</p>
+<p>我们再用代码来验证下矩阵乘法结合律</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line"></span><br><span class="line">e_32 = np.array([</span><br><span class="line">    [<span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>], </span><br><span class="line">    [<span class="hljs-number">0.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>],</span><br><span class="line">    [<span class="hljs-number">0.</span>, -<span class="hljs-number">2.</span>, <span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">e_21 = np.array([</span><br><span class="line">    [<span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>], </span><br><span class="line">    [-<span class="hljs-number">3.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>],</span><br><span class="line">    [<span class="hljs-number">0.</span>,<span class="hljs-number">0.</span>,<span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">A = np.array([</span><br><span class="line">        [<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>, <span class="hljs-number">1.</span>], </span><br><span class="line">        [<span class="hljs-number">3.</span>, <span class="hljs-number">8.</span>, <span class="hljs-number">1.</span>],</span><br><span class="line">        [<span class="hljs-number">0.</span>, <span class="hljs-number">4.</span>, <span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">e_32 @ e_21 @ A</span><br><span class="line">e_32 @ (e_21 @ A)</span><br></pre></td></tr></tbody></table></figure>
+<p>结果都为 </p><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">array([[ <span class="hljs-number">1.</span>,  <span class="hljs-number">2.</span>,  <span class="hljs-number">1.</span>],</span><br><span class="line">       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">2.</span>, -<span class="hljs-number">2.</span>],</span><br><span class="line">       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">5.</span>]])</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>因此，矩阵 <span class="math inline">\(A\)</span> 的消元过程可以用一个矩阵 <span class="math inline">\(E\)</span> 表示出来。 $$ E= <em>{E</em>{32}}</p>
+<em>{E</em>{21}} =
+<span class="math display">\[\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray}0 \\
+-3&amp;1&amp; \cellcolor{lightgray}0 \\
+6&amp;-2&amp;1
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p><span class="math display">\[
+EA=U 
+\]</span></p>
+<h2 id="矩阵的逆">矩阵的逆</h2>
+<p>以基本行操作 <span class="math inline">\(E_{21}^{-1}\)</span> 为例，此变换是从第二行中减去三倍的第一行</p>
+<p><span class="math display">\[
+\color{red}
+\Bigg[\quad E_{21}^{-1}\quad \Bigg]
+\color{black}
+\underbrace{
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray}0 \\
+-3&amp;1&amp; \cellcolor{lightgray}0\\0&amp;0&amp;1
+\end{bmatrix}
+}_{E_{21}}
+=
+\begin{bmatrix}
+\boxed{1} &amp;0&amp;0 \\
+0 &amp; \boxed{1} &amp; 0 \\
+0&amp;0&amp; \boxed{1}
+\end{bmatrix}
+\]</span></p>
+<p>那么其逆变换就是给第二行加上三倍的第一行，所以逆矩阵就是</p>
+<p><span class="math display">\[
+E_{21}^{-1} = 
+\color{red}
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray}0 \\
+3&amp;1&amp; \cellcolor{lightgray} 0 \\
+0&amp;0&amp;1
+\end{bmatrix}
+\]</span></p>
+<p><span class="math inline">\(E_{32}^{-1}\)</span> 也是同样</p>
+<p><span class="math display">\[
+\color{red}
+\Bigg[\quad E_{32}^{-1}\quad \Bigg]
+\color{black}
+\underbrace{
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0 &amp; \cellcolor{lightgray} 0 \\
+0 &amp; 1&amp; \cellcolor{lightgray} 0\\0&amp;-2&amp;1
+\end{bmatrix}
+}_{E_{32}}
+=
+\begin{bmatrix}
+\boxed{1} &amp;0&amp;0 \\
+0 &amp; \boxed{1} &amp; 0 \\
+0&amp;0&amp; \boxed{1}
+\end{bmatrix}
+\]</span></p>
+<p><span class="math display">\[
+E_{32}^{-1} = 
+\color{red}
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray}0&amp; \cellcolor{lightgray}0 \\
+0&amp;1&amp; \cellcolor{lightgray}0 \\
+0&amp;2&amp;1\end{bmatrix}
+\]</span></p>
+<p>我们已经知道这两个行变换的综合效果为 <span class="math inline">\(E\)</span></p>
+<p>$$ E= <em>{E</em>{32}}</p>
+<em>{E</em>{21}} =
+<span class="math display">\[\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0 &amp; \cellcolor{lightgray} 0 \\
+-3&amp;1&amp; \cellcolor{lightgray}0\\6&amp;-2&amp;1
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p>那么 <span class="math inline">\(E^{-1}\)</span> 和 <span class="math inline">\(E_{32}^{-1},E_{21}^{-1}\)</span> 有什么关系呢？ $$ E^{-1}= <em>{E</em>{21}^{-1}}</p>
+<em>{E</em>{32}^{-1}} =
+<span class="math display">\[\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray}0 \\
+3&amp;1&amp; \cellcolor{lightgray} 0 \\
+0&amp;2&amp;1
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p>发现综合结果的逆以相反的顺序相乘，这个也容易理解，因为逆操作将一个上三角矩阵 <span class="math inline">\(U\)</span> 恢复成 <span class="math inline">\(A\)</span>，这个过程是自下而上的行变换。</p>
+<p>最后，来核实 <span class="math inline">\(E E^{-1} = I\)</span>。</p>
+<p><span class="math display">\[
+E E^{-1} = 
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray} 0 \\
+-3&amp;1&amp; \cellcolor{lightgray} 0\\6&amp;-2&amp;1
+\end{bmatrix}
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray} 0 \\
+3&amp;1&amp; \cellcolor{lightgray}0\\0&amp;2&amp;1
+\end{bmatrix}
+=\begin{bmatrix}
+\boxed{1} &amp;0&amp;0 \\
+0 &amp; \boxed{1} &amp; 0 \\
+0&amp;0&amp; \boxed{1}
+\end{bmatrix}
+\]</span></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Maths/">#Maths</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Linear-Algebra/">#Linear Algebra</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2022/linear-algebra-strang-02-solving-equations/">Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://myencyclopedia.top/blog/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/">https://myencyclopedia.top/blog/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/">https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2022 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        // TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]},
+        "HTML-CSS": {
+            matchFontHeight: true
+        },
+        SVG: {
+            matchFontHeight: true
+        },
+        CommonHTML: {
+            matchFontHeight: true
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script> -->
+<!-- <script>
+    MathJax = {
+      tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+      svg: {
+        scale: 4,
+        // exFactor: 2,                  // default size of ex in em units
+        minScale: 1,                  // smallest scaling factor to use
+          fontCache: 'local'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script> -->
+    <script>
+        MathJax = {
+          tex: {
+              inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+        chtml: {
+            scale:3,
+        }
+        };
+        </script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

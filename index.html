@@ -167,6 +167,398 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/" itemprop="url">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-02-25T10:45:01.000Z" itemprop="datePublished">2月 25 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            10 分钟 读完 (约 1506 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>本系列用彩色的 <span style="color:blue">L</span><span style="color:green">a</span><span style="color:red">t</span><span style="color:magenta">e</span><span style="color:orange">x</span> 公式呈现总结 MIT Gilbert Strang 教授经典的线性代数课程18.06之精华，便于大家回顾复习。</p>
+<p>本文在矩阵乘法和解方程组的基础上引入消元对应的矩阵乘法和矩阵的逆。</p>
+<h3 id="消元操作的矩阵表示">消元操作的矩阵表示</h3>
+<p>回顾上一节，解方程组的意义和过程 中，在消元步骤时，将矩阵 A 依行顺序向下，每一行通过减去上面行的若干倍，将矩阵 A 逐行规范成上三角矩阵形式。</p>
+<p><span class="math display">\[
+A
+=
+\begin{bmatrix}
+\rowcolor{pink}
+\color{red} 1&amp;2&amp;1 \\
+\rowcolor{lightgray}
+3&amp;8&amp;1 \\
+\rowcolor{lightgray}
+0&amp;4&amp;1
+\end{bmatrix}
+\xrightarrow{row_2-3row_1}
+\begin{bmatrix}
+\rowcolor{lightgray}
+\color{red} 1&amp;2&amp;1 \\ 
+\rowcolor{pink}
+\color{blue} \boxed{0} &amp; \color{red} 2&amp; \color{blue} -2 \\
+\rowcolor{lightgray}
+0&amp;4&amp;1
+\end{bmatrix}
+\xrightarrow{row_3-2row_2}
+\begin{bmatrix}
+\rowcolor{lightgray}
+\color{red}1&amp;2&amp;1  \\
+\rowcolor{lightgray}
+0&amp; \color{red} 2&amp;-2  \\
+\rowcolor{pink}
+\color{blue} 0 &amp; \color{blue} \boxed{0} &amp; \color{red} 5
+\end{bmatrix}
+\]</span></p>
+<p>那么每一行规范的操作，例如操作 <span class="math inline">\(E_{21}\)</span> （第二行减去三倍第一行）是否可以通过矩阵乘法表示出来呢？ <span class="math display">\[
+E_{21} := {row_2-3\times row_1}
+\]</span></p>
+<p>结合矩阵乘法的五种理解一节中行行切分，我们将 <span class="math inline">\(E_{21}\)</span> 视为三个行相加。 <span class="math display">\[
+\begin{align}
+E_{21} &amp;= \begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\cellcolor{yellow} -3 &amp; \cellcolor{pink} 1&amp; \cellcolor{lightgray} 0 \\\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix}\\
+&amp; =
+\begin{bmatrix}
+\rowcolor{lightblue} 
+\color{black} 1 &amp; \color{black}0 &amp; \color{black} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix}
++
+\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\rowcolor{lightblue} 
+ -3 &amp;  1&amp; 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix}
++
+\begin{bmatrix}
+\color{gray} 0 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\rowcolor{lightblue}  0 &amp;  0 &amp;  1
+\end{bmatrix}
+\end{align}
+\]</span></p>
+<p>如此，第一个矩阵 <span class="math inline">\([1 \quad 0 \quad 0]\)</span> 乘以 <span class="math inline">\(A\)</span> 形成了乘积矩阵的第一行，具体来说， <span class="math inline">\([1 \quad 0 \quad 0]\)</span> 表示取 <span class="math inline">\(A\)</span> 的1个第一行，0个第二行，0个第三行的和组成乘积矩阵第一行。 同样地，乘积矩阵第二行由第二个矩阵 <span class="math inline">\([-3 \quad 1 \quad 0]\)</span> 形成，表示取 <span class="math inline">\(A\)</span> 的-3个第一行，1个第二行，0个第三行之和。</p>
+<p>具体转换如下</p>
+<p>$$ <span class="math display">\[\begin{align}
+&amp;
+\underbrace{
+\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\cellcolor{yellow} -3 &amp; \cellcolor{pink} 1&amp; \cellcolor{lightgray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix}
+}_{E_{21}}
+
+\underbrace{
+\begin{bmatrix}
+\rowcolor{yellow} 
+\color{red} 1 &amp; \color{red} 2 &amp; \color{red} 1 \\
+\rowcolor{pink} 
+\color{blue} 3 &amp; \color{blue} 8 &amp; \color{blue} 1 \\
+\rowcolor{lightgray}
+0&amp;4&amp;1
+\end{bmatrix}
+}_{A} \\
+=&amp;
+\begin{bmatrix}
+\rowcolor{lightblue} 
+\color{black} 1 &amp; \color{black}0 &amp; \color{black} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix} A
++
+\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\cellcolor{yellow} -3 &amp; \cellcolor{pink} 1&amp; \cellcolor{lightgray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 1
+\end{bmatrix} A
++
+\begin{bmatrix}
+\color{gray} 0 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\rowcolor{lightblue}  0 &amp;  0 &amp;  1
+\end{bmatrix} A \\
+=&amp;
+\begin{bmatrix}
+\rowcolor{lightblue} 
+\color{black} 1 &amp; \color{black} 2 &amp; \color{black} 1 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0
+\end{bmatrix} 
++
+\begin{bmatrix}
+\color{gray} 0 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\rowcolor{lightgreen} 
+\boxed{0} &amp; \boxed{2} &amp; \boxed{-2} \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0
+\end{bmatrix} 
++
+\begin{bmatrix}
+\color{gray} 0 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 \\
+\rowcolor{lightblue} 
+\color{black} 0 &amp; \color{black} 4 &amp; \color{black} 1
+\end{bmatrix} \\
+=&amp;
+\begin{bmatrix}
+1&amp;2&amp;1 \\
+\rowcolor{lightgreen} 
+\boxed{0} &amp; \boxed{2} &amp; \boxed{-2} \\
+0&amp;4&amp;1
+\end{bmatrix}
+\end{align}\]</span></p>
+<p>$$</p>
+<p>至此，操作 <span class="math inline">\(E_{21}\)</span> 可以用矩阵 <span class="math inline">\(E_{21}\)</span> 右乘以 <span class="math inline">\(A\)</span> 来表示，即</p>
+<p>$$ <em>{E</em>{21}}</p>
+<p>_{A}</p>
+=
+<span class="math display">\[\begin{bmatrix}
+1&amp;2&amp;1 \\
+\rowcolor{lightgreen} 
+\boxed{0} &amp; \boxed{2} &amp; \boxed{-2} \\
+0&amp;4&amp;1
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p>上述矩阵乘法可以用简单地 Python 代码来核实</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line"></span><br><span class="line">A = np.array([</span><br><span class="line">        [<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>, <span class="hljs-number">1.</span>], </span><br><span class="line">        [<span class="hljs-number">3.</span>, <span class="hljs-number">8.</span>, <span class="hljs-number">1.</span>],</span><br><span class="line">        [<span class="hljs-number">0.</span>, <span class="hljs-number">4.</span>, <span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br><span class="line">e_21 = np.array([</span><br><span class="line">    [<span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>], </span><br><span class="line">    [-<span class="hljs-number">3.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>],</span><br><span class="line">    [<span class="hljs-number">0.</span>,<span class="hljs-number">0.</span>,<span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">e_21 @ A</span><br></pre></td></tr></tbody></table></figure>
+<p>运行结果为</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">array([[ <span class="hljs-number">1.</span>,  <span class="hljs-number">2.</span>,  <span class="hljs-number">1.</span>],</span><br><span class="line">       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">2.</span>, -<span class="hljs-number">2.</span>],</span><br><span class="line">       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">4.</span>,  <span class="hljs-number">1.</span>]])</span><br></pre></td></tr></tbody></table></figure>
+<p>将 <span class="math inline">\(A\)</span> 矩阵消元的第二个操作是 <span class="math inline">\(E_{32}\)</span>，第三行减去2倍第二行，这个操作依样画葫芦可以写成</p>
+<p><span class="math display">\[
+E_{32} = 
+\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 1&amp; \color{gray} 0 \\
+\cellcolor{lightgray} 0 &amp; \cellcolor{yellow} -2 &amp; \cellcolor{pink} 1
+\end{bmatrix}
+\]</span></p>
+将 <span class="math inline">\(E_{32}\)</span> 右乘以上面的中间结果可以得到最后的上三角矩阵形式，完成消元步骤。 $$ E_{32} (E_{21}A) =
+<span class="math display">\[\begin{bmatrix}
+\color{gray} 1 &amp; \color{gray}0 &amp; \color{gray} 0 \\
+\color{gray} 0 &amp; \color{gray} 1&amp; \color{gray} 0 \\
+\cellcolor{lightgray} 0 &amp; \cellcolor{yellow} -2 &amp; \cellcolor{pink} 1
+\end{bmatrix}
+\begin{bmatrix}
+\rowcolor{lightgray}
+1&amp;2&amp;1 \\
+\rowcolor{yellow}
+0 &amp; 2 &amp; -2 \\ 
+\rowcolor{pink}
+0 &amp; 4 &amp;  1
+\end{bmatrix}\]</span>
+=
+<span class="math display">\[\begin{bmatrix}
+1&amp;2&amp;1 \\
+0&amp;2&amp;-2 \\
+\rowcolor{lightgreen} 
+
+\boxed{0} &amp; \boxed{0} &amp; \boxed{5}
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p>即 <span class="math inline">\(A\)</span> 在两次左乘相应矩阵后变成上三角矩阵 <span class="math inline">\(U\)</span></p>
+<p><span class="math display">\[
+\displaylines{
+E_{32}(E_{21}A)=U \\
+}
+\]</span></p>
+<p>由于乘法结合律，可以将两次操作 <span class="math inline">\(E_{32}, E_{21}\)</span> 视为统一的操作 <span class="math inline">\(E\)</span></p>
+<p><span class="math display">\[
+\underbrace{(E_{32}E_{21})}_{E}A=U
+\]</span></p>
+<p>$$ ( <em>{E</em>{32}}</p>
+<p><em>{E</em>{21}} ) _{A}</p>
+<p>= _{U} $$</p>
+<p>注意上式中， <span class="math inline">\(E_{32},E_{21}\)</span> 为下三角矩阵。</p>
+<p>我们再用代码来验证下矩阵乘法结合律</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line"></span><br><span class="line">e_32 = np.array([</span><br><span class="line">    [<span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>], </span><br><span class="line">    [<span class="hljs-number">0.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>],</span><br><span class="line">    [<span class="hljs-number">0.</span>, -<span class="hljs-number">2.</span>, <span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">e_21 = np.array([</span><br><span class="line">    [<span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">0.</span>], </span><br><span class="line">    [-<span class="hljs-number">3.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>],</span><br><span class="line">    [<span class="hljs-number">0.</span>,<span class="hljs-number">0.</span>,<span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">A = np.array([</span><br><span class="line">        [<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>, <span class="hljs-number">1.</span>], </span><br><span class="line">        [<span class="hljs-number">3.</span>, <span class="hljs-number">8.</span>, <span class="hljs-number">1.</span>],</span><br><span class="line">        [<span class="hljs-number">0.</span>, <span class="hljs-number">4.</span>, <span class="hljs-number">1.</span>]</span><br><span class="line">])</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">e_32 @ e_21 @ A</span><br><span class="line">e_32 @ (e_21 @ A)</span><br></pre></td></tr></tbody></table></figure>
+<p>结果都为 </p><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">array([[ <span class="hljs-number">1.</span>,  <span class="hljs-number">2.</span>,  <span class="hljs-number">1.</span>],</span><br><span class="line">       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">2.</span>, -<span class="hljs-number">2.</span>],</span><br><span class="line">       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">5.</span>]])</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>因此，矩阵 <span class="math inline">\(A\)</span> 的消元过程可以用一个矩阵 <span class="math inline">\(E\)</span> 表示出来。 $$ E= <em>{E</em>{32}}</p>
+<em>{E</em>{21}} =
+<span class="math display">\[\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray}0 \\
+-3&amp;1&amp; \cellcolor{lightgray}0 \\
+6&amp;-2&amp;1
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p><span class="math display">\[
+EA=U 
+\]</span></p>
+<h2 id="矩阵的逆">矩阵的逆</h2>
+<p>以基本行操作 <span class="math inline">\(E_{21}^{-1}\)</span> 为例，此变换是从第二行中减去三倍的第一行</p>
+<p><span class="math display">\[
+\color{red}
+\Bigg[\quad E_{21}^{-1}\quad \Bigg]
+\color{black}
+\underbrace{
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray}0 \\
+-3&amp;1&amp; \cellcolor{lightgray}0\\0&amp;0&amp;1
+\end{bmatrix}
+}_{E_{21}}
+=
+\begin{bmatrix}
+\boxed{1} &amp;0&amp;0 \\
+0 &amp; \boxed{1} &amp; 0 \\
+0&amp;0&amp; \boxed{1}
+\end{bmatrix}
+\]</span></p>
+<p>那么其逆变换就是给第二行加上三倍的第一行，所以逆矩阵就是</p>
+<p><span class="math display">\[
+E_{21}^{-1} = 
+\color{red}
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray}0 \\
+3&amp;1&amp; \cellcolor{lightgray} 0 \\
+0&amp;0&amp;1
+\end{bmatrix}
+\]</span></p>
+<p><span class="math inline">\(E_{32}^{-1}\)</span> 也是同样</p>
+<p><span class="math display">\[
+\color{red}
+\Bigg[\quad E_{32}^{-1}\quad \Bigg]
+\color{black}
+\underbrace{
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0 &amp; \cellcolor{lightgray} 0 \\
+0 &amp; 1&amp; \cellcolor{lightgray} 0\\0&amp;-2&amp;1
+\end{bmatrix}
+}_{E_{32}}
+=
+\begin{bmatrix}
+\boxed{1} &amp;0&amp;0 \\
+0 &amp; \boxed{1} &amp; 0 \\
+0&amp;0&amp; \boxed{1}
+\end{bmatrix}
+\]</span></p>
+<p><span class="math display">\[
+E_{32}^{-1} = 
+\color{red}
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray}0&amp; \cellcolor{lightgray}0 \\
+0&amp;1&amp; \cellcolor{lightgray}0 \\
+0&amp;2&amp;1\end{bmatrix}
+\]</span></p>
+<p>我们已经知道这两个行变换的综合效果为 <span class="math inline">\(E\)</span></p>
+<p>$$ E= <em>{E</em>{32}}</p>
+<em>{E</em>{21}} =
+<span class="math display">\[\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0 &amp; \cellcolor{lightgray} 0 \\
+-3&amp;1&amp; \cellcolor{lightgray}0\\6&amp;-2&amp;1
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p>那么 <span class="math inline">\(E^{-1}\)</span> 和 <span class="math inline">\(E_{32}^{-1},E_{21}^{-1}\)</span> 有什么关系呢？ $$ E^{-1}= <em>{E</em>{21}^{-1}}</p>
+<em>{E</em>{32}^{-1}} =
+<span class="math display">\[\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray}0 \\
+3&amp;1&amp; \cellcolor{lightgray} 0 \\
+0&amp;2&amp;1
+\end{bmatrix}\]</span>
+<p>$$</p>
+<p>发现综合结果的逆以相反的顺序相乘，这个也容易理解，因为逆操作将一个上三角矩阵 <span class="math inline">\(U\)</span> 恢复成 <span class="math inline">\(A\)</span>，这个过程是自下而上的行变换。</p>
+<p>最后，来核实 <span class="math inline">\(E E^{-1} = I\)</span>。</p>
+<p><span class="math display">\[
+E E^{-1} = 
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray} 0 \\
+-3&amp;1&amp; \cellcolor{lightgray} 0\\6&amp;-2&amp;1
+\end{bmatrix}
+\begin{bmatrix}
+1&amp; \cellcolor{lightgray} 0&amp; \cellcolor{lightgray} 0 \\
+3&amp;1&amp; \cellcolor{lightgray}0\\0&amp;2&amp;1
+\end{bmatrix}
+=\begin{bmatrix}
+\boxed{1} &amp;0&amp;0 \\
+0 &amp; \boxed{1} &amp; 0 \\
+0&amp;0&amp; \boxed{1}
+\end{bmatrix}
+\]</span></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh/2022/linear-algebra-strang-02-solving-equations/" itemprop="url">Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程</a>
         
     </h1>
@@ -222,7 +614,7 @@ x \\ y
 <h4 id="行视角">行视角</h4>
 <p>回顾 $2x - y = 0 $ 为所有满足此条件的 (x, y) 的集合，即集合组成二维平面的一条直线，如下图蓝线所示。</p>
 <p>$ -x + 2y = 3$ 则对应绿线。</p>
-<p>因此方程组的解 x = 1, y = 2 为两条直线的交点，这就是方程组的行视角：将系数矩阵按行切分，则每一行表示一个约束条件，几何意义是N维空间的一个子空间。在二元方程中，一行表示一条线，三元方程中，一行表示一个平面（详见后一小结）。 <span class="math display">\[
+<p>因此方程组的解 x = 1, y = 2 为两条直线的交点，这就是方程组的行视角：将系数矩阵按行切分，则每一行表示一个约束条件，几何意义是N维空间的一个子空间。在二元方程中，一行表示一条线，三元方程中，一行表示一个平面（详见后一小节）。 <span class="math display">\[
 \begin{bmatrix}
 \color{blue} 2 x &amp; {\color{blue} -1 y} \\
 \color{green} -1 x &amp; \color{green} 2 y
@@ -1593,110 +1985,6 @@ b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
 
 
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></div></div></div></div></div></body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh/2021/share-wechat-resources/" itemprop="url">公众号共享资源</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2021-08-12T10:45:01.000Z" itemprop="datePublished">8月 12 2021</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            1 分钟 读完 (约 170 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><ul>
-<li><p>docker 环境，conda X Window</p>
-<p>公众号回复 <code>docker-conda-x</code></p></li>
-<li><p>docker 环境，Pytorch OpenNE</p>
-<p>公众号回复 <code>docker-openne</code></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0mbQggMo3ynwsJ51JvnzFQ">图神经网络 GCN Pytorch 版实现代码讲解</a></p>
-<p>docker 环境，公众号回复 <code>docker-pygcn</code></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/l1W0CUqsO2-aRUbU8J-_vA">新书推荐&amp;课程视频网盘下载：强化学习与最优控制</a></p>
-<p>公众号回复 <code>adp</code></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/COQhJe-ffSkdz5HMXwdr6A">课程视频共享：Illinois大学 CS598 统计强化学习</a> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av929950486">B站链接</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vMlNwCYJqcZTjxCMTMkTdw">分享精品深度强化学习讲座 Berkeley Deep RL Bootcamp 2017</a></p>
-<p>公众号回复 <code>rl-bootcamp-ucb-2017</code></p></li>
-</ul>
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
