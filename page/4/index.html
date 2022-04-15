@@ -167,6 +167,207 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh/2020/tsp-3-pointer-net/" itemprop="url">TSP问题从DP算法到深度学习3：Pointer Network</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-10-24T22:45:01.000Z" itemprop="datePublished">10月 24 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            13 分钟 读完 (约 2000 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>本篇是TSP问题从DP算法到深度学习系列第三篇，在这一篇中，我们会开始进入深度学习领域来求近似解法。本文会介绍并实现指针网络（Pointer Networks），一种seq-to-seq模型，它的设计目的就是为了解决TSP问题或者凸包（Convex Hull）问题。本文代码在 https://github.com/MyEncyclopedia/blog/tree/master/tsp/ptr_net_pytorch 中。</p>
+<ul>
+<li><p><a href="/zh/2020/tsp-3-pointer-net/!--swig￼4--">第一篇: 递归DP方法 AC AIZU TSP问题</a></p></li>
+<li><p><a href="/zh/2020/tsp-3-pointer-net/!--swig￼5--">第二篇: 二维空间TSP数据集及其DP解法</a></p></li>
+<li><p><a href="/zh/2020/tsp-3-pointer-net/!--swig￼6--">第三篇: 深度学习 Pointer Networks 的 Pytorch实现</a></p></li>
+<li><p>第四篇: 搜寻最有可能路径：Viterbi算法和其他</p></li>
+<li><p>第五篇: 深度强化学习无监督算法的 Pytorch实现</p></li>
+</ul>
+<h2 id="pointer-networks">Pointer Networks</h2>
+<p>随着深度学习 seq-to-seq 模型作为概率近似模型在各领域的成功，TSP问题似乎也可以用同样的思路去解决。然而，传统的seq-to-seq 模型其输出的类别是预先固定的。例如，NLP RNN生成模型每一步会从 <span class="math inline">\(|V|\)</span> 大的词汇表中产生一个单词。 然而，有很大一类问题，譬如TSP问题、凸包（Convex Hull）问题、Delaunay三角剖分问题，输出的类别不是事先固定的，而是随着输入而变化的。 <em>Pointer Networks </em> 的出现解决了这种限制：输出的类别可以通过指向某个输入，以此克服类别的问题，因此形象地取名为指针网络（Pointer Networks）。先来看看原论文中提到的三个问题。</p>
+<h3 id="凸包问题convex-hull">凸包问题（Convex Hull）</h3>
+<p>如下图所示，需要在给定的10个点中找到若干个点，使得这些点包住了所有点。问题输入是不确定个数 n 个点的位置信息，输出是 k (k&lt;=n)个点的。 这个经典的算法问题已经被证明找出精确解等价于排序问题（<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Convex_hull_algorithms">wikipedia 链接</a>），因此时间复杂度为 <span class="math inline">\(O(n*log(n))\)</span>。</p>
+<img src="/zh/2020/tsp-3-pointer-net/./convex_hull.png" title="fig:" alt="image info">
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\text{Input:  } \mathcal{P} &amp;=&amp; \left\{ P_{1}, \ldots, P_{10} \right\} \\
+&amp;\text{Output:  } C^{\mathcal{P}} &amp;=&amp; \{2,4,3,5,6,7,2\}
+\end{align*}
+\]</span></p>
+</div>
+<h3 id="tsp-问题">TSP 问题</h3>
+<p>TSP 和凸包问题很类似，输入为不确定个数的 n 个点信息，输出为这 n 个点的某序列。在。。。中，我们可以将确定解的时间复杂度从 <span class="math inline">\(O(n!)\)</span> 降到 <span class="math inline">\(O(n^2*2^n)\)</span>。</p>
+<figure>
+<img src="/zh/2020/tsp-3-pointer-net/./tsp.svg" alt=""><figcaption>image info</figcaption>
+</figure>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\text{Input:  } \mathcal{P} &amp;= &amp;\left\{P_{1}, \ldots, P_{6} \right\} \\
+&amp;\text{Output:  } C^{\mathcal{P}} &amp;=&amp; \{1,3,2,4,5,6,1\}
+\end{align*}
+\]</span></p>
+</div>
+<h3 id="delaunay三角剖分">Delaunay三角剖分</h3>
+<p>Delaunay三角剖分问题是将平面上的散点集划分成三角形，使得在可能形成的三角剖分中，所形成的三角形的最小角最大。这个问题的输出是若干个集合，每个集合代表一个三角形，由输入点的编号表示。 <img src="/zh/2020/tsp-3-pointer-net/./delaunay_triangulation.png" alt="image info"></p>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\text{Input:  } \mathcal{P} &amp;=&amp; \left\{P_{1}, \ldots, P_{5} \right\} \\
+&amp;\text{Output:  } C^{\mathcal{P}} &amp;=&amp; \{(1,2,4),(1,4,5),(1,3,5),(1,2,3)\}
+\end{align*}
+\]</span></p>
+</div>
+<h3 id="seq-to-seq-模型">Seq-to-Seq 模型</h3>
+<p>现在假设n是固定的，传统基本的seq-to-seq模型（参数部分记为 <span class="math inline">\(\theta\)</span> ），训练数据若记为<span class="math inline">\((\mathcal{P}, C^{\mathcal{P}})\)</span>，，将拟合以下条件概率：</p>
+<p><span class="math display">\[
+\begin{equation}
+ p\left(\mathcal{C}^{\mathcal{P}} | \mathcal{P} ; \theta\right)=\prod_{i=1}^{m(\mathcal{P})} p\left(C_{i} | C_{1}, \ldots, C_{i-1}, \mathcal{P} ; \theta\right) 
+\end{equation}
+\]</span> 训练的方向是找到 <span class="math inline">\(\theta^{*}\)</span> 来最大化上述联合概率，即： <span class="math display">\[
+\begin{equation}
+\theta^{*}=\underset{\theta}{\arg \max } \sum_{\mathcal{P}, \mathcal{C}^{\mathcal{P}}} \log p\left(\mathcal{C}^{\mathcal{P}} | \mathcal{P} ; \theta\right) 
+\end{equation}
+\]</span></p>
+<h3 id="content-based-input-attention">Content Based Input Attention</h3>
+<p>一种增强基本seq-to-seq模型的方法是加入attention机制。记encoder和decoder隐藏状态分别是 $ (e_{1}, , e_{n}) $ 和 $ (d_{1}, , d_{m()}) $。seq-to-seq第 i 次输出了 <span class="math inline">\(d_i\)</span>，注意力机制额外计算第i步的注意力向量 <span class="math inline">\(d_i^{\prime}\)</span>，并将其和<span class="math inline">\(d_i\)</span>连接后作为隐藏状态。<span class="math inline">\(d_i^{\prime}\)</span>的计算方式如下，输入 $ (e_{1}, , e_{n}) $ 和 i 对应的权重向量 $ (a_{1}^{i}, , a_{n}^{i}) $做点乘。</p>
+<p><span class="math display">\[
+d_{i} = \sum_{j=1}^{n} a_{j}^{i} e_{j}
+\]</span></p>
+$ (a_{1}^{i}, , a_{n}^{i}) $ 是向量 $ (u_{1}^{i}, , u_{n}^{i}) $ softmax后的值， <span class="math inline">\(u_{j}^{i}\)</span> 表示 <span class="math inline">\(d_{i}\)</span> 和 <span class="math inline">\(e_{j}\)</span>的距离，Pointer Networks论文中的距离为如下的tanh公式。
+<div>
+<p><span class="math display">\[
+\begin{eqnarray}
+u_{j}^{i} &amp;=&amp; v^{T} \tanh \left(W_{1} e_{j}+W_{2} d_\right) \quad j \in(1, \ldots, n) \\
+a_{j}^{i} &amp;=&amp; \operatorname{softmax}\left(u_{j}^{i}\right) \quad j \in(1, \ldots, n)
+\end{eqnarray}
+\]</span></p>
+</div>
+<h3 id="更多attention计算方式">更多Attention计算方式</h3>
+<p>在<em>FloydHub Blog - Attention Mechanism </em>中，作者清楚地解释了两种经典的attention方法，第一种称为Additive Attention，由<em>Dzmitry Bahdanau </em> 提出，也就是Pointer Networks中通过tanh的计算方式，第二种称为 Multiplicative Attention，由Thang Luong*提出。</p>
+Luong Attention 有三种方法计算 <span class="math inline">\(d_{i}\)</span> 和 <span class="math inline">\(e_{j}\)</span> 的距离（或者可以认为向量间的对齐得分）。
+<div>
+<p><span class="math display">\[
+\operatorname{score} \left( d_i, e_j \right)=
+\begin{cases}
+d_i^{\top} e_j &amp; \text { dot } \\
+d_i^{\top} W_a e_j &amp; \text { general } \\
+v_a^{\top} \tanh \left( W_a \left[ d_i ; e_j \right] \right) &amp; \text { concat }
+\end{cases}
+\]</span></p>
+</div>
+<h3 id="pointer-networks-1">Pointer Networks</h3>
+<figure>
+<img src="/zh/2020/tsp-3-pointer-net/./ptr_net.png" alt=""><figcaption>image info</figcaption>
+</figure>
+<p>Pointer Networks 基于Additive Attention，其创新之处在于用 <span class="math inline">\(u^i_j\)</span> 作为第j个输入的评分，即第 i 次输出为1-n个输入中 <span class="math inline">\(u^i_j\)</span> 得分最高的j作为输出，这样巧妙的解决了n不是预先固定的限制。</p>
+<div>
+<p><span class="math display">\[
+\begin{eqnarray*}
+ u_{j}^{i} &amp;=&amp; v^{T} \tanh \left(W_{1} e_{j}+W_{2} d_{i}\right) \quad j \in(1, \ldots, n) \\
+ p\left(C_{i} | C_{1}, \ldots, C_{i-1}, \mathcal{P}\right) &amp;=&amp; \operatorname{softmax}\left(u^{i}\right) 
+\end{eqnarray*}
+\]</span></p>
+</div>
+<h2 id="pytorch-代码实现">PyTorch 代码实现</h2>
+<p>在本系列第二篇 <a href="/zh/2020/tsp-3-pointer-net/!--swig￼8--">episode 2</a>，中，我们说明过TSP数据集的格式，每一行字段意义如下</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x0, y0, x1, y1, ... output 1 v1 v2 v3 ... 1</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="转换成pytorch-dataset">转换成PyTorch Dataset</h3>
+<p>每一个case会转换成nd.ndarray，共有五个分量，分别是 (input, input_len, output_in, output_out, output_len) 并且分装成pytorch的 Dataset类。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> torch.utils.data <span class="hljs-keyword">import</span> Dataset</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TSPDataset</span>(<span class="hljs-params">Dataset</span>):</span></span><br><span class="line">	<span class="hljs-string">"each data item of form (input, input_len, output_in, output_out, output_len)"</span></span><br><span class="line">	data: <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]]</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__len__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.data)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__getitem__</span>(<span class="hljs-params">self, index</span>):</span></span><br><span class="line">		<span class="hljs-built_in">input</span>, input_len, output_in, output_out, output_len = self.data[index]</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-built_in">input</span>, input_len, output_in, output_out, output_len</span><br></pre></td></tr></tbody></table></figure> <img src="/zh/2020/tsp-3-pointer-net/./data_loader.svg" alt="image info"><p></p>
+<h3 id="pytorch-pad_packed_sequence-优化技巧">PyTorch pad_packed_sequence 优化技巧</h3>
+<p>PyTorch 实现 seq-to-seq 模型一般会使用 <strong>pack_padded_sequence</strong> 以及 <strong>pad_packed_sequence</strong> 来减少计算量，本质上可以认为根据pad大小分批进行矩阵运算，减少被pad的矩阵元素导致的无效运算，详细的解释可以参考 https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#decoder-1。</p>
+<figure>
+<img src="/zh/2020/tsp-3-pointer-net/./ex_padded_seq.jpg" alt=""><figcaption>image info</figcaption>
+</figure>
+<p>对应代码如下：</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RNNEncoder</span>(<span class="hljs-params">nn.Module</span>):</span></span><br><span class="line">	rnn: <span class="hljs-type">Union</span>[nn.LSTM, nn.GRU, nn.RNN]</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, rnn_type: <span class="hljs-built_in">str</span>, bidirectional: <span class="hljs-built_in">bool</span>, num_layers: <span class="hljs-built_in">int</span>, input_size: <span class="hljs-built_in">int</span>, hidden_size: <span class="hljs-built_in">int</span>, dropout: <span class="hljs-built_in">float</span></span>):</span></span><br><span class="line">		<span class="hljs-built_in">super</span>(RNNEncoder, self).__init__()</span><br><span class="line">		<span class="hljs-keyword">if</span> bidirectional:</span><br><span class="line">			<span class="hljs-keyword">assert</span> hidden_size % <span class="hljs-number">2</span> == <span class="hljs-number">0</span></span><br><span class="line">			hidden_size = hidden_size // <span class="hljs-number">2</span></span><br><span class="line">		self.rnn = rnn_init(rnn_type, input_size=input_size, hidden_size=hidden_size, bidirectional=bidirectional,num_layers=num_layers, dropout=dropout)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">forward</span>(<span class="hljs-params">self, src: Tensor, src_lengths: Tensor, hidden: Tensor = <span class="hljs-literal">None</span></span>) -&gt; <span class="hljs-type">Tuple</span>[Tensor, Tensor]:</span></span><br><span class="line">		lengths = src_lengths.view(-<span class="hljs-number">1</span>).tolist()</span><br><span class="line">		packed_src = pack_padded_sequence(src, lengths)</span><br><span class="line">		memory_bank, hidden_final = self.rnn(packed_src, hidden)</span><br><span class="line">		memory_bank = pad_packed_sequence(memory_bank)[<span class="hljs-number">0</span>]</span><br><span class="line">		<span class="hljs-keyword">return</span> memory_bank, hidden_final</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="注意力机制相关代码">注意力机制相关代码</h3>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Attention</span>(<span class="hljs-params">nn.Module</span>):</span></span><br><span class="line">	linear_out: nn.Linear</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, dim: <span class="hljs-built_in">int</span></span>):</span></span><br><span class="line">		<span class="hljs-built_in">super</span>(Attention, self).__init__()</span><br><span class="line">		self.linear_out = nn.Linear(dim * <span class="hljs-number">2</span>, dim, bias=<span class="hljs-literal">False</span>)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">score</span>(<span class="hljs-params">self, src: Tensor, target: Tensor</span>) -&gt; Tensor:</span></span><br><span class="line">		batch_size, src_len, dim = src.size()</span><br><span class="line">		_, target_len, _ = target.size()</span><br><span class="line">		target_ = target</span><br><span class="line">		src_ = src.transpose(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)</span><br><span class="line">		<span class="hljs-keyword">return</span> torch.bmm(target_, src_)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">forward</span>(<span class="hljs-params">self, src: Tensor, target: Tensor, src_lengths: Tensor</span>) -&gt; <span class="hljs-type">Tuple</span>[Tensor, Tensor]:</span></span><br><span class="line">		<span class="hljs-keyword">assert</span> target.dim() == <span class="hljs-number">3</span></span><br><span class="line"></span><br><span class="line">		batch_size, src_len, dim = src.size()</span><br><span class="line">		_, target_len, _ = target.size()</span><br><span class="line"></span><br><span class="line">		align_score = self.score(src, target)</span><br><span class="line"></span><br><span class="line">		mask = sequence_mask(src_lengths)</span><br><span class="line">		<span class="hljs-comment"># (batch_size, max_len) -&gt; (batch_size, 1, max_len)</span></span><br><span class="line">		mask = mask.unsqueeze(<span class="hljs-number">1</span>)</span><br><span class="line">		align_score.data.masked_fill_(~mask, -<span class="hljs-built_in">float</span>(<span class="hljs-string">'inf'</span>))</span><br><span class="line">		align_score = F.softmax(align_score, -<span class="hljs-number">1</span>)</span><br><span class="line"></span><br><span class="line">		c = torch.bmm(align_score, src)</span><br><span class="line"></span><br><span class="line">		concat_c = torch.cat([c, target], -<span class="hljs-number">1</span>)</span><br><span class="line">		attn_h = self.linear_out(concat_c)</span><br><span class="line"></span><br><span class="line">		<span class="hljs-keyword">return</span> attn_h, align_score</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="参考资料">参考资料</h2>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh/2020/rl-sutton-cartpole-sarsa-qlearning/" itemprop="url">通过代码学Sutton强化学习：SARSA、Q-Learning和Expected SARSA时序差分算法训练CartPole</a>
         
     </h1>
@@ -2036,180 +2237,6 @@ dp[bitstate][v] = \min ( dp[bitstate \cup \{u\}][u] + dist(v,u) \mid u \notin bi
 <figure class="highlight java hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// passed http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DPL_2_A</span></span><br><span class="line"><span class="hljs-keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="hljs-keyword">import</span> java.util.Scanner;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>{</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Graph</span> </span>{</span><br><span class="line">        <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> V_NUM;</span><br><span class="line">        <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span>[][] edges;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Graph</span><span class="hljs-params">(<span class="hljs-keyword">int</span> V_NUM)</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">this</span>.V_NUM = V_NUM;</span><br><span class="line">            <span class="hljs-keyword">this</span>.edges = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[V_NUM][V_NUM];</span><br><span class="line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; V_NUM; i++) {</span><br><span class="line">                Arrays.fill(<span class="hljs-keyword">this</span>.edges[i], Integer.MAX_VALUE);</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setDist</span><span class="hljs-params">(<span class="hljs-keyword">int</span> src, <span class="hljs-keyword">int</span> dest, <span class="hljs-keyword">int</span> dist)</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">this</span>.edges[src][dest] = dist;</span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">    }</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TSP</span> </span>{</span><br><span class="line">        <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Graph g;</span><br><span class="line">        <span class="hljs-keyword">long</span>[][] dp;</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">TSP</span><span class="hljs-params">(Graph g)</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">this</span>.g = g;</span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">solve</span><span class="hljs-params">()</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">int</span> N = g.V_NUM;</span><br><span class="line">            dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">long</span>[<span class="hljs-number">1</span> &lt;&lt; N][N];</span><br><span class="line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; dp.length; i++) {</span><br><span class="line">                Arrays.fill(dp[i], -<span class="hljs-number">1</span>);</span><br><span class="line">            }</span><br><span class="line">    </span><br><span class="line">            <span class="hljs-keyword">long</span> ret = recurse(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>);</span><br><span class="line">            <span class="hljs-keyword">return</span> ret == Integer.MAX_VALUE ? -<span class="hljs-number">1</span> : ret;</span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">long</span> <span class="hljs-title">recurse</span><span class="hljs-params">(<span class="hljs-keyword">int</span> state, <span class="hljs-keyword">int</span> v)</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">int</span> ALL = (<span class="hljs-number">1</span> &lt;&lt; g.V_NUM) - <span class="hljs-number">1</span>;</span><br><span class="line">            <span class="hljs-keyword">if</span> (dp[state][v] &gt;= <span class="hljs-number">0</span>) {</span><br><span class="line">                <span class="hljs-keyword">return</span> dp[state][v];</span><br><span class="line">            }</span><br><span class="line">            <span class="hljs-keyword">if</span> (state == ALL &amp;&amp; v == <span class="hljs-number">0</span>) {</span><br><span class="line">                dp[state][v] = <span class="hljs-number">0</span>;</span><br><span class="line">                <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">            }</span><br><span class="line">            <span class="hljs-keyword">long</span> res = Integer.MAX_VALUE;</span><br><span class="line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> u = <span class="hljs-number">0</span>; u &lt; g.V_NUM; u++) {</span><br><span class="line">                <span class="hljs-keyword">if</span> ((state &amp; (<span class="hljs-number">1</span> &lt;&lt; u)) == <span class="hljs-number">0</span>) {</span><br><span class="line">                    <span class="hljs-keyword">long</span> s = recurse(state | <span class="hljs-number">1</span> &lt;&lt; u, u);</span><br><span class="line">                    res = Math.min(res, s + g.edges[v][u]);</span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line">            dp[state][v] = res;</span><br><span class="line">            <span class="hljs-keyword">return</span> res;</span><br><span class="line">    </span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">    }</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{</span><br><span class="line">    </span><br><span class="line">        Scanner in = <span class="hljs-keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="hljs-keyword">int</span> V = in.nextInt();</span><br><span class="line">        <span class="hljs-keyword">int</span> E = in.nextInt();</span><br><span class="line">        Graph g = <span class="hljs-keyword">new</span> Graph(V);</span><br><span class="line">        <span class="hljs-keyword">while</span> (E &gt; <span class="hljs-number">0</span>) {</span><br><span class="line">            <span class="hljs-keyword">int</span> src = in.nextInt();</span><br><span class="line">            <span class="hljs-keyword">int</span> dest = in.nextInt();</span><br><span class="line">            <span class="hljs-keyword">int</span> dist = in.nextInt();</span><br><span class="line">            g.setDist(src, dest, dist);</span><br><span class="line">            E--;</span><br><span class="line">        }</span><br><span class="line">        System.out.println(<span class="hljs-keyword">new</span> TSP(g).solve());</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
 <h3 id="aizu-python-3-递归dp版本">AIZU Python 3 递归DP版本</h3>
 <figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line">INT_INF = -<span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Graph</span>:</span></span><br><span class="line">    v_num: <span class="hljs-built_in">int</span></span><br><span class="line">    edges: <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, v_num: <span class="hljs-built_in">int</span></span>):</span></span><br><span class="line">        self.v_num = v_num</span><br><span class="line">        self.edges = [[INT_INF <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(v_num)] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(v_num)]</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setDist</span>(<span class="hljs-params">self, src: <span class="hljs-built_in">int</span>, dest: <span class="hljs-built_in">int</span>, dist: <span class="hljs-built_in">int</span></span>):</span></span><br><span class="line">        self.edges[src][dest] = dist</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TSPSolver</span>:</span></span><br><span class="line">    g: Graph</span><br><span class="line">    dp: <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, g: Graph</span>):</span></span><br><span class="line">        self.g = g</span><br><span class="line">        self.dp = [[<span class="hljs-literal">None</span> <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(g.v_num)] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span> &lt;&lt; g.v_num)]</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">solve</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> self._recurse(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_recurse</span>(<span class="hljs-params">self, v: <span class="hljs-built_in">int</span>, state: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">    </span></span><br><span class="line"><span class="hljs-string">        :param v:</span></span><br><span class="line"><span class="hljs-string">        :param state:</span></span><br><span class="line"><span class="hljs-string">        :return: -1 means INF</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        dp = self.dp</span><br><span class="line">        edges = self.g.edges</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-keyword">if</span> dp[state][v] <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> dp[state][v]</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-keyword">if</span> (state == (<span class="hljs-number">1</span> &lt;&lt; self.g.v_num) - <span class="hljs-number">1</span>) <span class="hljs-keyword">and</span> (v == <span class="hljs-number">0</span>):</span><br><span class="line">            dp[state][v] = <span class="hljs-number">0</span></span><br><span class="line">            <span class="hljs-keyword">return</span> dp[state][v]</span><br><span class="line">    </span><br><span class="line">        ret: <span class="hljs-built_in">int</span> = INT_INF</span><br><span class="line">        <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.g.v_num):</span><br><span class="line">            <span class="hljs-keyword">if</span> (state &amp; (<span class="hljs-number">1</span> &lt;&lt; u)) == <span class="hljs-number">0</span>:</span><br><span class="line">                s: <span class="hljs-built_in">int</span> = self._recurse(u, state | <span class="hljs-number">1</span> &lt;&lt; u)</span><br><span class="line">                <span class="hljs-keyword">if</span> s != INT_INF <span class="hljs-keyword">and</span> edges[v][u] != INT_INF:</span><br><span class="line">                    <span class="hljs-keyword">if</span> ret == INT_INF:</span><br><span class="line">                        ret = s + edges[v][u]</span><br><span class="line">                    <span class="hljs-keyword">else</span>:</span><br><span class="line">                        ret = <span class="hljs-built_in">min</span>(ret, s + edges[v][u])</span><br><span class="line">        dp[state][v] = ret</span><br><span class="line">        <span class="hljs-keyword">return</span> ret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span></span><br><span class="line">    V, E = <span class="hljs-built_in">map</span>(<span class="hljs-built_in">int</span>, <span class="hljs-built_in">input</span>().split())</span><br><span class="line">    g: Graph = Graph(V)</span><br><span class="line">    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(E):</span><br><span class="line">        src, dest, dist = <span class="hljs-built_in">map</span>(<span class="hljs-built_in">int</span>, <span class="hljs-built_in">input</span>().split())</span><br><span class="line">        g.setDist(src, dest, dist)</span><br><span class="line"></span><br><span class="line">    tsp: TSPSolver = TSPSolver(g)</span><br><span class="line">    <span class="hljs-built_in">print</span>(tsp.solve())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:</span><br><span class="line">    main()</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh/2020/leetcode-1227-airplane-seat-assignment-probability/" itemprop="url">从蒙特卡罗模拟，数学递推到直觉模式来思考 Leetcode 1227 飞机座位分配概率</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2020-08-29T10:45:01.000Z" itemprop="datePublished">8月 29 2020</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            11 分钟 读完 (约 1580 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/airplane-seat-assignment-probability/">Leetcode 1227</a> 是一道有意思的概率题，本篇将从多个角度来讨论这道题。题目如下</p>
-<blockquote>
-<p>有 n 位乘客即将登机，飞机正好有 n 个座位。第一位乘客的票丢了，他随便选了一个座位坐下。 剩下的乘客将会： 如果他们自己的座位还空着，就坐到自己的座位上， 当他们自己的座位被占用时，随机选择其他座位，第 n 位乘客坐在自己的座位上的概率是多少？</p>
-</blockquote>
-<blockquote>
-<p>示例 1： 输入：n = 1 输出：1.00000 解释：第一个人只会坐在自己的位置上。</p>
-</blockquote>
-<blockquote>
-<p>示例 2： 输入: n = 2 输出: 0.50000 解释：在第一个人选好座位坐下后，第二个人坐在自己的座位上的概率是 0.5。</p>
-</blockquote>
-<blockquote>
-<p>提示： 1 &lt;= n &lt;= 10^5</p>
-</blockquote>
-<p>假设规模为n时答案为f(n)，一般来说，这种递推问题在数学形式上可能有关于n的简单数学表达式（closed form），或者肯定有f(n)关于f(n-k)的递推表达式。工程上，我们可以通过通过多次模拟即蒙特卡罗模拟来算得近似的数值解。</p>
-<h2 id="monte-carlo-模拟发现规律">Monte Carlo 模拟发现规律</h2>
-<p>首先，我们先来看看如何高效的用代码来模拟。根据题意的描述过程，直接可以写出下面代码。seats为n大小的bool 数组，每个位置表示此位置是否已经被占据。然后依次给第i个人按题意分配座位。注意，每次参数随机数范围在[0,n-1]，因此，会出现已经被占据的情况，此时需要再次随机，直至分配到空位。</p>
-<h3 id="暴力直接模拟">暴力直接模拟</h3>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">simulate_bruteforce</span>(<span class="hljs-params">n: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">    <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">    Simulates one round. Unbounded time complexity.</span></span><br><span class="line"><span class="hljs-string">    :param n: total number of seats</span></span><br><span class="line"><span class="hljs-string">    :return: True if last one has last seat, otherwise False</span></span><br><span class="line"><span class="hljs-string">    """</span></span><br><span class="line"></span><br><span class="line">    seats = [<span class="hljs-literal">False</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n)]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n-<span class="hljs-number">1</span>):</span><br><span class="line">        <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span>:  <span class="hljs-comment"># first one, always random</span></span><br><span class="line">            seats[random.randint(<span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>)] = <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> seats[i]:  <span class="hljs-comment"># i-th has his seat</span></span><br><span class="line">                seats[i] = <span class="hljs-literal">True</span></span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">                    rnd = random.randint(<span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>) <span class="hljs-comment"># random until no conflicts</span></span><br><span class="line">                    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> seats[rnd]:</span><br><span class="line">                        seats[rnd] = <span class="hljs-literal">True</span></span><br><span class="line">                        <span class="hljs-keyword">break</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">not</span> seats[n-<span class="hljs-number">1</span>]</span><br></pre></td></tr></tbody></table></figure>
-<p>运行上面的代码来模拟 n 从 2 到10 的情况，每种情况跑500次模拟，输出如下 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1 =&gt; 1.0</span><br><span class="line">2 =&gt; 0.55</span><br><span class="line">3 =&gt; 0.54</span><br><span class="line">4 =&gt; 0.486</span><br><span class="line">5 =&gt; 0.488</span><br><span class="line">6 =&gt; 0.498</span><br><span class="line">7 =&gt; 0.526</span><br><span class="line">8 =&gt; 0.504</span><br><span class="line">9 =&gt; 0.482</span><br><span class="line">10 =&gt; 0.494</span><br></pre></td></tr></tbody></table></figure><p></p>
-<p>发现当 n&gt;=2 时，似乎概率都是0.5。</p>
-<h3 id="标准答案">标准答案</h3>
-<p>其实，这道题的标准答案就是 n=1 为1，n&gt;=2 为0.5。下面是 python 3 标准答案。本篇后面会从多个角度来探讨为什么是0.5 。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">nthPersonGetsNthSeat</span>(<span class="hljs-params">self, n: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">float</span>:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-number">1.0</span> <span class="hljs-keyword">if</span> n == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0.5</span></span><br></pre></td></tr></tbody></table></figure>
-<h3 id="on-改进算法">O(n) 改进算法</h3>
-<p>上面的暴力直接模拟版本有个最大的问题是当n很大时，随机分配座位会产生大量冲突，因此，最坏复杂度是没有任何上限的。解决方法是每次发生随机分配时保证不冲突，能直接选到空位。下面是一种最坏复杂度O(n)的模拟过程，seats数组初始话成 0，1，...，n-1，表示座位号。当第i个人登机时，seats[i:n] 的值为他可以选择的座位集合，而seats[0:i]为已经被占据的座位集合。由于[i: n]是连续空间，产生随机数就能保证不冲突。当第i个人选完座位时，将他选中的seats[k]和seats[i] 交换，保证第i+i个人面临的seats[i+1:n]依然为可选座位集合。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">simulate_online</span>(<span class="hljs-params">n: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">    <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">    Simulates one round of complexity O(N).</span></span><br><span class="line"><span class="hljs-string">    :param n: total number of seats</span></span><br><span class="line"><span class="hljs-string">    :return: True if last one has last seat, otherwise False</span></span><br><span class="line"><span class="hljs-string">    """</span></span><br><span class="line"></span><br><span class="line">    seats = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n)]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">swap</span>(<span class="hljs-params">i, j</span>):</span></span><br><span class="line">        tmp = seats[i]</span><br><span class="line">        seats[i] = seats[j]</span><br><span class="line">        seats[j] = tmp</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment"># for each person, the seats array idx available are [i, n-1]</span></span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n-<span class="hljs-number">1</span>):</span><br><span class="line">        <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span>:  <span class="hljs-comment"># first one, always random</span></span><br><span class="line">            rnd = random.randint(<span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>)</span><br><span class="line">            swap(rnd, <span class="hljs-number">0</span>)</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            <span class="hljs-keyword">if</span> seats[i] == i:  <span class="hljs-comment"># i-th still has his seat</span></span><br><span class="line">                <span class="hljs-keyword">pass</span></span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                rnd = random.randint(i, n - <span class="hljs-number">1</span>)  <span class="hljs-comment"># selects idx from [i, n-1]</span></span><br><span class="line">                swap(rnd, i)</span><br><span class="line">    <span class="hljs-keyword">return</span> seats[n-<span class="hljs-number">1</span>] == n - <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
-<h2 id="递推思维">递推思维</h2>
-<p>这一节我们用数学递推思维来解释0.5的解。令f(n) 为第 n 位乘客坐在自己的座位上的概率，考察第一个人的情况（first step analysis），有三种可能</p>
-<ol type="1">
-<li>第一个人选了第一个即自己的座位，那么最后一个人一定能保证坐在自己的座位。</li>
-<li>第一个人选了最后一个人的座位，无论中间什么过程，最后一个人无法坐到自己座位</li>
-<li>第一个人选了第i个座位，(1&lt;i&lt;n)，那么第i个人前面的除了第一个外的人都会坐在自己位置上，第i个人由于没有自己座位，随机在剩余的座位1，座位 [i+1,n] 中随机选择，此时，问题转变为f(n-i+1)，如下图所示。</li>
-</ol>
-<figure>
-<img src="/zh/2020/leetcode-1227-airplane-seat-assignment-probability/f(n).png">
-<figcaption>
-第一个人选了位置i
-</figcaption>
-</figure>
-<figure>
-<img src="/zh/2020/leetcode-1227-airplane-seat-assignment-probability/f(n-i+1).png">
-<figcaption>
-第i个人将问题转换成f(n-i+1)
-</figcaption>
-</figure>
-<p>通过上面分析，得到概率递推关系如下</p>
-<p><span class="math display">\[
-f(n) =  
-\begin{align*}
-  \left\lbrace
-  \begin{array}{r@{}l}
-    1 &amp; &amp; p=\frac{1}{n} \quad \text{选了第一个位置} \\\\\\
-    f(n-i+1) &amp; &amp; p=\frac{1}{n} \quad \text{选了第i个位置，1&lt;i&lt;n} \\\\\\
-    0 &amp; &amp; p=\frac{1}{n} \quad \text{选了第n个位置}
-  \end{array}
-  \right.
-\end{align*}
-\]</span></p>
-<p>即f(n)的递推式为： <span class="math display">\[
-f(n) = \frac{1}{n} + \frac{1}{n} \times [ f(n-1) + f(n-2) + ...+ f(2)], \quad n&gt;=2
-\]</span> 同理，f(n+1)递推式如下 <span class="math display">\[
-f(n+1) = \frac{1}{n+1} + \frac{1}{n+1} \times [ f(n) + f(n-1) + ...+ f(2)]
-\]</span> <span class="math inline">\((n+1)f(n+1) - nf(n)\)</span> 抵消 <span class="math inline">\(f(n-1) + ...f(2)\)</span> 项，可得 <span class="math display">\[
-(n+1)f(n+1) - nf(n) = f(n)
-\]</span> 即 <span class="math display">\[
-f(n+1) = f(n) = \frac{1}{2} \quad n&gt;=2
-\]</span></p>
-<p>用数学归纳法也可以证明 n&gt;=2 时 f(n)=0.5。</p>
-<h2 id="简化的思考方式">简化的思考方式</h2>
-<p>我们再仔细思考一下上面的第三种情况，就是第一个人坐了第i个座位，1&lt;i&lt;n，此时，程序继续，不产生结果，直至产生结局1或者2，也就是case 1和2是真正的结局节点，它们产生的概率相同，因此答案是1/2。</p>
-<p>从调用图可以看出这种关系，由于中间节点 f(4)，f(3)，f(2)生成Case 1和2的概率一样，因此无论它们之间是什么关系，最后结果都是1/2.</p>
-<figure>
-<img src="/zh/2020/leetcode-1227-airplane-seat-assignment-probability/call_graph.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>知乎上有个很形象的类比理解方式</p>
-<blockquote>
-<p>考虑一枚硬币，正面向上的概率为 1/n，反面也是，立起来的概率为 (n-2)/n 。我们规定硬币立起来重新抛，但重新抛时，n会至少减小1。求结果为反面的概率。这样很显然结果为 1/2 。</p>
-</blockquote>
-<p>这里，正面向上对应Case 2，反面对应Case 1。</p>
-<p>这种思想可以写出如下代码，seats为 n 大小的bool 数组，当第i个人（0&lt;i&lt;n）发现自己座位被占的话，此时必然seats[0]没有被占，同时seats[i+1:]都是空的。假设seats[0]被占的话，要么是第一个人占的，要么是第p个人（p&lt;i）坐了，两种情况下乱序都已经恢复了，此时第i个座位一定是空的。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">simulate</span>(<span class="hljs-params">n: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">    <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">    Simulates one round of complexity O(N).</span></span><br><span class="line"><span class="hljs-string">    :param n: total number of seats</span></span><br><span class="line"><span class="hljs-string">    :return: True if last one has last seat, otherwise False</span></span><br><span class="line"><span class="hljs-string">    """</span></span><br><span class="line"></span><br><span class="line">    seats = [<span class="hljs-literal">False</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n)]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n-<span class="hljs-number">1</span>):</span><br><span class="line">        <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span>:  <span class="hljs-comment"># first one, always random</span></span><br><span class="line">            rnd = random.randint(<span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>)</span><br><span class="line">            seats[rnd] = <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> seats[i]:  <span class="hljs-comment"># i-th still has his seat</span></span><br><span class="line">                seats[i] = <span class="hljs-literal">True</span></span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                <span class="hljs-comment"># 0 must not be available, now we have 0 and [i+1, n-1],</span></span><br><span class="line">                rnd = random.randint(i, n - <span class="hljs-number">1</span>)</span><br><span class="line">                <span class="hljs-keyword">if</span> rnd == i:</span><br><span class="line">                    seats[<span class="hljs-number">0</span>] = <span class="hljs-literal">True</span></span><br><span class="line">                <span class="hljs-keyword">else</span>:</span><br><span class="line">                    seats[rnd] = <span class="hljs-literal">True</span></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">not</span> seats[n-<span class="hljs-number">1</span>]</span><br></pre></td></tr></tbody></table></figure>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>

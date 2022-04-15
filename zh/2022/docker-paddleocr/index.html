@@ -2,13 +2,13 @@
 <html class="has-navbar-fixed-top">
 <head>
     <meta charset="utf-8">
-<title>标签: OCR - MyEncyclopedia</title>
+<title>一键即起开箱即用部署强悍中英文OCR本地服务 - MyEncyclopedia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-<link href="/en/tags/OCR/" rel="alternate" hreflang="en" />
+<link href="/en/2022/docker-paddleocr/" rel="alternate" hreflang="en" />
     
 
 
@@ -18,13 +18,25 @@
 
 
 
-    <meta property="og:type" content="website">
-<meta property="og:title" content="MyEncyclopedia">
-<meta property="og:url" content="https://myencyclopedia.github.io/tags/OCR/">
+    <meta name="description" content="PaddleOCR CPU 镜像 本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。 众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练把自己的数据集和调参，只要用成熟的模型就足">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一键即起开箱即用部署强悍中英文OCR本地服务">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/">
 <meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="PaddleOCR CPU 镜像 本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。 众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练把自己的数据集和调参，只要用成熟的模型就足">
 <meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/scene-out.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/scene-out.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/engtest-out.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/me-out.png">
+<meta property="article:published_time" content="2022-04-16T10:45:01.000Z">
+<meta property="article:modified_time" content="2022-04-15T07:24:22.000Z">
 <meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="OCR">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Deep Learning Practice">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/scene-out.png">
 
 
 
@@ -101,6 +113,56 @@
             </a>
             
             
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#paddleocr-cpu-镜像">1&nbsp;&nbsp;<b>PaddleOCR CPU 镜像</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#文字效果">1.1&nbsp;&nbsp;文字效果</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#获取镜像">2&nbsp;&nbsp;<b>获取镜像</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#命令行识别">3&nbsp;&nbsp;<b>命令行识别</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#代码识别">4&nbsp;&nbsp;<b>代码识别</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#结果展示">4.1&nbsp;&nbsp;结果展示</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#demo_ch.py">4.2&nbsp;&nbsp;demo_ch.py</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#结束语">5&nbsp;&nbsp;<b>结束语</b></a>
+                    
+                </div>
+            </div>
+            
             
             <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
                 
@@ -113,19 +175,14 @@
     </div>
 </nav>
 
-    <section class="section section-heading">
+    <section class="section">
     <div class="container">
-        <div class="content">
-            <h5>#OCR</h5>
-        </div>
-    </div>
-</section>
-<section class="section">
-    <div class="container">
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
+    <article class="article content gallery" itemscope itemprop="blogPost">
     <aside id='article-toc' role="navigation" class='fixed'>
         <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#paddleocr-cpu-%E9%95%9C%E5%83%8F"><span class="toc-text">PaddleOCR CPU 镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E5%AD%97%E6%95%88%E6%9E%9C"><span class="toc-text">文字效果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E9%95%9C%E5%83%8F"><span class="toc-text">获取镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AF%86%E5%88%AB"><span class="toc-text">命令行识别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%AF%86%E5%88%AB"><span class="toc-text">代码识别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="toc-text">结果展示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo_ch.py"><span class="toc-text">demo_ch.py</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9D%9F%E8%AF%AD"><span class="toc-text">结束语</span></a></li></ol>
             
         </div>
         
@@ -174,7 +231,7 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh/2022/docker-paddleocr/" itemprop="url">一键即起开箱即用部署强悍中英文OCR本地服务</a>
+            一键即起开箱即用部署强悍中英文OCR本地服务
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -228,168 +285,68 @@
     
     </div>
     
+    <div class="columns is-variable is-1 is-multiline is-mobile">
     
-</article>
-
-
-
-
-
-
-
-
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/OCR/">#OCR</a></span>
     
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh/2021/service-math2latex/" itemprop="url">MyEncyclopedia 重磅推出 mathpix 服务：图片转换成Latex源码</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2021-08-20T10:45:01.000Z" itemprop="datePublished">8月 20 2021</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            1 分钟 读完 (约 211 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker/">#Docker</a></span>
     
-        <html><head></head><body><p>大家一定都用过神奇的 mathpix 服务，它可以方便大家将数学公式图片转换成 Latex 数学公式。现在 MyEncyclopedia 也推出了手机版和桌面版的 mathpix 服务啦！</p>
-<iframe src="//player.bilibili.com/player.html?aid=674980364&amp;bvid=BV1BU4y1E7Be&amp;cid=393607422&amp;page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true">
-</iframe>
-<h2 id="使用流程-登录服务">使用流程 登录服务</h2>
-<h3 id="关注-myencyclopedia-公众号">1. 关注 <code>MyEncyclopedia</code> 公众号</h3>
-<h3 id="在公众号对话中回复">2. 在公众号对话中回复 <code>?</code></h3>
-<figure>
-<img src="/zh/2021/service-math2latex/start.png">
-<figcaption>
-</figcaption>
-</figure>
-<h3 id="点击-ai在线服务">3. 点击 <code>AI在线服务</code></h3>
-<h3 id="在非微信浏览器中打开链接">4. 在非微信浏览器中打开链接</h3>
-<figure>
-<img src="/zh/2021/service-math2latex/open_browser.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-<h3 id="登录">5. 登录</h3>
-<p>目前提供两种方式。 在国内的小伙伴建议使用微信公众号的方式登录，在国外的朋友们可以使用 Google 账号登录。</p>
-<h3 id="微信登录按提示在为公众号中输入验证码">5.1 微信登录，按提示在为公众号中输入验证码</h3>
-<figure>
-<img src="/zh/2021/service-math2latex/wechat_code.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-<h3 id="google登录">5.2 Google登录</h3>
-<figure>
-<img src="/zh/2021/service-math2latex/google_login.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-<h2 id="使用流程">使用流程</h2>
-点击右上方 <code>+</code> 选择图片
-<figure>
-<img src="/zh/2021/service-math2latex/select.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-<h2 id="等待结果">等待结果</h2>
-<p>Output Source 为转换的 Latex 源码</p>
-<p>Output Render 为转换源码对应的渲染效果</p>
-<figure>
-<img src="/zh/2021/service-math2latex/final.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-
-
-
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></div></div></div></div></div></body></html>
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Deep-Learning-Practice/">#Deep Learning Practice</a></span>
     
     </div>
     
     
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-prev">
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
+            
+        </span>
+    </div>
+    
 </article>
 
 
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://myencyclopedia.top/blog/zh/2022/docker-paddleocr/">https://myencyclopedia.top/blog/zh/2022/docker-paddleocr/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/">https://myencyclopedia.github.io/zh/2022/docker-paddleocr/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
 
 
 
 
-
-
+<div class="sharebox">
     
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
     
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
     </div>
 </section>
     <footer class="footer">
@@ -433,11 +390,11 @@
         <div class="dropdown-menu has-text-left" role="menu">
             <div class="dropdown-content">
             
-                <a href="/tags/OCR/" class="dropdown-item">
+                <a href="/2022/docker-paddleocr/" class="dropdown-item">
                     简体中文
                 </a>
             
-                <a href="/en/tags/OCR/" class="dropdown-item">
+                <a href="/en/2022/docker-paddleocr/" class="dropdown-item">
                     English
                 </a>
             

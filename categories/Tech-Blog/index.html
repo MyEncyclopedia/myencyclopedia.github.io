@@ -174,6 +174,122 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh/2022/docker-paddleocr/" itemprop="url">一键即起开箱即用部署强悍中英文OCR本地服务</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-04-16T10:45:01.000Z" itemprop="datePublished">4月 16 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            6 分钟 读完 (约 931 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><h2 id="paddleocr-cpu-镜像">PaddleOCR CPU 镜像</h2>
+<p>本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。</p>
+<p>众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练把自己的数据集和调参，只要用成熟的模型就足够了。另外，无论在 Windows 还是 Linux 中，大家配置安装 nvidia GPU 镜像都是比较麻烦。因此，这次特地为大家打造了这样一个 CPU 的 PaddleOCR 镜像，并且把常规的模型都预装到镜像中了，大家一键就能部署强悍的本地 OCR 服务。只需要安装 Docker 即可，也支持 Mac。</p>
+<h3 id="文字效果">文字效果</h3>
+<p>先来看一个文字识别的效果吧，图片中这家店铺使用了非常规的中文字体，但PaddleOCR依然完全识别了出来。 <img src="/zh/2022/docker-paddleocr/scene-out.png"></p>
+<h2 id="获取镜像">获取镜像</h2>
+<p>具体获取方式为：关注 <code>MyEncyclopedia</code> 公众号，回复 <code>docker-paddleocr</code></p>
+<p>下面的命令一键起了这个镜像，注意，<strong>大家要将 <code>me-paddleocr</code> 替换成公众号中的镜像名</strong>。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it me-paddleocr bash </span><br></pre></td></tr></tbody></table></figure>
+<p>进入容器后，我们已经在 <code>/proj</code>目录，通过 <code>ls</code> 可以发现有如下文件，三个图片demo输入文件，<code>scene.png</code>, <code>engtest.jpg</code>, <code>me.png</code> 和 <code>demo_ch.py</code>。</p>
+<h2 id="命令行识别">命令行识别</h2>
+<p>通过 PaddleOCR 内置的命令可以最快捷地识别文字，命令格式如下。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">paddleocr --image_dir scene.png --use_angle_cls <span class="hljs-literal">true</span> --lang ch --use_gpu <span class="hljs-literal">false</span></span><br></pre></td></tr></tbody></table></figure>
+<p>输出为，最后两行为识别出的两处文字及其位置。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ppocr INFO: **********scene.png**********</span><br><span class="line">ppocr DEBUG: dt_boxes num : 2, elapse : 0.1184682846069336</span><br><span class="line">ppocr DEBUG: cls num  : 2, elapse : 0.016251802444458008</span><br><span class="line">ppocr DEBUG: rec_res num  : 2, elapse : 0.041384220123291016</span><br><span class="line">ppocr INFO: [[[152.0, 83.0], [402.0, 81.0], [402.0, 135.0], [153.0, 137.0]], ('匠牛饺子', 0.94130754)]</span><br><span class="line">ppocr INFO: [[[412.0, 183.0], [450.0, 183.0], [450.0, 206.0], [412.0, 206.0]], ('匠牛', 0.7368352)]</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="代码识别">代码识别</h2>
+<p>当然了，为了方便查看结果，需要通过代码来实现。下面展示镜像内置的三个demo图片的执行python 代码 <code>demo_ch.py</code> 后的输出效果。</p>
+<h3 id="结果展示">结果展示</h3>
+<p>图片一：门头照片 <img src="/zh/2022/docker-paddleocr/scene-out.png"></p>
+<p>图片二：中英文混合的试卷 <img src="/zh/2022/docker-paddleocr/engtest-out.png"></p>
+<p>图片三：中英文混合Logo <img src="/zh/2022/docker-paddleocr/me-out.png"></p>
+<h3 id="demo_ch.py">demo_ch.py</h3>
+<p>附上 <code>demo_ch.py</code> 源代码，不做赘述。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> paddleocr <span class="hljs-keyword">import</span> PaddleOCR</span><br><span class="line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line"><span class="hljs-keyword">import</span> cv2</span><br><span class="line"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt</span><br><span class="line"><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image, ImageDraw, ImageFont</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cv2ImgAddText</span>(<span class="hljs-params">img, text, left, top, textColor=(<span class="hljs-params"><span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span></span>), textSize=<span class="hljs-number">20</span></span>):</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isinstance</span>(img, np.ndarray)):</span><br><span class="line">        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))</span><br><span class="line">    draw = ImageDraw.Draw(img)</span><br><span class="line">    fontStyle = ImageFont.truetype(<span class="hljs-string">'wqy-zenhei.ttc'</span>, textSize, encoding=<span class="hljs-string">"utf-8"</span>)</span><br><span class="line">    draw.text((left, top), text, textColor, font=fontStyle)</span><br><span class="line">    <span class="hljs-keyword">return</span> cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)</span><br><span class="line"></span><br><span class="line">ocr = PaddleOCR()</span><br><span class="line">img_path = <span class="hljs-string">'/proj/scene.png'</span></span><br><span class="line"></span><br><span class="line">result = ocr.ocr(img_path, rec=<span class="hljs-literal">True</span>)</span><br><span class="line"><span class="hljs-built_in">print</span>(<span class="hljs-string">f"The predicted text box of <span class="hljs-subst">{img_path}</span> are follows."</span>)</span><br><span class="line"></span><br><span class="line">image = cv2.imread(img_path)</span><br><span class="line">boxes = [[line[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">2</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">3</span>]] <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> result]</span><br><span class="line">texts = [line[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> result]</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> box, text <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(boxes, texts):</span><br><span class="line">    box = np.reshape(np.array(box), [-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]).astype(np.int64)</span><br><span class="line">    <span class="hljs-built_in">print</span>(box)</span><br><span class="line">    image = cv2.polylines(np.array(image), [box], <span class="hljs-literal">True</span>, (<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), <span class="hljs-number">2</span>)</span><br><span class="line">    image = cv2ImgAddText(image, text, box[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] - <span class="hljs-number">10</span>, box[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>][<span class="hljs-number">1</span>] - <span class="hljs-number">10</span>, textColor=(<span class="hljs-number">0</span>, <span class="hljs-number">255</span>, <span class="hljs-number">0</span>), textSize=<span class="hljs-number">20</span>)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>))</span><br><span class="line">plt.imshow(image)</span><br><span class="line">plt.savefig(<span class="hljs-string">'/proj/result.jpg'</span>)</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="结束语">结束语</h2>
+<p>PaddleOCR最为市面上最好的开源中文 OCR 引擎之一，其强悍的效果可以达到开箱即用，本期基于 CPU 的预制镜像更降低了大家使用的门槛。本系列后续会和大家分享如何在 PaddleOCR GPU 镜像中去训练自己的数据集，来提升特定字体的准确度，大家喜欢的话不要忘记一键三连哦。同时也可以关注 MyEncyclopedia 微信公众号以及B站频道，下次再见。</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/" itemprop="url">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
         
     </h1>
@@ -1842,156 +1958,6 @@ b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
 <p>我们换一个类库 hvplot，它的渲染和交换效果如下。 <img src="/zh/2021/pytorch-geometric-01-plot-cora/hvplot.gif" alt="hvplot"></p>
 <p>代码和 matplotlib 大致一致。注意渲染的时候 hvplot 需要将多个图片数据以乘法形式返回，借助 reduce 函数我们将 7 种节点的图相乘，再乘以描绘边的图，呈现出叠加的完整图片。 </p><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> hvplot.networkx <span class="hljs-keyword">as</span> hvnx</span><br><span class="line">options = {</span><br><span class="line">    <span class="hljs-string">'width'</span>: <span class="hljs-number">800</span>,</span><br><span class="line">    <span class="hljs-string">'height'</span>: <span class="hljs-number">1000</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">plt_nodes = []</span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> np.arange(<span class="hljs-built_in">len</span>(np.unique(node_classes))):</span><br><span class="line">    nodelist = node_label[node_classes == i]</span><br><span class="line">    plt = hvnx.draw_networkx_nodes(cora, pos, nodelist=<span class="hljs-built_in">list</span>(nodelist), node_color=node_color[i], **options)</span><br><span class="line">    plt_nodes.append(plt)</span><br><span class="line"></span><br><span class="line">plt_edges = hvnx.draw_networkx_edges(cora, pos, arrowstyle=<span class="hljs-string">'-&gt;'</span>, edge_width=<span class="hljs-number">2</span>, colorbar=<span class="hljs-literal">True</span>, **options)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> functools</span><br><span class="line"><span class="hljs-keyword">import</span> operator</span><br><span class="line">plt_edges * functools.reduce(operator.mul, plt_nodes)</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure><p></p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh/2021/service-math2latex/" itemprop="url">MyEncyclopedia 重磅推出 mathpix 服务：图片转换成Latex源码</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2021-08-20T10:45:01.000Z" itemprop="datePublished">8月 20 2021</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            1 分钟 读完 (约 211 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><p>大家一定都用过神奇的 mathpix 服务，它可以方便大家将数学公式图片转换成 Latex 数学公式。现在 MyEncyclopedia 也推出了手机版和桌面版的 mathpix 服务啦！</p>
-<iframe src="//player.bilibili.com/player.html?aid=674980364&amp;bvid=BV1BU4y1E7Be&amp;cid=393607422&amp;page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true">
-</iframe>
-<h2 id="使用流程-登录服务">使用流程 登录服务</h2>
-<h3 id="关注-myencyclopedia-公众号">1. 关注 <code>MyEncyclopedia</code> 公众号</h3>
-<h3 id="在公众号对话中回复">2. 在公众号对话中回复 <code>?</code></h3>
-<figure>
-<img src="/zh/2021/service-math2latex/start.png">
-<figcaption>
-</figcaption>
-</figure>
-<h3 id="点击-ai在线服务">3. 点击 <code>AI在线服务</code></h3>
-<h3 id="在非微信浏览器中打开链接">4. 在非微信浏览器中打开链接</h3>
-<figure>
-<img src="/zh/2021/service-math2latex/open_browser.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-<h3 id="登录">5. 登录</h3>
-<p>目前提供两种方式。 在国内的小伙伴建议使用微信公众号的方式登录，在国外的朋友们可以使用 Google 账号登录。</p>
-<h3 id="微信登录按提示在为公众号中输入验证码">5.1 微信登录，按提示在为公众号中输入验证码</h3>
-<figure>
-<img src="/zh/2021/service-math2latex/wechat_code.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-<h3 id="google登录">5.2 Google登录</h3>
-<figure>
-<img src="/zh/2021/service-math2latex/google_login.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-<h2 id="使用流程">使用流程</h2>
-点击右上方 <code>+</code> 选择图片
-<figure>
-<img src="/zh/2021/service-math2latex/select.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-<h2 id="等待结果">等待结果</h2>
-<p>Output Source 为转换的 Latex 源码</p>
-<p>Output Render 为转换源码对应的渲染效果</p>
-<figure>
-<img src="/zh/2021/service-math2latex/final.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-
-
-
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></div></div></div></div></div></body></html>
     
     </div>
     
