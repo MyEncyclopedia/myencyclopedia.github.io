@@ -2,13 +2,13 @@
 <html class="has-navbar-fixed-top">
 <head>
     <meta charset="utf-8">
-<title>Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解 - MyEncyclopedia</title>
+<title>Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程 - MyEncyclopedia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-<link href="/en/2022/linear-algebra-strang-01-matrix-product/" rel="alternate" hreflang="en" />
+<link href="/en/2022/linear-algebra-strang-02-solving-equations/" rel="alternate" hreflang="en" />
     
 
 
@@ -18,24 +18,26 @@
 
 
 
-    <meta name="description" content="在 MIT Gilbert Strang 教授经典的线性代数课程第三节中详细解释了矩阵相乘的5种方法及其理解，本文用彩色的 Latex 公式呈现出来，便于大家回顾复习。 01 - 矩阵乘法的五种理解 02 - 解方程组的意义和过程 假定 \(A \times B &#x3D;C\) 中， A 是 \(m\) 行 \(n\) 列的矩阵， \(B\) 是 \(n\) 行 \(p\) 列的矩阵，\(C\) 为 \">
+    <meta name="description" content="本文继续以彩色Latex 方式总结了方程组的行视角，列视角的几何意义；并回顾了解方程的两个步骤：消元和回代。内容对应于MIT 18.06 Gilbert Strang 线性代数视频课程第一，二节。 本系列链接如下 01 - 矩阵乘法的五种理解 02 - 解方程组的意义和过程 方程组两种几何解释 二元方程组 来看一个具体的二元线性方程组 \[ \begin{cases} 2x&amp;-y&amp;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解">
-<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/">
+<meta property="og:title" content="Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/">
 <meta property="og:site_name" content="MyEncyclopedia">
-<meta property="og:description" content="在 MIT Gilbert Strang 教授经典的线性代数课程第三节中详细解释了矩阵相乘的5种方法及其理解，本文用彩色的 Latex 公式呈现出来，便于大家回顾复习。 01 - 矩阵乘法的五种理解 02 - 解方程组的意义和过程 假定 \(A \times B &#x3D;C\) 中， A 是 \(m\) 行 \(n\) 列的矩阵， \(B\) 是 \(n\) 行 \(p\) 列的矩阵，\(C\) 为 \">
+<meta property="og:description" content="本文继续以彩色Latex 方式总结了方程组的行视角，列视角的几何意义；并回顾了解方程的两个步骤：消元和回代。内容对应于MIT 18.06 Gilbert Strang 线性代数视频课程第一，二节。 本系列链接如下 01 - 矩阵乘法的五种理解 02 - 解方程组的意义和过程 方程组两种几何解释 二元方程组 来看一个具体的二元线性方程组 \[ \begin{cases} 2x&amp;-y&amp;">
 <meta property="og:locale">
-<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/col_w.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/row_w.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/matrix_sum_w.png">
-<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/block.png">
-<meta property="article:published_time" content="2022-01-23T10:45:01.000Z">
-<meta property="article:modified_time" content="2022-02-03T05:11:50.000Z">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_col.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_row.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_col.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row_e.png">
+<meta property="article:published_time" content="2022-02-04T10:45:01.000Z">
+<meta property="article:modified_time" content="2022-02-22T14:35:52.000Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta property="article:tag" content="Maths">
 <meta property="article:tag" content="Linear Algebra">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/col_w.png">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png">
 
 
 
@@ -121,31 +123,53 @@
                     
                     
                     
-                    <a class="navbar-item" href="#b矩阵的列组合列列切分">1&nbsp;&nbsp;<b>B矩阵的列组合：列列切分</b></a>
+                    <a class="navbar-item" href="#方程组两种几何解释">1&nbsp;&nbsp;<b>方程组两种几何解释</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#二元方程组">1.1&nbsp;&nbsp;二元方程组</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#行视角">1.1.1&nbsp;&nbsp;行视角</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#列视角">1.1.2&nbsp;&nbsp;列视角</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#三元方程组">1.2&nbsp;&nbsp;三元方程组</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#行视角-1">1.2.1&nbsp;&nbsp;行视角</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#列视角-1">1.2.2&nbsp;&nbsp;列视角</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#a矩阵行组合行行切分">2&nbsp;&nbsp;<b>A矩阵行组合：行行切分</b></a>
+                    <a class="navbar-item" href="#解方程的步骤">2&nbsp;&nbsp;<b>解方程的步骤</b></a>
                     
                     
-                    <hr class="navbar-divider">
+                    
+                    <a class="navbar-item" href="#三元方程示例">2.1&nbsp;&nbsp;三元方程示例</a>
                     
                     
-                    <a class="navbar-item" href="#a行-x-b列-点乘行列切分">3&nbsp;&nbsp;<b>A行 x B列 点乘：行列切分</b></a>
+                    
+                    <a class="navbar-item" href="#消元过程">2.2&nbsp;&nbsp;消元过程</a>
                     
                     
-                    <hr class="navbar-divider">
+                    
+                    <a class="navbar-item" href="#回代过程">2.3&nbsp;&nbsp;回代过程</a>
                     
                     
-                    <a class="navbar-item" href="#a列-x-b行-矩阵和列行切分">4&nbsp;&nbsp;<b>A列 x B行 矩阵和：列行切分</b></a>
                     
-                    
-                    <hr class="navbar-divider">
-                    
-                    
-                    <a class="navbar-item" href="#分块相乘">5&nbsp;&nbsp;<b>分块相乘</b></a>
+                    <a class="navbar-item" href="#消元的行视角意义">2.4&nbsp;&nbsp;消元的行视角意义</a>
                     
                 </div>
             </div>
@@ -169,7 +193,7 @@
         <div id='article-toc-inner'>
             
             <strong class="sidebar-title">目录</strong>
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#b%E7%9F%A9%E9%98%B5%E7%9A%84%E5%88%97%E7%BB%84%E5%90%88%E5%88%97%E5%88%97%E5%88%87%E5%88%86"><span class="toc-text">B矩阵的列组合：列列切分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#a%E7%9F%A9%E9%98%B5%E8%A1%8C%E7%BB%84%E5%90%88%E8%A1%8C%E8%A1%8C%E5%88%87%E5%88%86"><span class="toc-text">A矩阵行组合：行行切分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#a%E8%A1%8C-x-b%E5%88%97-%E7%82%B9%E4%B9%98%E8%A1%8C%E5%88%97%E5%88%87%E5%88%86"><span class="toc-text">A行 x B列 点乘：行列切分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#a%E5%88%97-x-b%E8%A1%8C-%E7%9F%A9%E9%98%B5%E5%92%8C%E5%88%97%E8%A1%8C%E5%88%87%E5%88%86"><span class="toc-text">A列 x B行 矩阵和：列行切分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%9D%97%E7%9B%B8%E4%B9%98"><span class="toc-text">分块相乘</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E7%A8%8B%E7%BB%84%E4%B8%A4%E7%A7%8D%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A"><span class="toc-text">方程组两种几何解释</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E5%85%83%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="toc-text">二元方程组</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%8C%E8%A7%86%E8%A7%92"><span class="toc-text">行视角</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%97%E8%A7%86%E8%A7%92"><span class="toc-text">列视角</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%85%83%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="toc-text">三元方程组</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%8C%E8%A7%86%E8%A7%92-1"><span class="toc-text">行视角</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%97%E8%A7%86%E8%A7%92-1"><span class="toc-text">列视角</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E6%96%B9%E7%A8%8B%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="toc-text">解方程的步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%85%83%E6%96%B9%E7%A8%8B%E7%A4%BA%E4%BE%8B"><span class="toc-text">三元方程示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E5%85%83%E8%BF%87%E7%A8%8B"><span class="toc-text">消元过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9E%E4%BB%A3%E8%BF%87%E7%A8%8B"><span class="toc-text">回代过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E5%85%83%E7%9A%84%E8%A1%8C%E8%A7%86%E8%A7%92%E6%84%8F%E4%B9%89"><span class="toc-text">消元的行视角意义</span></a></li></ol></li></ol>
             
         </div>
         
@@ -218,13 +242,13 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解
+            Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
         <span class="column is-narrow">
             
-                <time datetime="2022-01-23T10:45:01.000Z" itemprop="datePublished">1月 23 2022</time>
+                <time datetime="2022-02-04T10:45:01.000Z" itemprop="datePublished">2月 4 2022</time>
             
         </span>
         
@@ -237,88 +261,233 @@
         <span class="column is-narrow">
             
             
-            5 分钟 读完 (约 763 字)
+            10 分钟 读完 (约 1495 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><p>在 MIT Gilbert Strang 教授经典的线性代数课程第三节中详细解释了矩阵相乘的5种方法及其理解，本文用彩色的 Latex 公式呈现出来，便于大家回顾复习。</p>
-<p><strong><a href="/zh/2022/linear-algebra-strang-01-matrix-product/../linear-algebra-strang-01-matrix-product">01 - 矩阵乘法的五种理解</a></strong></p>
-<p><strong><a href="/zh/2022/linear-algebra-strang-01-matrix-product/../linear-algebra-strang-02-solving-equations">02 - 解方程组的意义和过程</a></strong></p>
-<p>假定 <span class="math inline">\(A \times B =C\)</span> 中， A 是 <span class="math inline">\(m\)</span> 行 <span class="math inline">\(n\)</span> 列的矩阵， <span class="math inline">\(B\)</span> 是 <span class="math inline">\(n\)</span> 行 <span class="math inline">\(p\)</span> 列的矩阵，<span class="math inline">\(C\)</span> 为 <span class="math inline">\(m\)</span> 行 <span class="math inline">\(p\)</span> 列矩阵：</p>
+        <html><head></head><body><p>本文继续以彩色<span style="color:blue">L</span><span style="color:green">a</span><span style="color:red">t</span><span style="color:magenta">e</span><span style="color:orange">x</span> 方式总结了方程组的行视角，列视角的几何意义；并回顾了解方程的两个步骤：消元和回代。内容对应于MIT 18.06 Gilbert Strang 线性代数视频课程第一，二节。</p>
+<p>本系列链接如下</p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-01-matrix-product">01 - 矩阵乘法的五种理解</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-02-solving-equations">02 - 解方程组的意义和过程</a></strong></p>
+<h2 id="方程组两种几何解释">方程组两种几何解释</h2>
+<h3 id="二元方程组">二元方程组</h3>
+<p>来看一个具体的二元线性方程组</p>
 <p><span class="math display">\[
-A_{m \cdot n} \times B_{n \cdot p} = C_{m \cdot p}
+\begin{cases}
+2x&amp;-y&amp;=0 \\
+-x&amp;+2y&amp;=3
+\end{cases}
 \]</span></p>
-<h2 id="b矩阵的列组合列列切分">B矩阵的列组合：列列切分</h2>
-<p>这是最经典的理解方式，沿袭了第一部分 <span class="math inline">\(A \vec x= \vec b\)</span> 的方式。</p>
-<p>回顾可以将 <span class="math inline">\(A \vec x\)</span> 视为 <span class="math inline">\(A\)</span> 的列向量关于每个 <span class="math inline">\(x\)</span> 分量的线性组合。</p>
-<p>那么 <span class="math inline">\(A B\)</span> 相乘可以理解为将矩阵 <span class="math inline">\(B\)</span> 按列切分成列向量，即 <span class="math display">\[
-B = [\vec B_{col_1} \vec B_{col_2} \cdots \vec B_{col_p} ]
-\]</span></p>
-<p>如此，结果矩阵的第 <span class="math inline">\(j\)</span> 列就是 <span class="math inline">\(A \vec B_{col_j}\)</span>：<span class="math inline">\(A\)</span> 的列向量关于 $ B_{col_j} $ 的线性组合。</p>
-<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/col_w.png"></p>
-<p>由于我们将 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 都按列来切，这种方式可以助记成 <strong>列列</strong> 切分。</p>
-<h2 id="a矩阵行组合行行切分">A矩阵行组合：行行切分</h2>
-<p>同样的，对应与 <span class="math inline">\(A\)</span> 右乘向量等同于<span class="math inline">\(A\)</span>列的组合，<span class="math inline">\(A\)</span> 左乘行向量等同于 <span class="math inline">\(A\)</span> 行的组合： <span class="math display">\[
-[x_1, x_2, ..., x_n]\begin{bmatrix} A_{row_1} \\ A_{row_2} \\ \vdots \\A_{row_n} \end{bmatrix}
-= x_1 \cdot A_{row_1} + x_2 \cdot A_{row_2} +...+ x_n \cdot A_{row_n}
-\]</span> 其结果是一个行向量。</p>
-<p>那么 <span class="math inline">\(A B\)</span> 相乘可以理解为将矩阵 <span class="math inline">\(A\)</span> 按行切分成行向量，即 <span class="math display">\[
-A = \begin{bmatrix} A_{row_1} \\  A_{row_2}\\ \vdots \\ A_{row_m} \end{bmatrix}
-\]</span></p>
-<p>如此，结果矩阵的第 <span class="math inline">\(i\)</span> 行就是 <span class="math inline">\(\vec A_{row_i} B\)</span>：<span class="math inline">\(B\)</span> 的行向量关于 $ A_{row_i} $ 的线性组合。</p>
-<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/row_w.png"></p>
-<p>这种方式可以助记成 <strong>行行</strong> 切分。</p>
-<h2 id="a行-x-b列-点乘行列切分">A行 x B列 点乘：行列切分</h2>
-<p>如 <span class="math inline">\(A\)</span> 矩阵按行切，<span class="math inline">\(B\)</span> 矩阵按列切，即住记成 <strong>行列</strong> 切分时如下所示。</p>
+<p>写成矩阵形式</p>
 <p><span class="math display">\[
-\begin{eqnarray*} 
-&amp;&amp; A_{m \cdot n} \times B_{n \cdot p} \\
-&amp;=&amp;
 \begin{bmatrix}
-A_{row_1} \\
-A_{row_2} \\
-\vdots \\
-A_{row_i} \\
-\vdots \\
-\end{bmatrix}_{m \cdot n}
+2&amp;-1 \\
+-1&amp;2
+\end{bmatrix}
 \begin{bmatrix}
- B_{col_1} &amp;  B_{col_2} &amp; \cdots &amp; B_{col_p}
-\end{bmatrix}_{n \cdot p} \\
-&amp;=&amp;
-\begin{bmatrix}
-&amp;\vdots&amp;\\&amp;
-A_{row_i}&amp;\\&amp;\vdots&amp;
-\end{bmatrix}_{m \cdot n}
-\begin{bmatrix}
-&amp;&amp;\\\cdots&amp; B_{col_j} &amp; \cdots\\&amp;&amp;
-\end{bmatrix}_{n \cdot p} \\
-&amp;=&amp;
-\begin{bmatrix}
-&amp;\vdots&amp;\\\cdots&amp;c_{ij}&amp;\cdots\\&amp;
-\vdots
-\end{bmatrix}_{m \cdot p}
-\end{eqnarray*}
-\]</span></p>
-<p>行乘以列即列向量点乘，结果是一个标量。因此 <span class="math inline">\(c_{ij}\)</span> 为结果矩阵 <span class="math inline">\(C\)</span> 的第 <span class="math inline">\(i\)</span> 行 <span class="math inline">\(j\)</span> 列的值。</p>
-<p><span class="math display">\[
-c_{ij}=A_{row_i} \cdot B_{col_j}
+x \\ y
+\end{bmatrix}
 =
 \begin{bmatrix}
-a_{i1} &amp; a_{i2} &amp; \cdots &amp; a_{in}
+0 \\ 3
+\end{bmatrix}
+\]</span></p>
+<h4 id="行视角">行视角</h4>
+<p>回顾 $2x - y = 0 $ 为所有满足此条件的 (x, y) 的集合，即集合组成二维平面的一条直线，如下图蓝线所示。</p>
+<p>$ -x + 2y = 3$ 则对应绿线。</p>
+<p>因此方程组的解 x = 1, y = 2 为两条直线的交点，这就是方程组的行视角：将系数矩阵按行切分，则每一行表示一个约束条件，几何意义是N维空间的一个子空间。在二元方程中，一行表示一条线，三元方程中，一行表示一个平面（详见后一小节）。 <span class="math display">\[
+\begin{bmatrix}
+\color{blue} 2 x &amp; {\color{blue} -1 y} \\
+\color{green} -1 x &amp; \color{green} 2 y
+\end{bmatrix}
+=
+\begin{bmatrix}
+\color{blue} 0 \\ \color{green} 3
+\end{bmatrix}
+\]</span></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png"></p>
+<h4 id="列视角">列视角</h4>
+<p>若将系数矩阵按列切分，则每一列表示一个向量，方程组的解 (x, y) 表示每个列向量以 x, y 为权重的线性组合刚好形成 b 向量。<strong>这个就是方程组 <span class="math inline">\(Ax=b\)</span> 有解的条件：b 在 A 的列空间</strong>，此时，x 为 列向量的组合系数。 <span class="math display">\[
+x
+\begin{bmatrix}
+\color{Green} 2 \\ \color{Green} -1
+\end{bmatrix}
++
+y
+\begin{bmatrix}
+\color{Turquoise} -1
+\\ \color{Turquoise} 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+\color{Red} 0\\ \color{Red} 3
+\end{bmatrix}
+\]</span></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_col.png"></p>
+<h3 id="三元方程组">三元方程组</h3>
+<h4 id="行视角-1">行视角</h4>
+<p>对于三元方程组行视角来说，每一行的方程组成一个三维空间中的一个平面。解是三个平面的交点，通常来说为一个点。 <span class="math display">\[
+\begin{bmatrix}
+\color{magenta} m_{11} &amp; \color{magenta} m_{12} &amp; \color{magenta} m_{13} \\
+\color{cyan} m_{21} &amp; \color{cyan} m_{22} &amp; \color{cyan} m_{23} \\
+\color{green} m_{31} &amp; \color{green} m_{32} &amp; \color{green} m_{33} \\
 \end{bmatrix}
 \begin{bmatrix}
-b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
+w_{1} \\
+w_{2} \\
+w_{3}
+\end{bmatrix}=
+\begin{bmatrix}
+\color{magenta} y_{1} \\
+\color{cyan} y_{2} \\
+\color{green} y_{3}
 \end{bmatrix}
-=\sum_{k=i}^na_{ik}b_{kj}
 \]</span></p>
-<h2 id="a列-x-b行-矩阵和列行切分">A列 x B行 矩阵和：列行切分</h2>
-<p>最后，也可也按<strong>列行</strong>来切分。注意列乘以行时的结果是一个矩阵。</p>
-<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/matrix_sum_w.png"></p>
-<h2 id="分块相乘">分块相乘</h2>
-<p>第五种方式是分块相乘，可以认为是点乘理解下的扩展。</p>
-<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/block.png"></p>
+<p>图片来自 <a target="_blank" rel="noopener" href="https://pabloinsente.github.io/intro-linear-algebra">Introduction to Linear Algebra for Applied Machine Learning with Python</a>，解为一直线而非一个点。 <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_row.png"></p>
+<h4 id="列视角-1">列视角</h4>
+<p>三元列视角下，A 的列向量为三维平面的一个向量，x（下图为 w） 表示每个列向量取多少倍数可以组成 b 向量。 <span class="math display">\[
+\color{cyan}
+w_1
+\color{black}
+\begin{bmatrix}
+\color{cyan}
+m_{11} \\
+\color{cyan}
+m_{21} \\
+\color{cyan}
+m_{31}
+\end{bmatrix}+
+\color{magenta}
+w_2
+\color{black}
+\begin{bmatrix}
+\color{magenta}
+m_{12} \\
+\color{magenta}
+m_{22} \\
+\color{magenta}
+m_{32}
+\end{bmatrix}+
+\color{green}
+w_3
+\color{black}
+\begin{bmatrix}
+\color{green} m_{13} \\
+\color{green} m_{23} \\
+\color{green} m_{33}
+\end{bmatrix}=
+\begin{bmatrix}
+\color{red} y_{1} \\
+\color{red} y_{2} \\
+\color{red} y_{3}
+\end{bmatrix}
+\]</span></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_col.png"></p>
+<h2 id="解方程的步骤">解方程的步骤</h2>
+<p>总结了二元三元方程组的行和列视角后，我们回顾求解方程的具体步骤。用两个过程，消元和回代便可以解得方程。</p>
+<ul>
+<li><p>消元的目的是将系数矩阵表示成变量依次依赖的<strong>上矩阵形式</strong> (Upper Triangular Matrix)。 <span class="math display">\[
+\begin{bmatrix}
+a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n} \\
+a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+a_{n1} &amp; a_{n2} &amp; \cdots &amp; a_{nn} \\
+\end{bmatrix}
+\underrightarrow{Eliminate}
+\begin{bmatrix}
+\color{red} a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n} \\
+\color{gray} 0 &amp; \color{red} a'_{22} &amp; \cdots &amp; a'_{2n} \\
+\color{gray} 0  &amp; \vdots &amp; \ddots &amp; \vdots \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 &amp; \color{red} a'_{nn} \\
+\end{bmatrix}
+\]</span></p></li>
+<li><p>回代则在上矩阵的基础上依次解得每个分量的值。</p></li>
+</ul>
+<h3 id="三元方程示例">三元方程示例</h3>
+<p>举个三元方程组为例 <span class="math display">\[
+\begin{cases}
+x&amp;+2y&amp;+z&amp;=2 \\
+3x&amp;+8y&amp;+z&amp;=12 \\
+&amp;+4y&amp;+z&amp;=2
+\end{cases}
+\]</span></p>
+<p>写成矩阵形式为</p>
+<p><span class="math display">\[
+\begin{bmatrix}1&amp;2&amp;1\\3&amp;8&amp;1\\0&amp;4&amp;1\end{bmatrix}\begin{bmatrix}x\\y\\z\end{bmatrix}=\begin{bmatrix}2\\12\\2\end{bmatrix}
+\]</span></p>
+<h3 id="消元过程">消元过程</h3>
+<p>在消元过程中，有两类操作，一是将上一行乘以某系数后被下一行减去，依次消除这一行的元。第二类操作是交换当前行和后面某行，行交换用于当某行对应的元已经为0的情况下。</p>
+<p>以上述三元方程为例，第二行消元的具体过程为第二行减去3倍的第一行。接着，再进行第三行消元。</p>
+<p><span class="math display">\[
+\left[\begin{array}{c|c}A&amp;b\end{array}\right]
+=
+\left[\begin{array}{ccc|c}
+\color{red} 1&amp;2&amp;1&amp;2 \\
+3&amp;8&amp;1&amp;12 \\
+0&amp;4&amp;1&amp;2
+\end{array}\right]
+\xrightarrow{row_2-3row_1}
+\left[\begin{array}{ccc|c}
+\color{red} 1&amp;2&amp;1&amp;2 \\ 
+\color{blue} \boxed{0} &amp; \color{red} 2&amp; \color{blue} -2&amp; \color{blue}6 \\
+0&amp;4&amp;1&amp;2
+\end{array}\right]
+\xrightarrow{row_3-2row_2}
+\left[\begin{array}{ccc|c}
+\color{red}1&amp;2&amp;1&amp;2 \\
+0&amp; \color{red} 2&amp;-2&amp;6 \\
+\color{blue} 0 &amp; \color{blue} \boxed{0} &amp; \color{red} 5&amp; \color{blue}-10
+\end{array}\right]
+\]</span></p>
+<p>最终，上矩阵为 <span class="math display">\[
+U=\begin{bmatrix}
+\color{red} 1 &amp; 2&amp; 1 \\
+\color{gray} 0 &amp; \color{red} 2 &amp; -2 \\
+\color{gray} 0 &amp; \color{gray} 0&amp; \color{red} 5
+\end{bmatrix}
+\]</span></p>
+<h3 id="回代过程">回代过程</h3>
+<p>回代过程比较直白，由上矩阵 U 对应方程组 <span class="math display">\[
+\begin{cases}
+\color{red} x&amp;+2y&amp;+z&amp;=2 \\
+&amp; \color{red} +2y &amp;-2z&amp;=6 \\
+&amp;&amp; \color{red} +5z&amp;=-10
+\end{cases}
+\]</span></p>
+<p>自下向上，容易解得 <span class="math display">\[
+\begin{cases}
+\color{red}x \color{black}= 2 \\
+\color{red}y \color{black}= 1 \\
+\color{red}z \color{black}= -2
+\end{cases}
+\]</span></p>
+<h3 id="消元的行视角意义">消元的行视角意义</h3>
+<p>注意到消元时的两类操作都不改变系数矩阵的行空间，只是改变了行空间的线性组合方式。</p>
+<p>由于每一行代表一个拘束子空间，因此每一次消元改变了该行的拘束子空间。</p>
+<p>举个例子，对于二元方程组和行空间 <span class="math display">\[
+\begin{bmatrix}
+\color{blue} 2 x &amp; \color{blue} -1 y \\
+\color{green} -1 x &amp; \color{green} 2 y
+\end{bmatrix}
+=
+\begin{bmatrix}
+\color{blue} 0 \\ \color{green} 3
+\end{bmatrix}
+\]</span></p>
+<p>对应了两条直线 <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png"></p>
+<p>第二行的 x 消除后其几何意义为：蓝色直线不变，绿色直线从包含 x 的成分变成不含 x 成分，并且维持交点 （1, 2）不变。 <span class="math display">\[
+\begin{bmatrix}
+\color{blue} 2 x &amp; \color{blue} -1 y \\
+&amp; \color{green} {3 \over 2} y
+\end{bmatrix}
+=
+\begin{bmatrix}
+\color{blue} 0 \\ \color{green} 3
+\end{bmatrix}
+\]</span> <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row_e.png"></p>
+<p>最后还有一个问题可以思考一下：消元对于列视角的几何意义是什么呢？</p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
@@ -335,12 +504,12 @@ b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
     <div class="columns is-mobile is-multiline article-nav">
         <span class="column is-12-mobile is-half-desktop  article-nav-prev">
             
-            <a href="/zh/2022/linear-algebra-strang-02-solving-equations/">Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程</a>
+            <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
             
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/zh/2021/service-arxiv/">MyEncyclopedia Arxiv Trending 发现服务</a>
+            <a href="/zh/2022/linear-algebra-strang-01-matrix-product/">Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解</a>
             
         </span>
     </div>
@@ -351,8 +520,8 @@ b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
 <div>
 <p class="note note-warning">
 <strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
-<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://myencyclopedia.top/blog/zh/2022/linear-algebra-strang-01-matrix-product/">https://myencyclopedia.top/blog/zh/2022/linear-algebra-strang-01-matrix-product/</a> <br>
-<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/">https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://myencyclopedia.top/blog/zh/2022/linear-algebra-strang-02-solving-equations/">https://myencyclopedia.top/blog/zh/2022/linear-algebra-strang-02-solving-equations/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/">https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/</a> <br>
 
 <img src="/about/me_wechat_scan_search_white.png" />
 </p>
@@ -428,11 +597,11 @@ b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
         <div class="dropdown-menu has-text-left" role="menu">
             <div class="dropdown-content">
             
-                <a href="/2022/linear-algebra-strang-01-matrix-product/" class="dropdown-item">
+                <a href="/2022/linear-algebra-strang-02-solving-equations/" class="dropdown-item">
                     简体中文
                 </a>
             
-                <a href="/en/2022/linear-algebra-strang-01-matrix-product/" class="dropdown-item">
+                <a href="/en/2022/linear-algebra-strang-02-solving-equations/" class="dropdown-item">
                     English
                 </a>
             

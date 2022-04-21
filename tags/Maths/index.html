@@ -174,7 +174,7 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh/2022/aa/" itemprop="url">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
+            <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/" itemprop="url">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -353,7 +353,7 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/" itemprop="url">Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程</a>
+            <a href="/zh/2022/linear-algebra-strang-02-solving-equations/" itemprop="url">Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -380,8 +380,8 @@
     
         <html><head></head><body><p>本文继续以彩色<span style="color:blue">L</span><span style="color:green">a</span><span style="color:red">t</span><span style="color:magenta">e</span><span style="color:orange">x</span> 方式总结了方程组的行视角，列视角的几何意义；并回顾了解方程的两个步骤：消元和回代。内容对应于MIT 18.06 Gilbert Strang 线性代数视频课程第一，二节。</p>
 <p>本系列链接如下</p>
-<p><strong><a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/../linear-algebra-strang-01-matrix-product">01 - 矩阵乘法的五种理解</a></strong></p>
-<p><strong><a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/../linear-algebra-strang-02-solving-equations">02 - 解方程组的意义和过程</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-01-matrix-product">01 - 矩阵乘法的五种理解</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-02-solving-equations">02 - 解方程组的意义和过程</a></strong></p>
 <h2 id="方程组两种几何解释">方程组两种几何解释</h2>
 <h3 id="二元方程组">二元方程组</h3>
 <p>来看一个具体的二元线性方程组</p>
@@ -418,7 +418,7 @@ x \\ y
 \color{blue} 0 \\ \color{green} 3
 \end{bmatrix}
 \]</span></p>
-<p><img src="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/eq_2d_row.png"></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png"></p>
 <h4 id="列视角">列视角</h4>
 <p>若将系数矩阵按列切分，则每一列表示一个向量，方程组的解 (x, y) 表示每个列向量以 x, y 为权重的线性组合刚好形成 b 向量。<strong>这个就是方程组 <span class="math inline">\(Ax=b\)</span> 有解的条件：b 在 A 的列空间</strong>，此时，x 为 列向量的组合系数。 <span class="math display">\[
 x
@@ -436,7 +436,7 @@ y
 \color{Red} 0\\ \color{Red} 3
 \end{bmatrix}
 \]</span></p>
-<p><img src="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/eq_2d_col.png"></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_col.png"></p>
 <h3 id="三元方程组">三元方程组</h3>
 <h4 id="行视角-1">行视角</h4>
 <p>对于三元方程组行视角来说，每一行的方程组成一个三维空间中的一个平面。解是三个平面的交点，通常来说为一个点。 <span class="math display">\[
@@ -456,7 +456,7 @@ w_{3}
 \color{green} y_{3}
 \end{bmatrix}
 \]</span></p>
-<p>图片来自 <a target="_blank" rel="noopener" href="https://pabloinsente.github.io/intro-linear-algebra">Introduction to Linear Algebra for Applied Machine Learning with Python</a>，解为一直线而非一个点。 <img src="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/eq_3d_row.png"></p>
+<p>图片来自 <a target="_blank" rel="noopener" href="https://pabloinsente.github.io/intro-linear-algebra">Introduction to Linear Algebra for Applied Machine Learning with Python</a>，解为一直线而非一个点。 <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_row.png"></p>
 <h4 id="列视角-1">列视角</h4>
 <p>三元列视角下，A 的列向量为三维平面的一个向量，x（下图为 w） 表示每个列向量取多少倍数可以组成 b 向量。 <span class="math display">\[
 \color{cyan}
@@ -495,7 +495,7 @@ w_3
 \color{red} y_{3}
 \end{bmatrix}
 \]</span></p>
-<p><img src="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/eq_3d_col.png"></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_col.png"></p>
 <h2 id="解方程的步骤">解方程的步骤</h2>
 <p>总结了二元三元方程组的行和列视角后，我们回顾求解方程的具体步骤。用两个过程，消元和回代便可以解得方程。</p>
 <ul>
@@ -587,7 +587,7 @@ U=\begin{bmatrix}
 \color{blue} 0 \\ \color{green} 3
 \end{bmatrix}
 \]</span></p>
-<p>对应了两条直线 <img src="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/eq_2d_row.png"></p>
+<p>对应了两条直线 <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png"></p>
 <p>第二行的 x 消除后其几何意义为：蓝色直线不变，绿色直线从包含 x 的成分变成不含 x 成分，并且维持交点 （1, 2）不变。 <span class="math display">\[
 \begin{bmatrix}
 \color{blue} 2 x &amp; \color{blue} -1 y \\
@@ -597,7 +597,7 @@ U=\begin{bmatrix}
 \begin{bmatrix}
 \color{blue} 0 \\ \color{green} 3
 \end{bmatrix}
-\]</span> <img src="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/eq_2d_row_e.png"></p>
+\]</span> <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row_e.png"></p>
 <p>最后还有一个问题可以思考一下：消元对于列视角的几何意义是什么呢？</p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
