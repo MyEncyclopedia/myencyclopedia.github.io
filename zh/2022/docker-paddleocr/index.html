@@ -18,19 +18,19 @@
 
 
 
-    <meta name="description" content="PaddleOCR CPU 镜像 本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。 众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练把自己的数据集和调参，只要用成熟的模型就足">
+    <meta name="description" content="PaddleOCR CPU 镜像 本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。 众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练自己的数据集和调参，只要用成熟的模型就足够">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一键即起开箱即用部署强悍中英文OCR本地服务">
 <meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/">
 <meta property="og:site_name" content="MyEncyclopedia">
-<meta property="og:description" content="PaddleOCR CPU 镜像 本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。 众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练把自己的数据集和调参，只要用成熟的模型就足">
+<meta property="og:description" content="PaddleOCR CPU 镜像 本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。 众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练自己的数据集和调参，只要用成熟的模型就足够">
 <meta property="og:locale">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/scene-out.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/scene-out.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/engtest-out.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/me-out.png">
 <meta property="article:published_time" content="2022-04-16T10:45:01.000Z">
-<meta property="article:modified_time" content="2022-04-15T07:24:22.000Z">
+<meta property="article:modified_time" content="2022-04-15T09:52:46.000Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta property="article:tag" content="OCR">
 <meta property="article:tag" content="Docker">
@@ -250,7 +250,7 @@
         <span class="column is-narrow">
             
             
-            6 分钟 读完 (约 931 字)
+            6 分钟 读完 (约 930 字)
         </span>
         
     </div>
@@ -258,7 +258,7 @@
     
         <html><head></head><body><h2 id="paddleocr-cpu-镜像">PaddleOCR CPU 镜像</h2>
 <p>本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。</p>
-<p>众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练把自己的数据集和调参，只要用成熟的模型就足够了。另外，无论在 Windows 还是 Linux 中，大家配置安装 nvidia GPU 镜像都是比较麻烦。因此，这次特地为大家打造了这样一个 CPU 的 PaddleOCR 镜像，并且把常规的模型都预装到镜像中了，大家一键就能部署强悍的本地 OCR 服务。只需要安装 Docker 即可，也支持 Mac。</p>
+<p>众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练自己的数据集和调参，只要用成熟的模型就足够了。另外，无论在 Windows 还是 Linux 中，大家配置安装 nvidia GPU 镜像都是比较麻烦。因此，这次特地为大家打造了这样一个 CPU 的 PaddleOCR 镜像，并且把常规的模型都预装到镜像中了，大家一键就能部署强悍的本地 OCR 服务。只需要安装 Docker 即可，也支持 Mac。</p>
 <h3 id="文字效果">文字效果</h3>
 <p>先来看一个文字识别的效果吧，图片中这家店铺使用了非常规的中文字体，但PaddleOCR依然完全识别了出来。 <img src="/zh/2022/docker-paddleocr/scene-out.png"></p>
 <h2 id="获取镜像">获取镜像</h2>
@@ -302,7 +302,7 @@
         </span>
         <span class="column is-12-mobile is-half-desktop  article-nav-next">
             
-            <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
+            <a href="/zh/2022/aa/">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
             
         </span>
     </div>
