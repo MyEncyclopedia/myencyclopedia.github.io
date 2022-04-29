@@ -174,6 +174,109 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh/2021/course-pytorch-geometric/" itemprop="url">Pytorch Geometric (pyg) 系列教程</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2021-10-12T10:45:01.000Z" itemprop="datePublished">10月 12 2021</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            1 分钟 读完 (约 147 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>请在桌面浏览器中打开此链接，保证最好的浏览体验</p>
+<h2 id="关注公众号后回复-docker-geometric获取-docker-image">关注公众号后回复 <code>docker-geometric</code>，获取 Docker Image</h2>
+<p><img src="https://myencyclopedia.top/en/img/me_gzh.jpg" width="120px"></p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># 导入image</span></span><br><span class="line">docker load &lt; env-torch1.8-geometric.tar</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 运行 jupyter notebook</span></span><br><span class="line">docker run  -p 8888:8888 -it env-torch1.8-geometric jupyter notebook --allow-root --ip <span class="hljs-string">'0.0.0.0'</span> --notebook-dir=/proj</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="在线代码">在线代码</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mydoc.myencyclopedia.top/pub-html/01_plot_cora.html">01 Plot Cora</a></li>
+<li><a target="_blank" rel="noopener" href="https://mydoc.myencyclopedia.top/pub-html/02_data_interface.html">02 Geometric Graph Data Representation</a></li>
+<li><a target="_blank" rel="noopener" href="https://mydoc.myencyclopedia.top/pub-html/03_gcn.html">03 GCN</a></li>
+</ul>
+<h2 id="公众号系列视频链接"><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA4NzkxNzM3Nw==&amp;action=getalbum&amp;album_id=2055350201493585920#wechat_redirect">公众号系列视频链接</a></h2>
+<h2 id="b站视频系列链接"><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1f3411i7MQ">B站视频系列链接</a></h2>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh/2021/pytorch-geometric-01-plot-cora/" itemprop="url">Pytorch Geometric 系列教程1：互动可视化Graph数据集</a>
         
     </h1>
@@ -1871,140 +1974,6 @@ X_1,X_2, X_3, ..., X_N
 <li><p><span class="math inline">\(\hat\theta_{10}\)</span> 的分散度比 $ _{80}$ 要大，即方差要大</p></li>
 <li><p><span class="math inline">\(\hat\theta_{10}, \hat\theta_{80}\)</span> 的均值都在 0.7</p></li>
 </ul>
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh/2021/leetcode-1029-two-city-scheduling/" itemprop="url">Leetcode 1029 两地调度优化解法（附OR-Tools和PuLP代码）</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2021-02-20T10:45:01.000Z" itemprop="datePublished">2月 20 2021</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            12 分钟 读完 (约 1850 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><h2 id="leetcode-1029.-两地调度-medium">Leetcode 1029. 两地调度 (medium)</h2>
-<p>公司计划面试 2N 人。第 i 人飞往 A 市的费用为 costs[i][0]，飞往 B 市的费用为 costs[i][1]。</p>
-<p>返回将每个人都飞到某座城市的最低费用，要求每个城市都有 N 人抵达。&nbsp;</p>
-<p>示例：</p>
-<blockquote>
-<p>输入：[[10,20],[30,200],[400,50],[30,20]] 输出：110 解释： 第一个人去 A 市，费用为 10。 第二个人去 A 市，费用为 30。 第三个人去 B 市，费用为 50。 第四个人去 B 市，费用为 20。 最低总费用为 10 + 30 + 50 + 20 = 110，每个城市都有一半的人在面试。</p>
-</blockquote>
-<p>提示：</p>
-<p>1 &lt;= costs.length &lt;= 100 costs.length 为偶数 1 &lt;= costs[i][0], costs[i][1] &lt;= 1000</p>
-<p>链接：https://leetcode-cn.com/problems/two-city-scheduling</p>
-<h2 id="暴力枚举法">暴力枚举法</h2>
-<p>最直接的方式是暴力枚举出所有分组的可能。因为 2N 个人平均分成两组，总数为 <span class="math inline">\({2n \choose n}\)</span>，是 n 的指数级数量。在文章<a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzA4NzkxNzM3Nw==&amp;mid=2457480569&amp;idx=1&amp;sn=dd90016214931db2f48140d6e269b137&amp;chksm=87bc9b57b0cb12419631a7bcd96b5cd6e6d4081ffdfc49852572a31c4823bda4d42c5e73dcba&amp;scene=21#wechat_redirect">24 点游戏算法题的 Python 函数式实现: 学用itertools，yield，yield from 巧刷题</a>，我们展示如何调用 Python 的 itertools包，这里，我们也用同样的方式产生 [0, 2N] 的所有集合大小为N的可能（保存在left_set_list中），再遍历找到最小值即可。当然，这种解法会TLE，只是举个例子来体会一下暴力做法。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> math</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">twoCitySchedCost</span>(<span class="hljs-params">self, costs: <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        L = <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(costs))</span><br><span class="line">        <span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> combinations</span><br><span class="line">        left_set_list = [<span class="hljs-built_in">set</span>(c) <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> combinations(<span class="hljs-built_in">list</span>(L), <span class="hljs-built_in">len</span>(L)//<span class="hljs-number">2</span>)]</span><br><span class="line"></span><br><span class="line">        min_total = math.inf</span><br><span class="line">        <span class="hljs-keyword">for</span> left_set <span class="hljs-keyword">in</span> left_set_list:</span><br><span class="line">            cost = <span class="hljs-number">0</span></span><br><span class="line">            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> L:</span><br><span class="line">                is_left = <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> i <span class="hljs-keyword">in</span> left_set <span class="hljs-keyword">else</span> <span class="hljs-number">0</span></span><br><span class="line">                cost += costs[i][is_left]</span><br><span class="line">            min_total = <span class="hljs-built_in">min</span>(min_total, cost)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> min_total</span><br></pre></td></tr></tbody></table></figure>
-<h2 id="on-ac解法">O(N) AC解法</h2>
-<p>对于组合优化问题来说，例如TSP问题（解法链接 <a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzA4NzkxNzM3Nw==&amp;mid=2457480484&amp;idx=1&amp;sn=bf45afaa2bd987747c34a03b9176e89f&amp;chksm=87bc9b0ab0cb121c311299dbf16a55fe76b2b60d6d9e073f37deec49e28766ca416860a7659c#rd">TSP问题从DP算法到深度学习1：递归DP方法 AC AIZU TSP问题</a>），一般都是 NP-Hard问题，意味着没有多项次复杂度的解法。但是这个问题比较特殊，它增加了一个特定条件：去城市A和城市B的人数相同，也就是我们已经知道两个分组的数量是一样的。我们仔细思考一下这个意味着什么？考虑只有四个人的小规模情况，如果让你来手动规划，你一定不会穷举出所有两两分组的可能，而是比较人与人相对的两个城市的cost差。举个例子，有如下四个人的costs </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0 A:3,  B:1</span><br><span class="line">1 A:99, B:100</span><br><span class="line">2 A:2,  B:2</span><br><span class="line">3 A:3,  B:3</span><br></pre></td></tr></tbody></table></figure> 虽然1号人去城市A（99）cost 很大，但是相比较他去B（100）来说，可以省下 100-99 = 1 的钱，这个钱比0号人去B不去A省下的钱 3-1 = 2 还要多，因此你一定会选择让1号人去A而让0号人去B。<p></p>
-<p>有了这个想法，再整理一下，就会发现让某人去哪个城市和他去两个城市的cost 差 $ C_a - C_b$相关，如果这个值越大，那么他越应该去B。但是最后决定他是否去B取决于他的差在所有人中的排名，由于两组人数相等，因此差能大到排在前一半，则他就去B，在后一半就去A。</p>
-<p>按照这个思路，很快能写出代码，代码写法有很多，下面略举一例。代码中由于用到排序，复杂度为 <span class="math inline">\(O(N \cdot \log(N))\)</span> 。这里补充一点，理论上只需找数组中位数的值即可，最好的时间复杂度是 <span class="math inline">\(O(N)\)</span>。</p>
-<p>代码实现上，cost_diff_list 将每个人的在原数组的index 和他的cost差组成 pair。即</p>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[(0, cost_0), (1, cost_1), ... ]</span><br></pre></td></tr></tbody></table></figure>
-<p>这样我们可以将这个数组按照cost排序，排完序后前面N个元素属于B城市。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 36 ms, faster than 87.77% of Python3 online submissions</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 14.5 MB, less than 14.84% of Python3 online</span></span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">twoCitySchedCost</span>(<span class="hljs-params">self, costs: <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        L = <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(costs))</span><br><span class="line">        cost_diff_lst = [(i, costs[i][<span class="hljs-number">0</span>] - costs[i][<span class="hljs-number">1</span>]) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> L]</span><br><span class="line">        cost_diff_lst.sort(key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>])</span><br><span class="line"></span><br><span class="line">        total_cost = <span class="hljs-number">0</span></span><br><span class="line">        <span class="hljs-keyword">for</span> c, (idx, _) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(cost_diff_lst):</span><br><span class="line">            is_left = <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> c &lt; <span class="hljs-built_in">len</span>(L) // <span class="hljs-number">2</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span></span><br><span class="line">            total_cost += costs[idx][is_left]</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> total_cost</span><br></pre></td></tr></tbody></table></figure>
-<h2 id="转换成整数规划问题">转换成整数规划问题</h2>
-<p>这个问题对于略有算法经验的人来说，很类似于背包问题。它们都需要回答N个物品取或者不取，并同时最大最小化总cost。区别在它们的约束条件不一样。这道题的约束是去取（去城市A）和不取（去城市B）的数量一样。这一类问题即 <em>integer programming</em>，即整数规划。下面我们选取两个比较流行的优化库来展示如何调包解这道题。</p>
-<p>首先我们先来formulate这个问题，因为需要表达两个约束条件，我们将每个人的状态分成是否去A和是否去B两个变量。</p>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x[i-th-person][0]: boolean 表示是否去 city a</span><br><span class="line">x[i-th-person][1]: boolean 表示是否去 city b</span><br></pre></td></tr></tbody></table></figure>
-<p>这样，问题转换成如下优化模型</p>
-<p><span class="math display">\[
-\begin{array}{rrclcl}
-\displaystyle \min_{x} &amp; costs[i][0] \cdot x[i][0] + costs[i][1] \cdot x[i][1]\\
-\textrm{s.t.} &amp; x[i][0] + x[i][1] =1\\
-&amp;x[i][0] + x[i][1] + ... =N    \\
-\end{array}
-\]</span></p>
-<h2 id="google-or-tools">Google OR-Tools</h2>
-<p>Google OR-Tools 是业界最好的优化库，下面为调用代码，由于直接对应于上面的数学优化问题，不做赘述。当然 Leetcode上不支持这些第三方的库，肯定也不能AC。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> ortools.sat.python <span class="hljs-keyword">import</span> cp_model</span><br><span class="line"></span><br><span class="line">costs = [[<span class="hljs-number">515</span>,<span class="hljs-number">563</span>],[<span class="hljs-number">451</span>,<span class="hljs-number">713</span>],[<span class="hljs-number">537</span>,<span class="hljs-number">709</span>],[<span class="hljs-number">343</span>,<span class="hljs-number">819</span>],[<span class="hljs-number">855</span>,<span class="hljs-number">779</span>],[<span class="hljs-number">457</span>,<span class="hljs-number">60</span>],[<span class="hljs-number">650</span>,<span class="hljs-number">359</span>],[<span class="hljs-number">631</span>,<span class="hljs-number">42</span>]]</span><br><span class="line"></span><br><span class="line">I = <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(costs))</span><br><span class="line"></span><br><span class="line">model = cp_model.CpModel()</span><br><span class="line">x = []</span><br><span class="line">total_cost = model.NewIntVar(<span class="hljs-number">0</span>, <span class="hljs-number">10000</span>, <span class="hljs-string">'total_cost'</span>)</span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I:</span><br><span class="line">    t = []</span><br><span class="line">    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2</span>):</span><br><span class="line">        t.append(model.NewBoolVar(<span class="hljs-string">'x[%i,%i]'</span> % (i, j)))</span><br><span class="line">    x.append(t)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># Constraints</span></span><br><span class="line"><span class="hljs-comment"># Each person must be assigned to at exact one city</span></span><br><span class="line">[model.Add(<span class="hljs-built_in">sum</span>(x[i][j] <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2</span>)) == <span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I]</span><br><span class="line"><span class="hljs-comment"># equal number of person assigned to two cities</span></span><br><span class="line">model.Add(<span class="hljs-built_in">sum</span>(x[i][<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I) == (<span class="hljs-built_in">len</span>(I) // <span class="hljs-number">2</span>))</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># Total cost</span></span><br><span class="line">model.Add(total_cost == <span class="hljs-built_in">sum</span>(x[i][<span class="hljs-number">0</span>] * costs[i][<span class="hljs-number">0</span>] + x[i][<span class="hljs-number">1</span>] * costs[i][<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I))</span><br><span class="line">model.Minimize(total_cost)</span><br><span class="line"></span><br><span class="line">solver = cp_model.CpSolver()</span><br><span class="line">status = solver.Solve(model)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> status == cp_model.OPTIMAL:</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">'Total min cost = %i'</span> % solver.ObjectiveValue())</span><br><span class="line">    <span class="hljs-built_in">print</span>()</span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I:</span><br><span class="line">        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2</span>):</span><br><span class="line">            <span class="hljs-keyword">if</span> solver.Value(x[i][j]) == <span class="hljs-number">1</span>:</span><br><span class="line">                <span class="hljs-built_in">print</span>(<span class="hljs-string">'People '</span>, i, <span class="hljs-string">' assigned to city '</span>, j, <span class="hljs-string">'  Cost = '</span>, costs[i][j])</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p>完整代码可以从我的github下载。</p>
-<p>https://github.com/MyEncyclopedia/leetcode/blob/master/1029_Two_City_Scheduling/1029_ortool.py</p>
-<h2 id="pulp">PuLP</h2>
-<p>类似的，另一种流行 python 优化库 PuLP 的代码为</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> pulp</span><br><span class="line"></span><br><span class="line">costs = [[<span class="hljs-number">259</span>,<span class="hljs-number">770</span>],[<span class="hljs-number">448</span>,<span class="hljs-number">54</span>],[<span class="hljs-number">926</span>,<span class="hljs-number">667</span>],[<span class="hljs-number">184</span>,<span class="hljs-number">139</span>],[<span class="hljs-number">840</span>,<span class="hljs-number">118</span>],[<span class="hljs-number">577</span>,<span class="hljs-number">469</span>]]   <span class="hljs-comment"># 1859</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">I = <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(costs))</span><br><span class="line"></span><br><span class="line">items=[i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I]</span><br><span class="line">city_a = pulp.LpVariable.dicts(<span class="hljs-string">'left'</span>, items, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, pulp.LpBinary)</span><br><span class="line">city_b = pulp.LpVariable.dicts(<span class="hljs-string">'right'</span>, items, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, pulp.LpBinary)</span><br><span class="line"></span><br><span class="line">m = pulp.LpProblem(<span class="hljs-string">"Two Cities"</span>, pulp.LpMinimize)</span><br><span class="line"></span><br><span class="line">m += pulp.lpSum((costs[i][<span class="hljs-number">0</span>] * city_a[i] + costs[i][<span class="hljs-number">1</span>] * city_b[i]) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> items)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># Constraints</span></span><br><span class="line"><span class="hljs-comment"># Each person must be assigned to at exact one city</span></span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I:</span><br><span class="line">    m += pulp.lpSum([city_a[i] + city_b[i]]) == <span class="hljs-number">1</span></span><br><span class="line"><span class="hljs-comment"># create a binary variable to state that a table setting is used</span></span><br><span class="line">m += pulp.lpSum(city_a[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I) == (<span class="hljs-built_in">len</span>(I) // <span class="hljs-number">2</span>)</span><br><span class="line"></span><br><span class="line">m.solve()</span><br><span class="line"></span><br><span class="line">total = <span class="hljs-number">0</span></span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> I:</span><br><span class="line">    <span class="hljs-keyword">if</span> city_a[i].value() == <span class="hljs-number">1.0</span>:</span><br><span class="line">        total += costs[i][<span class="hljs-number">0</span>]</span><br><span class="line">    <span class="hljs-keyword">else</span>:</span><br><span class="line">        total += costs[i][<span class="hljs-number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">print</span>(<span class="hljs-string">"Total cost {}"</span>.<span class="hljs-built_in">format</span>(total))</span><br></pre></td></tr></tbody></table></figure>
-<p>代码地址为</p>
-<p>https://github.com/MyEncyclopedia/leetcode/blob/master/1029_Two_City_Scheduling/1029_pulp.py</p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>

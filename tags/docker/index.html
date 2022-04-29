@@ -2,13 +2,13 @@
 <html class="has-navbar-fixed-top">
 <head>
     <meta charset="utf-8">
-<title>标签: Docker - MyEncyclopedia</title>
+<title>标签: docker - MyEncyclopedia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-<link href="/en/tags/Docker/" rel="alternate" hreflang="en" />
+<link href="/en/tags/docker/" rel="alternate" hreflang="en" />
     
 
 
@@ -20,7 +20,7 @@
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="MyEncyclopedia">
-<meta property="og:url" content="https://myencyclopedia.github.io/tags/Docker/">
+<meta property="og:url" content="https://myencyclopedia.github.io/tags/docker/">
 <meta property="og:site_name" content="MyEncyclopedia">
 <meta property="og:locale">
 <meta property="article:author" content="MyEncyclopedia">
@@ -116,7 +116,7 @@
     <section class="section section-heading">
     <div class="container">
         <div class="content">
-            <h5>#Docker</h5>
+            <h5>#docker</h5>
         </div>
     </div>
 </section>
@@ -174,13 +174,13 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh/2022/docker-paddleocr/" itemprop="url">一键即起开箱即用部署强悍中英文OCR本地服务</a>
+            <a href="/zh/2021/docker-gym-nes/" itemprop="url">跨平台任天堂红白机强化学习预制环境</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
         <span class="column is-narrow">
             
-                <time datetime="2022-04-16T10:45:01.000Z" itemprop="datePublished">4月 16 2022</time>
+                <time datetime="2021-11-21T10:45:01.000Z" itemprop="datePublished">11月 21 2021</time>
             
         </span>
         
@@ -193,37 +193,53 @@
         <span class="column is-narrow">
             
             
-            6 分钟 读完 (约 930 字)
+            6 分钟 读完 (约 966 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><h2 id="paddleocr-cpu-镜像">PaddleOCR CPU 镜像</h2>
-<p>本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。</p>
-<p>众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练自己的数据集和调参，只要用成熟的模型就足够了。另外，无论在 Windows 还是 Linux 中，大家配置安装 nvidia GPU 镜像都是比较麻烦。因此，这次特地为大家打造了这样一个 CPU 的 PaddleOCR 镜像，并且把常规的模型都预装到镜像中了，大家一键就能部署强悍的本地 OCR 服务。只需要安装 Docker 即可，也支持 Mac。</p>
-<h3 id="文字效果">文字效果</h3>
-<p>先来看一个文字识别的效果吧，图片中这家店铺使用了非常规的中文字体，但PaddleOCR依然完全识别了出来。 <img src="/zh/2022/docker-paddleocr/scene-out.png"></p>
-<h2 id="获取镜像">获取镜像</h2>
-<p>具体获取方式为：关注 <code>MyEncyclopedia</code> 公众号，回复 <code>docker-paddleocr</code></p>
-<p>下面的命令一键起了这个镜像，注意，<strong>大家要将 <code>me-paddleocr</code> 替换成公众号中的镜像名</strong>。</p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it me-paddleocr bash </span><br></pre></td></tr></tbody></table></figure>
-<p>进入容器后，我们已经在 <code>/proj</code>目录，通过 <code>ls</code> 可以发现有如下文件，三个图片demo输入文件，<code>scene.png</code>, <code>engtest.jpg</code>, <code>me.png</code> 和 <code>demo_ch.py</code>。</p>
-<h2 id="命令行识别">命令行识别</h2>
-<p>通过 PaddleOCR 内置的命令可以最快捷地识别文字，命令格式如下。</p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">paddleocr --image_dir scene.png --use_angle_cls <span class="hljs-literal">true</span> --lang ch --use_gpu <span class="hljs-literal">false</span></span><br></pre></td></tr></tbody></table></figure>
-<p>输出为，最后两行为识别出的两处文字及其位置。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ppocr INFO: **********scene.png**********</span><br><span class="line">ppocr DEBUG: dt_boxes num : 2, elapse : 0.1184682846069336</span><br><span class="line">ppocr DEBUG: cls num  : 2, elapse : 0.016251802444458008</span><br><span class="line">ppocr DEBUG: rec_res num  : 2, elapse : 0.041384220123291016</span><br><span class="line">ppocr INFO: [[[152.0, 83.0], [402.0, 81.0], [402.0, 135.0], [153.0, 137.0]], ('匠牛饺子', 0.94130754)]</span><br><span class="line">ppocr INFO: [[[412.0, 183.0], [450.0, 183.0], [450.0, 206.0], [412.0, 206.0]], ('匠牛', 0.7368352)]</span><br></pre></td></tr></tbody></table></figure><p></p>
-<h2 id="代码识别">代码识别</h2>
-<p>当然了，为了方便查看结果，需要通过代码来实现。下面展示镜像内置的三个demo图片的执行python 代码 <code>demo_ch.py</code> 后的输出效果。</p>
-<h3 id="结果展示">结果展示</h3>
-<p>图片一：门头照片 <img src="/zh/2022/docker-paddleocr/scene-out.png"></p>
-<p>图片二：中英文混合的试卷 <img src="/zh/2022/docker-paddleocr/engtest-out.png"></p>
-<p>图片三：中英文混合Logo <img src="/zh/2022/docker-paddleocr/me-out.png"></p>
-<h3 id="demo_ch.py">demo_ch.py</h3>
-<p>附上 <code>demo_ch.py</code> 源代码，不做赘述。</p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> paddleocr <span class="hljs-keyword">import</span> PaddleOCR</span><br><span class="line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line"><span class="hljs-keyword">import</span> cv2</span><br><span class="line"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt</span><br><span class="line"><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image, ImageDraw, ImageFont</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cv2ImgAddText</span>(<span class="hljs-params">img, text, left, top, textColor=(<span class="hljs-params"><span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span></span>), textSize=<span class="hljs-number">20</span></span>):</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isinstance</span>(img, np.ndarray)):</span><br><span class="line">        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))</span><br><span class="line">    draw = ImageDraw.Draw(img)</span><br><span class="line">    fontStyle = ImageFont.truetype(<span class="hljs-string">'wqy-zenhei.ttc'</span>, textSize, encoding=<span class="hljs-string">"utf-8"</span>)</span><br><span class="line">    draw.text((left, top), text, textColor, font=fontStyle)</span><br><span class="line">    <span class="hljs-keyword">return</span> cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)</span><br><span class="line"></span><br><span class="line">ocr = PaddleOCR()</span><br><span class="line">img_path = <span class="hljs-string">'/proj/scene.png'</span></span><br><span class="line"></span><br><span class="line">result = ocr.ocr(img_path, rec=<span class="hljs-literal">True</span>)</span><br><span class="line"><span class="hljs-built_in">print</span>(<span class="hljs-string">f"The predicted text box of <span class="hljs-subst">{img_path}</span> are follows."</span>)</span><br><span class="line"></span><br><span class="line">image = cv2.imread(img_path)</span><br><span class="line">boxes = [[line[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">2</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">3</span>]] <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> result]</span><br><span class="line">texts = [line[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> result]</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> box, text <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(boxes, texts):</span><br><span class="line">    box = np.reshape(np.array(box), [-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]).astype(np.int64)</span><br><span class="line">    <span class="hljs-built_in">print</span>(box)</span><br><span class="line">    image = cv2.polylines(np.array(image), [box], <span class="hljs-literal">True</span>, (<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), <span class="hljs-number">2</span>)</span><br><span class="line">    image = cv2ImgAddText(image, text, box[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] - <span class="hljs-number">10</span>, box[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>][<span class="hljs-number">1</span>] - <span class="hljs-number">10</span>, textColor=(<span class="hljs-number">0</span>, <span class="hljs-number">255</span>, <span class="hljs-number">0</span>), textSize=<span class="hljs-number">20</span>)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>))</span><br><span class="line">plt.imshow(image)</span><br><span class="line">plt.savefig(<span class="hljs-string">'/proj/result.jpg'</span>)</span><br></pre></td></tr></tbody></table></figure>
-<h2 id="结束语">结束语</h2>
-<p>PaddleOCR最为市面上最好的开源中文 OCR 引擎之一，其强悍的效果可以达到开箱即用，本期基于 CPU 的预制镜像更降低了大家使用的门槛。本系列后续会和大家分享如何在 PaddleOCR GPU 镜像中去训练自己的数据集，来提升特定字体的准确度，大家喜欢的话不要忘记一键三连哦。同时也可以关注 MyEncyclopedia 微信公众号以及B站频道，下次再见。</p>
+        <html><head></head><body><p>今天和大家分享强化学习的经典训练环境，任天堂的红白机训练环境。</p>
+<p><img src="/zh/2021/docker-gym-nes/gym-demo.gif"></p>
+<p>这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux 甚至 Mac 上都可以运行。</p>
+<p>这里将通过大家最常用的 Windows 系统来演示环境的使用。</p>
+<h2 id="x-window-服务器">X window 服务器</h2>
+<p>在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 XLaunch。</p>
+<p><img src="/zh/2021/docker-gym-nes/xlaunch.png"></p>
+<p>这里采用 XLaunch 是因为安装比较方便，安装包也很小。</p>
+<p>如果 XLaunch 正常启动的话，就会在系统托管的地方显示出来。接着我们来下载环境的 docker images。</p>
+<h2 id="拉取镜像">拉取镜像</h2>
+<p>用 docker pull 命令我们将预制的公开镜像拉下来</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull myencyclopedia/gym-nes</span><br></pre></td></tr></tbody></table></figure>
+<p>拉下来以后，可以用 docker image命令来检查是否存在</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></tbody></table></figure>
+<p>下一步，我们需要找到物理机或者 docker host 机器的 IP 地址。</p>
+<p>在windows上，我们执行 ipconfig 命令，注意我们要的是 WSL 对应的 IP 地址。</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ ipconfig.exe</span><br><span class="line"></span><br><span class="line">Windows IP 配置</span><br><span class="line"></span><br><span class="line">以太网适配器 以太网:</span><br><span class="line">   媒体状态  . . . . . . . . . . . . : 媒体已断开连接</span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">以太网适配器 vEthernet (WSL):</span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">   本地链接 IPv6 地址. . . . . . . . : fe80::8841:6bd8:5064:9a3c%45</span><br><span class="line">   IPv4 地址 . . . . . . . . . . . . : 172.23.0.1</span><br><span class="line">   子网掩码  . . . . . . . . . . . . : 255.255.240.0</span><br><span class="line">   默认网关. . . . . . . . . . . . . :</span><br></pre></td></tr></tbody></table></figure>
+<p>得到了物理机的 docker 网段地址以后，我们将地址保存在物理机的 Display 环境变量中，注意最后需要加上 <code>:0</code></p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> DISPLAY=172.23.0.1:0</span><br></pre></td></tr></tbody></table></figure>
+<p>至此，我们可以一键跑超级玛丽了。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash -c <span class="hljs-string">'python gym_nes_demo.py'</span></span><br></pre></td></tr></tbody></table></figure>
+<p>解释一点，<code>-e DISPLAY=$DISPLAY</code> 将 Display 环境变量从当前 shell 注入到 container 中。</p>
+<p>一切顺利的话，有个 X window的窗口会跳出来，无人控制得超级玛丽运行了起来，它会随机执行一些动作。</p>
+<p>结束程序记得要把 docker container 显示关掉，需要执行 <code>docker stop</code>。</p>
+<h2 id="各种游戏">各种游戏</h2>
+<p>其实，预制的 docker 环境给大家装了更多的游戏，大家也可以修改源码跑其他游戏</p>
+<p>具体方法是，将上面命令稍微修改一下 次我们进入 interactive bash。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it  -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/zh/2021/docker-gym-nes/docker-bash.gif"></p>
+<p>进了 container 之后，我们发现之前执行的 python 原代码是当前目录的 <code>gym_nes_demo.py</code></p>
+<p>先列出所有的游戏的 rom 文件。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">(py3.7) root@aff72945133b:/proj/nes_py# find . -name '*.nes'</span><br><span class="line">./tests/games/excitebike.nes</span><br><span class="line">./tests/games/super-mario-bros-2.nes</span><br><span class="line">./tests/games/super-mario-bros-3.nes</span><br><span class="line">./tests/games/empty.nes</span><br><span class="line">./tests/games/super-mario-bros-lost-levels.nes</span><br><span class="line">./tests/games/super-mario-bros-1.nes</span><br><span class="line">./tests/games/the-legend-of-zelda.nes</span><br><span class="line">./tests/nes-roms/1942 (Japan, USA).nes</span><br><span class="line">./tests/nes-roms/contra.nes</span><br><span class="line">./tests/nes-roms/Battle City (J).nes</span><br><span class="line">./tests/nes-roms/red.nes</span><br><span class="line">./tests/nes-roms/Gradius 2 (J).nes</span><br><span class="line">./tests/nes-roms/super-mario.nes</span><br><span class="line">./tests/nes-roms/Contra Force (USA).nes</span><br><span class="line">./tests/nes-roms/Rush'n Attack (U).nes</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>文件夹里有很多游戏， 包括魂斗罗，坦克大战等等。</p>
+<p>修改 <code>gym_nes_demo.py</code>，将超级玛丽替换成魂斗罗 nes。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> nes_py <span class="hljs-keyword">import</span> NESEnv</span><br><span class="line"><span class="hljs-keyword">import</span> tqdm</span><br><span class="line">env = NESEnv(<span class="hljs-string">'/proj/nes_py/tests/games/super-mario-bros-1.nes'</span>)</span><br><span class="line"></span><br><span class="line">done = <span class="hljs-literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">try</span>:</span><br><span class="line">    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> tqdm.tqdm(<span class="hljs-built_in">range</span>(<span class="hljs-number">5000</span>)):</span><br><span class="line">        <span class="hljs-keyword">if</span> done:</span><br><span class="line">            state = env.reset()</span><br><span class="line">            done = <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            state, reward, done, info = env.step(env.action_space.sample())</span><br><span class="line">            env.render()</span><br><span class="line"><span class="hljs-keyword">except</span> KeyboardInterrupt:</span><br><span class="line">    <span class="hljs-keyword">pass</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env = NESEnv('./tests/nes-roms/contra.nes')</span><br></pre></td></tr></tbody></table></figure>
+<p>保存后，执行</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python gym_nes_demo.py</span><br></pre></td></tr></tbody></table></figure>
+<p>魂斗罗的 random agent 也跑起来了。</p>
+<p><img src="/zh/2021/docker-gym-nes/contra.png"></p>
+<p>下一期，我会把一些很经典的深度强化学习的算法应用到这个环境中，让大家可以很方便得训练调试深度强化学习算法来挑战各种红白机游戏。</p>
+<p>最后，感谢大家关注 MyEncyclopedia 公众号，B站频道或者 Youtube 频道。谢谢大家再见。</p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
@@ -283,11 +299,11 @@
         <div class="dropdown-menu has-text-left" role="menu">
             <div class="dropdown-content">
             
-                <a href="/tags/Docker/" class="dropdown-item">
+                <a href="/tags/docker/" class="dropdown-item">
                     简体中文
                 </a>
             
-                <a href="/en/tags/Docker/" class="dropdown-item">
+                <a href="/en/tags/docker/" class="dropdown-item">
                     English
                 </a>
             
