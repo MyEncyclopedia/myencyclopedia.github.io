@@ -2,7 +2,7 @@
 <html class="has-navbar-fixed-top">
 <head>
     <meta charset="utf-8">
-<title>Markme 0.3.0 - MyEncyclopedia</title>
+<title>Markme 0.3.0 发布：支持图片转latex，微信公众号排版，上传下载图片 - MyEncyclopedia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
@@ -18,32 +18,34 @@
 
 
 
-    <meta name="description" content="基本功能   Markdown 显示 图片显示  代码高亮  数学公式  Html 标签  兼容 mdnice 样式导出微信公众号  下载远程图片到本地  通过 PicGo 上传本地图片到图床  Mathpix 图片转 Latex  其他">
+    <meta name="description" content="Mark-ME 在几个月的开发之后，发布了 v0.3.0 版本。Mark-ME 致力于做最好的跨平台（Win, Mac, Linux）markdown 编辑器，面向AI辅助写作，一站式多平台发布。超越 Typora，mdnice 等。本版本增加了不少高级的功能，包括  导出兼容 mdnice 样式的微信公众号文章 mathpix 图片转 latex 代码 通过 PicGo 上传本地图片到图床 下载">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Markme 0.3.0">
+<meta property="og:title" content="Markme 0.3.0 发布：支持图片转latex，微信公众号排版，上传下载图片">
 <meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/">
 <meta property="og:site_name" content="MyEncyclopedia">
-<meta property="og:description" content="基本功能   Markdown 显示 图片显示  代码高亮  数学公式  Html 标签  兼容 mdnice 样式导出微信公众号  下载远程图片到本地  通过 PicGo 上传本地图片到图床  Mathpix 图片转 Latex  其他">
+<meta property="og:description" content="Mark-ME 在几个月的开发之后，发布了 v0.3.0 版本。Mark-ME 致力于做最好的跨平台（Win, Mac, Linux）markdown 编辑器，面向AI辅助写作，一站式多平台发布。超越 Typora，mdnice 等。本版本增加了不少高级的功能，包括  导出兼容 mdnice 样式的微信公众号文章 mathpix 图片转 latex 代码 通过 PicGo 上传本地图片到图床 下载">
 <meta property="og:locale">
-<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/menu.gif">
-<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/zoom.gif">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/func_image.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/func_code.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/func_math.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/typora-math.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/mdnice-math.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/func_html.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/wechat_style.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/mathpix.gif">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/download_img.gif">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/upload_img.gif">
-<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/mathpix.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/menu.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/zoom.gif">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/option.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/reg.png">
 <meta property="article:published_time" content="2022-04-30T10:45:01.000Z">
-<meta property="article:modified_time" content="2022-04-29T15:23:38.000Z">
+<meta property="article:modified_time" content="2022-04-30T08:45:28.000Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta property="article:tag" content="Markme">
 <meta property="article:tag" content="Service">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/menu.gif">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/markme-0.3.0/func_image.png">
 
 
 
@@ -129,35 +131,35 @@
                     
                     
                     
-                    <a class="navbar-item" href="#基本功能">1&nbsp;&nbsp;<b>基本功能</b></a>
+                    <a class="navbar-item" href="#markdown-显示效果">1&nbsp;&nbsp;<b>Markdown 显示效果</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#图片显示">1.1&nbsp;&nbsp;1. 图片显示</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#代码高亮">1.2&nbsp;&nbsp;2. 代码高亮</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#数学公式">1.3&nbsp;&nbsp;3. 数学公式</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#内嵌-html-标签">1.4&nbsp;&nbsp;4. 内嵌 Html 标签</a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#markdown-显示">2&nbsp;&nbsp;<b>Markdown 显示</b></a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#图片显示">2.1&nbsp;&nbsp;图片显示</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#代码高亮">2.2&nbsp;&nbsp;代码高亮</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#数学公式">2.3&nbsp;&nbsp;数学公式</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#html-标签">2.4&nbsp;&nbsp;Html 标签</a>
+                    <a class="navbar-item" href="#兼容-mdnice-样式导出到微信公众号">2&nbsp;&nbsp;<b>兼容 mdnice 样式导出到微信公众号</b></a>
                     
                     
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#兼容-mdnice-样式导出微信公众号">3&nbsp;&nbsp;<b>兼容 mdnice 样式导出微信公众号</b></a>
+                    <a class="navbar-item" href="#mathpix-图片转-latex">3&nbsp;&nbsp;<b>Mathpix 图片转 Latex</b></a>
                     
                     
                     <hr class="navbar-divider">
@@ -175,13 +177,23 @@
                     <hr class="navbar-divider">
                     
                     
-                    <a class="navbar-item" href="#mathpix-图片转-latex">6&nbsp;&nbsp;<b>Mathpix 图片转 Latex</b></a>
+                    <a class="navbar-item" href="#其他">6&nbsp;&nbsp;<b>其他</b></a>
                     
                     
-                    <hr class="navbar-divider">
+                    
+                    <a class="navbar-item" href="#菜单展示">6.1&nbsp;&nbsp;菜单展示</a>
                     
                     
-                    <a class="navbar-item" href="#其他">7&nbsp;&nbsp;<b>其他</b></a>
+                    
+                    <a class="navbar-item" href="#缩放">6.2&nbsp;&nbsp;缩放</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配置窗口">6.3&nbsp;&nbsp;配置窗口</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#注册">6.4&nbsp;&nbsp;注册</a>
                     
                 </div>
             </div>
@@ -205,7 +217,7 @@
         <div id='article-toc-inner'>
             
             <strong class="sidebar-title">目录</strong>
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD"><span class="toc-text">基本功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#markdown-%E6%98%BE%E7%A4%BA"><span class="toc-text">Markdown 显示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E6%98%BE%E7%A4%BA"><span class="toc-text">图片显示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE"><span class="toc-text">代码高亮</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F"><span class="toc-text">数学公式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#html-%E6%A0%87%E7%AD%BE"><span class="toc-text">Html 标签</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%BC%E5%AE%B9-mdnice-%E6%A0%B7%E5%BC%8F%E5%AF%BC%E5%87%BA%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7"><span class="toc-text">兼容 mdnice 样式导出微信公众号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E8%BF%9C%E7%A8%8B%E5%9B%BE%E7%89%87%E5%88%B0%E6%9C%AC%E5%9C%B0"><span class="toc-text">下载远程图片到本地</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-picgo-%E4%B8%8A%E4%BC%A0%E6%9C%AC%E5%9C%B0%E5%9B%BE%E7%89%87%E5%88%B0%E5%9B%BE%E5%BA%8A"><span class="toc-text">通过 PicGo 上传本地图片到图床</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mathpix-%E5%9B%BE%E7%89%87%E8%BD%AC-latex"><span class="toc-text">Mathpix 图片转 Latex</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">其他</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#markdown-%E6%98%BE%E7%A4%BA%E6%95%88%E6%9E%9C"><span class="toc-text">Markdown 显示效果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E6%98%BE%E7%A4%BA"><span class="toc-text">1. 图片显示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE"><span class="toc-text">2. 代码高亮</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F"><span class="toc-text">3. 数学公式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%B5%8C-html-%E6%A0%87%E7%AD%BE"><span class="toc-text">4. 内嵌 Html 标签</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%BC%E5%AE%B9-mdnice-%E6%A0%B7%E5%BC%8F%E5%AF%BC%E5%87%BA%E5%88%B0%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7"><span class="toc-text">兼容 mdnice 样式导出到微信公众号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mathpix-%E5%9B%BE%E7%89%87%E8%BD%AC-latex"><span class="toc-text">Mathpix 图片转 Latex</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E8%BF%9C%E7%A8%8B%E5%9B%BE%E7%89%87%E5%88%B0%E6%9C%AC%E5%9C%B0"><span class="toc-text">下载远程图片到本地</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-picgo-%E4%B8%8A%E4%BC%A0%E6%9C%AC%E5%9C%B0%E5%9B%BE%E7%89%87%E5%88%B0%E5%9B%BE%E5%BA%8A"><span class="toc-text">通过 PicGo 上传本地图片到图床</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">其他</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8F%9C%E5%8D%95%E5%B1%95%E7%A4%BA"><span class="toc-text">菜单展示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%A9%E6%94%BE"><span class="toc-text">缩放</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%AA%97%E5%8F%A3"><span class="toc-text">配置窗口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C"><span class="toc-text">注册</span></a></li></ol></li></ol>
             
         </div>
         
@@ -254,7 +266,7 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            Markme 0.3.0
+            Markme 0.3.0 发布：支持图片转latex，微信公众号排版，上传下载图片
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
@@ -273,35 +285,55 @@
         <span class="column is-narrow">
             
             
-            几秒 读完 (约 93 字)
+            3 分钟 读完 (约 450 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><h2 id="基本功能">基本功能</h2>
-<p><img src="/zh/2022/markme-0.3.0/menu.gif"></p>
-<p><img src="/zh/2022/markme-0.3.0/zoom.gif"></p>
-<h2 id="markdown-显示">Markdown 显示</h2>
-<h3 id="图片显示">图片显示</h3>
+        <html><head></head><body><p><code>Mark-ME</code> 在几个月的开发之后，发布了 v0.3.0 版本。<code>Mark-ME</code> 致力于做最好的跨平台（Win, Mac, Linux）markdown 编辑器，面向AI辅助写作，一站式多平台发布。超越 <code>Typora</code>，<code>mdnice</code> 等。本版本增加了不少高级的功能，包括</p>
+<ul>
+<li>导出兼容 <code>mdnice</code> 样式的微信公众号文章</li>
+<li><code>mathpix</code> 图片转 <code>latex</code> 代码</li>
+<li>通过 <code>PicGo</code> 上传本地图片到图床</li>
+<li>下载文字远程图片到本地</li>
+</ul>
+<p>下载地址：</p>
+<p>https://github.com/MyEncyclopedia/Mark-ME/releases/download/v0.3.0/Mark-ME.0.3.0.exe</p>
+<h2 id="markdown-显示效果">Markdown 显示效果</h2>
+<h3 id="图片显示">1. 图片显示</h3>
+<p>注意，本地和远程图片都支持</p>
 <p><img src="/zh/2022/markme-0.3.0/func_image.png"></p>
-<h3 id="代码高亮">代码高亮</h3>
+<h3 id="代码高亮">2. 代码高亮</h3>
 <p><img src="/zh/2022/markme-0.3.0/func_code.png"></p>
-<h3 id="数学公式">数学公式</h3>
+<h3 id="数学公式">3. 数学公式</h3>
+<p>除了普通行内公式和块公式，还支持 <code>Typora</code>， <code>mdnice</code> 不支持的扩展 <code>Mathjax</code> 表达式。例如图中的彩色矩阵。</p>
 <p><img src="/zh/2022/markme-0.3.0/func_math.png"></p>
-<h3 id="html-标签">Html 标签</h3>
+<p>同样的表达式在 <code>Typora</code> 和 <code>mdnice</code> 中均不支持</p>
+<p><img src="/zh/2022/markme-0.3.0/typora-math.png"></p>
+<p><img src="/zh/2022/markme-0.3.0/mdnice-math.png"></p>
+<h3 id="内嵌-html-标签">4. 内嵌 <code>Html</code> 标签</h3>
+<p>完美显示内嵌 <code>html</code> 标签。</p>
+<p>注意，第二个例子中内嵌了 <code>svg</code> 的 <code>div</code> 标签，渲染结果为 <span class="math inline">\(x^2\)</span>。这个功能很方便将 <code>latex</code> 导出成 <code>svg</code> 后嵌入 <code>markdown</code> 文章中，即保护了 <code>latex</code> 源码，也无需担心多平台的显示效果。后续会加强此功能。</p>
 <p><img src="/zh/2022/markme-0.3.0/func_html.png"></p>
-<h2 id="兼容-mdnice-样式导出微信公众号">兼容 mdnice 样式导出微信公众号</h2>
+<h2 id="兼容-mdnice-样式导出到微信公众号">兼容 <code>mdnice</code> 样式导出到微信公众号</h2>
+<p>将 <code>mdnice</code> 的样式填入右边的输入中，完美换皮。</p>
 <p><img src="/zh/2022/markme-0.3.0/wechat_style.gif"></p>
+<h2 id="mathpix-图片转-latex"><code>Mathpix</code> 图片转 <code>Latex</code></h2>
+<p><img src="/zh/2022/markme-0.3.0/mathpix.gif"></p>
 <h2 id="下载远程图片到本地">下载远程图片到本地</h2>
 <p><img src="/zh/2022/markme-0.3.0/download_img.gif"></p>
-<h2 id="通过-picgo-上传本地图片到图床">通过 PicGo 上传本地图片到图床</h2>
+<h2 id="通过-picgo-上传本地图片到图床">通过 <code>PicGo</code> 上传本地图片到图床</h2>
 <p><img src="/zh/2022/markme-0.3.0/upload_img.gif"></p>
-<h2 id="mathpix-图片转-latex">Mathpix 图片转 Latex</h2>
-<p><img src="/zh/2022/markme-0.3.0/mathpix.gif"></p>
 <h2 id="其他">其他</h2>
+<h3 id="菜单展示">菜单展示</h3>
+<p><img src="/zh/2022/markme-0.3.0/menu.gif"></p>
+<h3 id="缩放">缩放</h3>
+<p><img src="/zh/2022/markme-0.3.0/zoom.gif"></p>
+<h3 id="配置窗口">配置窗口</h3>
 <p><img src="/zh/2022/markme-0.3.0/option.png"></p>
-<p><img src="/zh/2022/markme-0.3.0/reg.png"></p>
+<h3 id="注册">注册</h3>
+<p>一些高级功能虽然免费，但是需要用户注册 <code>myencyclopedia</code>。 <img src="/zh/2022/markme-0.3.0/reg.png"></p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
