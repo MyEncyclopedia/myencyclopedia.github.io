@@ -640,122 +640,6 @@ X_1,X_2, X_3, ..., X_N
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh/2021/distribution-poisson/" itemprop="url">从零构建统计随机变量生成器之泊松分布</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2021-01-30T10:45:01.000Z" itemprop="datePublished">1月 30 2021</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            1 分钟 读完 (约 172 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><p>http://www.columbia.edu/~ks20/4404-Sigman/4404-Notes-ITM.pdf</p>
-<p>https://www.win.tue.nl/~marko/2WB05/lecture8.pdf</p>
-<h2 id="泊松分布">泊松分布</h2>
-<figure>
-<img src="/zh/2021/distribution-poisson/distrib_poisson.png">
-<figcaption>
-</figcaption>
-</figure>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> exp</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">poisson</span>(<span class="hljs-params">lambdda: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    total = <span class="hljs-number">1.0</span></span><br><span class="line">    i = <span class="hljs-number">0</span></span><br><span class="line">    threshold = exp(-<span class="hljs-number">1</span> * lambdda)</span><br><span class="line">    <span class="hljs-keyword">while</span> total &gt;= threshold:</span><br><span class="line">        u = random.random()</span><br><span class="line">        total *= u</span><br><span class="line">        i += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> i - <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
-<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_poisson_inv.py</p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> numpy.random <span class="hljs-keyword">import</span> exponential</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">poisson</span>(<span class="hljs-params">lambdda: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    total = <span class="hljs-number">0.0</span></span><br><span class="line">    i = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> total &lt;= lambdda:</span><br><span class="line">        y = exponential(<span class="hljs-number">1</span>)</span><br><span class="line">        total += y</span><br><span class="line">        i += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> i - <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
-<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_poisson_from_exp.py</p>
-<h2 id="泊松分布-1">泊松分布</h2>
-<figure>
-<img src="/zh/2021/distribution-poisson/distrib_poisson.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>$ E_{1}, E_{2}, E_{3}, (1) $</p>
-<p><span class="math display">\[
-\mathbb{P}(K \geqslant k)=\mathbb{P}\left(E_{1}+\cdots+E_{k} \leqslant \lambda\right)
-\]</span></p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> numpy.random <span class="hljs-keyword">import</span> exponential</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">poisson</span>(<span class="hljs-params">lambdda: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    total = <span class="hljs-number">0.0</span></span><br><span class="line">    i = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> total &lt;= lambdda:</span><br><span class="line">        y = exponential(<span class="hljs-number">1</span>)</span><br><span class="line">        total += y</span><br><span class="line">        i += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> i - <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Github 代码地址：</p>
-<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_poisson_from_exp.py</p>
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-
-
-
-
-    
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
             <a href="/zh/2021/distribution-inverse-transformation-method/" itemprop="url">用逆变换采样方法构建随机变量生成器</a>
         
     </h1>
@@ -969,6 +853,122 @@ X=F^{-1}(u) \approx \frac{u^{0.135}-(1-u)^{0.135}}{0.1975}
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">normal</span>():</span></span><br><span class="line">    <span class="hljs-keyword">import</span> math</span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> (math.<span class="hljs-built_in">pow</span>(u, <span class="hljs-number">0.135</span>) - math.<span class="hljs-built_in">pow</span>(<span class="hljs-number">1</span>-u, <span class="hljs-number">0.135</span>)) / <span class="hljs-number">0.1975</span></span><br></pre></td></tr></tbody></table></figure>
 <p>Github 代码地址：</p>
 <p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/coutinous_normal_apprx.py</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/zh/2021/distribution-poisson/" itemprop="url">从零构建统计随机变量生成器之泊松分布</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2021-01-30T10:45:01.000Z" itemprop="datePublished">1月 30 2021</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            1 分钟 读完 (约 172 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>http://www.columbia.edu/~ks20/4404-Sigman/4404-Notes-ITM.pdf</p>
+<p>https://www.win.tue.nl/~marko/2WB05/lecture8.pdf</p>
+<h2 id="泊松分布">泊松分布</h2>
+<figure>
+<img src="/zh/2021/distribution-poisson/distrib_poisson.png">
+<figcaption>
+</figcaption>
+</figure>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> exp</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">poisson</span>(<span class="hljs-params">lambdda: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    total = <span class="hljs-number">1.0</span></span><br><span class="line">    i = <span class="hljs-number">0</span></span><br><span class="line">    threshold = exp(-<span class="hljs-number">1</span> * lambdda)</span><br><span class="line">    <span class="hljs-keyword">while</span> total &gt;= threshold:</span><br><span class="line">        u = random.random()</span><br><span class="line">        total *= u</span><br><span class="line">        i += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> i - <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_poisson_inv.py</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> numpy.random <span class="hljs-keyword">import</span> exponential</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">poisson</span>(<span class="hljs-params">lambdda: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    total = <span class="hljs-number">0.0</span></span><br><span class="line">    i = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> total &lt;= lambdda:</span><br><span class="line">        y = exponential(<span class="hljs-number">1</span>)</span><br><span class="line">        total += y</span><br><span class="line">        i += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> i - <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_poisson_from_exp.py</p>
+<h2 id="泊松分布-1">泊松分布</h2>
+<figure>
+<img src="/zh/2021/distribution-poisson/distrib_poisson.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>$ E_{1}, E_{2}, E_{3}, (1) $</p>
+<p><span class="math display">\[
+\mathbb{P}(K \geqslant k)=\mathbb{P}\left(E_{1}+\cdots+E_{k} \leqslant \lambda\right)
+\]</span></p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> numpy.random <span class="hljs-keyword">import</span> exponential</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">poisson</span>(<span class="hljs-params">lambdda: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    total = <span class="hljs-number">0.0</span></span><br><span class="line">    i = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> total &lt;= lambdda:</span><br><span class="line">        y = exponential(<span class="hljs-number">1</span>)</span><br><span class="line">        total += y</span><br><span class="line">        i += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">return</span> i - <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Github 代码地址：</p>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_poisson_from_exp.py</p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
