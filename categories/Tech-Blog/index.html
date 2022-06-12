@@ -174,13 +174,13 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh/2022/app-arxiv/" itemprop="url">MyEncyclopedia Arxiv 手机版转换和在线阅读</a>
+            <a href="/zh/2022/docker-flair-transformer-zero-shot/" itemprop="url">玩转transformer+flair zero shot 短文本分类：无需翻墙或额外下载模型和数据集的CPU docker镜像</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
         <span class="column is-narrow">
             
-                <time datetime="2022-05-18T10:45:01.000Z" itemprop="datePublished">5月 18 2022</time>
+                <time datetime="2022-06-10T10:45:01.000Z" itemprop="datePublished">6月 10 2022</time>
             
         </span>
         
@@ -193,19 +193,185 @@
         <span class="column is-narrow">
             
             
-            几秒 读完 (约 30 字)
+            8 分钟 读完 (约 1160 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><p><img src="/zh/2022/app-arxiv/mobile-conv-html.jpg"></p>
-<p><img src="/zh/2022/app-arxiv/mobile-conv-pdf.jpg"></p>
-<p><img src="/zh/2022/app-arxiv/mobile_pdf_orig-min.jpg"></p>
-<p><img src="/zh/2022/app-arxiv/conv_html_01-min.jpg"></p>
-<p><img src="/zh/2022/app-arxiv/conv_html_02-min.jpg"></p>
-<p><img src="/zh/2022/app-arxiv/conv_html_03-min.jpg"></p>
-<p><img src="/zh/2022/app-arxiv/conv_pdf_online-min.jpg"></p>
+        <html><head></head><body><p>在这一期中，我们来体验两个知名的 NLP 预训练类库 flair 和 transformer 的 zero-shot 短文本分类。所谓zero-shot 的意思是完全不需要数据集来训练，直接掉包解决问题。和以往一样，本期的 docker 镜像已经预装了 flair，transformer，pytorch，jupyter notebook等<strong>包依赖</strong>，并且还预先下载了 flair 和 transformer 的两个<strong>预训练模型</strong>和 <strong>yahoo 短文本主题数据集</strong>，整个 docker 镜像达到12GB，为了就是让大家无需翻墙下载额外数据或者模型，并且使用CPU就能体验最新的NLP zero shot 文本分类。</p>
+<h2 id="docker-镜像获取方式">Docker 镜像获取方式</h2>
+<p>关注 <code>MyEncyclopedia</code> 公众号后回复 <code>docker-transformer-zero-shot</code> 即可获取镜像地址和启动命令。</p>
+<h2 id="flair-zero-shot">Flair zero shot</h2>
+<p>先来看一个 flair 短文本 zero shot 短文本分类的例子。下面的代码将句子 <strong>Spain beat Swiss for first Nations League win</strong> 归类到 <strong>politics</strong>, <strong>sports</strong>，<strong>health</strong> 之一。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> flair.models <span class="hljs-keyword">import</span> TARSClassifier</span><br><span class="line"><span class="hljs-keyword">from</span> flair.data <span class="hljs-keyword">import</span> Sentence</span><br><span class="line"><span class="hljs-keyword">import</span> flair, torch</span><br><span class="line">flair.device = torch.device(<span class="hljs-string">'cpu'</span>)</span><br><span class="line"></span><br><span class="line">text = <span class="hljs-string">'Spain beat Swiss for first Nations League win'</span></span><br><span class="line">tars = TARSClassifier.load(<span class="hljs-string">'tars-base'</span>)</span><br><span class="line">sentence = Sentence(text)</span><br><span class="line">classes = [<span class="hljs-string">'politics'</span>, <span class="hljs-string">'sports'</span>, <span class="hljs-string">'health'</span>]</span><br><span class="line">tars.predict_zero_shot(sentence, classes)</span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">print</span>(sentence)</span><br><span class="line"><span class="hljs-built_in">print</span>(sentence.to_dict())</span><br></pre></td></tr></tbody></table></figure>
+<p>最后两行输出如下，<code>all labels</code> 字段显示概率最高的是 <code>sports</code>类别，达到 0.99+。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Sentence: <span class="hljs-string">"Spain beat Swiss for first Nations League win"</span> → sports (0.9952)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-string">'text'</span>: <span class="hljs-string">'Spain beat Swiss for first Nations League win'</span>, </span><br><span class="line">  <span class="hljs-string">'all labels'</span>: [{<span class="hljs-string">'value'</span>: <span class="hljs-string">'sports'</span>, <span class="hljs-string">'confidence'</span>: 0.9952359795570374}]</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">注意，在上面的代码中，`flair.device = torch.device(<span class="hljs-string">'cpu'</span>)` 强制使用了 cpu 资源，否则 flair 默认使用 gpu 会报错。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">## Transformer zero shot</span></span><br><span class="line">再来看看大名鼎鼎的 transformer zero shot 的结果。这里使用了默认的 transformer zero shot 分类的模型 Transformer Bart，小伙伴们可以使用其他模型，但是有些不兼容 zero shot 分类。代码如下</span><br><span class="line"></span><br><span class="line">​```python</span><br><span class="line">from transformers import pipeline</span><br><span class="line"></span><br><span class="line">text = <span class="hljs-string">'Spain beat Swiss for first Nations League win'</span></span><br><span class="line">classes = [<span class="hljs-string">'politics'</span>, <span class="hljs-string">'sports'</span>, <span class="hljs-string">'health'</span>]</span><br><span class="line">classifier = pipeline(<span class="hljs-string">"zero-shot-classification"</span>, device=-1)</span><br><span class="line">result = classifier(text, classes, multi_label=False)</span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">print</span>(result)</span><br><span class="line"><span class="hljs-built_in">print</span>(result[<span class="hljs-string">'labels'</span>][0])</span><br></pre></td></tr></tbody></table></figure>
+<p>最后两行输出为</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="hljs-string">'sequence'</span>: <span class="hljs-string">'Spain beat Swiss for first Nations League win'</span>, </span><br><span class="line">  <span class="hljs-string">'labels'</span>: [<span class="hljs-string">'sports'</span>, <span class="hljs-string">'health'</span>, <span class="hljs-string">'politics'</span>], </span><br><span class="line">  <span class="hljs-string">'scores'</span>: [0.9476209878921509, 0.03594793379306793, 0.016431059688329697]</span><br><span class="line">}</span><br><span class="line">sports</span><br></pre></td></tr></tbody></table></figure>
+<p><code>result</code> 的 <code>labels</code>中会按照最大概率排序输出类别和对应的分数。对于这句句子，也分的相当准确，<code>sports</code> 为 0.94+。</p>
+<p>也注意到 <code>pipeline("zero-shot-classification", device=-1)</code> 语句中 <strong>-1</strong> 表示强制使用 cpu。</p>
+<h2 id="yahoo-短文本主题数据分类效果">Yahoo 短文本主题数据分类效果</h2>
+<p>最后，来看一个真实数据集中这两者的实际效果，<code>yahoo_answers_topics</code> 是 <code>huggingface</code>的一个短文本分类数据集，可以通过以下命令下载并加载</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yahoo = load_dataset(<span class="hljs-string">'yahoo_answers_topics'</span>)</span><br></pre></td></tr></tbody></table></figure>
+<p>它的具体类别为</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line"><span class="hljs-string">'Society &amp; Culture'</span>, </span><br><span class="line"><span class="hljs-string">'Science &amp; Mathematics'</span>, </span><br><span class="line"><span class="hljs-string">'Health'</span>, </span><br><span class="line"><span class="hljs-string">'Education &amp; Reference'</span>, </span><br><span class="line"><span class="hljs-string">'Computers &amp; Internet'</span>, </span><br><span class="line"><span class="hljs-string">'Sports'</span>, </span><br><span class="line"><span class="hljs-string">'Business &amp; Finance'</span>, </span><br><span class="line"><span class="hljs-string">'Entertainment &amp; Music'</span>, </span><br><span class="line"><span class="hljs-string">'Family &amp; Relationships'</span>, </span><br><span class="line"><span class="hljs-string">'Politics &amp; Government'</span></span><br><span class="line">]</span><br></pre></td></tr></tbody></table></figure>
+<p>由于数量比较大，这里只取随机的1000个来测试，一些数据点如下</p>
+<table>
+<colgroup>
+<col style="width: 74%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Text</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A Permanent resident of Canada may stay out of Canada 3 years without losing status.</td>
+<td>Politics &amp; Government</td>
+</tr>
+<tr class="even">
+<td>The official major league opening game occurred on April 10, 2006, as the Cardinals defeated the Milwaukee Brewers 6-4. (Day Game)</td>
+<td>Sports</td>
+</tr>
+<tr class="odd">
+<td>Hold down the Command key while dragging and dropping files.</td>
+<td>Computers &amp; Internet</td>
+</tr>
+</tbody>
+</table>
+<p>接着，对于每条短文本用 flair 和 transformer 来预测类别，最终统计准确率。</p>
+<p>结果是 flair 准确率为 <strong>0.275</strong>，Transformer Bart 为 <strong>0.392</strong>，果然 transformer 显著胜出。其实，在 Yahoo数据集上取得 0.3 - 0.4 左右的效果已经不错了，毕竟有十个类别，全随机的准确率是 0.1。如果大家觉得这个效果一般的话，可以试试 tweet 情感分类数据集（具体在下面的链接中），Transformer 能达到惊人的 0.73。</p>
+<p>下面附部分代码，完整代码可以从镜像中获得，或者感兴趣的小伙伴也可以访问</p>
+<p>https://github.com/nlptown/nlp-notebooks/blob/master/Zero-Shot%20Text%20Classification.ipynb 获取所有五个数据集的代码，不过由于类库版本的关系，部分代码和模型或数据无法兼容，需要自行调试。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">evaluate_flair</span>(<span class="hljs-params">dataset, default_name=<span class="hljs-string">'neutral'</span></span>):</span></span><br><span class="line">    classifier = TARSClassifier.load(<span class="hljs-string">'tars-base'</span>)</span><br><span class="line">    total, correct = <span class="hljs-number">0</span>, <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">for</span> item, gold_label_idx <span class="hljs-keyword">in</span> tqdm(<span class="hljs-built_in">zip</span>(dataset[<span class="hljs-string">"test_texts"</span>], dataset[<span class="hljs-string">"test_labels"</span>]),</span><br><span class="line">                                     total=<span class="hljs-built_in">len</span>(dataset[<span class="hljs-string">"test_texts"</span>])):</span><br><span class="line">        sentence = Sentence(item)</span><br><span class="line">        classifier.predict_zero_shot(sentence, dataset[<span class="hljs-string">"class_names"</span>])</span><br><span class="line">        sorted_labels = <span class="hljs-built_in">sorted</span>(sentence.to_dict()[<span class="hljs-string">'all labels'</span>], key=<span class="hljs-keyword">lambda</span> k: k[<span class="hljs-string">'confidence'</span>], reverse=<span class="hljs-literal">True</span>)</span><br><span class="line">        gold_label = dataset[<span class="hljs-string">"class_names"</span>][gold_label_idx]</span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(sorted_labels) &gt; <span class="hljs-number">0</span>:</span><br><span class="line">            predicted_label = sorted_labels[<span class="hljs-number">0</span>][<span class="hljs-string">'value'</span>]</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            predicted_label = default_name</span><br><span class="line">        <span class="hljs-keyword">if</span> predicted_label == gold_label:</span><br><span class="line">            correct += <span class="hljs-number">1</span></span><br><span class="line">        total += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> correct / total</span><br><span class="line">    </span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">evaluate_huggingface</span>(<span class="hljs-params">dataset</span>):</span></span><br><span class="line">    classifier = pipeline(<span class="hljs-string">"zero-shot-classification"</span>, device=-<span class="hljs-number">1</span>)</span><br><span class="line">    correct = <span class="hljs-number">0</span></span><br><span class="line">    predictions, gold_labels = [], []</span><br><span class="line">    <span class="hljs-keyword">for</span> text, gold_label_idx <span class="hljs-keyword">in</span> tqdm(<span class="hljs-built_in">zip</span>(dataset[<span class="hljs-string">"test_texts"</span>], dataset[<span class="hljs-string">"test_labels"</span>]),</span><br><span class="line">                                     total=<span class="hljs-built_in">len</span>(dataset[<span class="hljs-string">"test_texts"</span>])):</span><br><span class="line"></span><br><span class="line">        result = classifier(text, dataset[<span class="hljs-string">"class_names"</span>], multi_label=<span class="hljs-literal">False</span>)</span><br><span class="line">        predicted_label = result[<span class="hljs-string">'labels'</span>][<span class="hljs-number">0</span>]</span><br><span class="line"></span><br><span class="line">        gold_label = dataset[<span class="hljs-string">"class_names"</span>][gold_label_idx]</span><br><span class="line"></span><br><span class="line">        predictions.append(predicted_label)</span><br><span class="line">        gold_labels.append(gold_label)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> predicted_label == gold_label:</span><br><span class="line">            correct += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">    accuracy = correct / <span class="hljs-built_in">len</span>(predictions)</span><br><span class="line">    <span class="hljs-keyword">return</span> accuracy</span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/zh/2022/app-arxiv-mobile/" itemprop="url">手机和微信中完美重排和阅读 Arxiv 论文</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-05-28T10:45:01.000Z" itemprop="datePublished">5月 28 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            3 分钟 读完 (约 502 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>如果你是一个重度论文阅读者，一定会在自己的笔记本上全副武装。但是也许只是偶尔，也会心血来潮地在手机端查看一篇论文，此时，你打开的这篇从 Arxiv 下载的论文，就像下图上半部分所示，时间稍长，便会觉得文字，公式和图片不忍直视。你多么希望在手机端查看PDF，也像图中下半部分一样重新排版来轻松阅读。</p>
+<p><img src="/zh/2022/app-arxiv-mobile/mobile-conv-html.jpg"></p>
+<h2 id="arxiv-论文手机智能重排和阅读服务">Arxiv 论文手机智能重排和阅读服务</h2>
+<p>现在，MyEncyclopedia 推出了智能的手机端重排和阅读 arxiv 论文服务。手机端只需浏览器甚至在<strong>微信</strong>中就能将指定的 arxiv 论文重排成适应移动端的格式，并在线浏览。</p>
+<p>具体效果如下</p>
+<p><img src="/zh/2022/app-arxiv-mobile/view.gif"></p>
+<h3 id="微信操作步骤">微信操作步骤</h3>
+<p>下面，以手机微信为例，讲解详细步骤。其他浏览器可以直接点击 <code>https://mydoc.myencyclopedia.top/app</code>，操作步骤类似。</p>
+<ul>
+<li><p>进入 MyEncyclopedia 公众号，回复 <code>?</code> 点击 <code>AI在线服务</code>。 <img src="/zh/2022/app-arxiv-mobile/op_01_enter_service.jpg"></p></li>
+<li><p>拷贝显示的口令</p></li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_02_get_token.jpg"></p>
+<ul>
+<li>返回到公众号后回复口令，登录使用服务</li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_03_enter.jpg"></p>
+<ul>
+<li>输入 <code>Arxiv ID</code>，点击 <code>Go to Page</code></li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_04_arxiv_id.jpg"></p>
+<ul>
+<li>在新页面点击 <code>Convert Html</code></li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_05_trigger_html.jpg"></p>
+<ul>
+<li>等待大约十几分钟，再次进入服务页面，此时，若下载转换任务成功，出现如下页面，点击<code>View Html</code>，即可在微信浏览器中完美查看论文了。</li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_06_view_html.jpg"></p>
+<h3 id="pdf-论文双列切割成单列服务">PDF 论文双列切割成单列服务</h3>
+<p>此外，也提供将 arxiv PDF从双列切割成单列服务。即上图中的<code>Convert PDF</code> 按钮，切割后的PDF文件可以在线浏览，或者下载到手机离线查看。也欢迎大家尝试。</p>
+<p><img src="/zh/2022/app-arxiv-mobile/mobile-conv-pdf.jpg"></p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
@@ -1603,138 +1769,6 @@ b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
 
 
     
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh/2021/docker-gym-nes/" itemprop="url">跨平台任天堂红白机强化学习预制环境</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2021-11-21T10:45:01.000Z" itemprop="datePublished">11月 21 2021</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            6 分钟 读完 (约 966 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><p>今天和大家分享强化学习的经典训练环境，任天堂的红白机训练环境。</p>
-<p><img src="/zh/2021/docker-gym-nes/gym-demo.gif"></p>
-<p>这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux 甚至 Mac 上都可以运行。</p>
-<p>这里将通过大家最常用的 Windows 系统来演示环境的使用。</p>
-<h2 id="x-window-服务器">X window 服务器</h2>
-<p>在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 XLaunch。</p>
-<p><img src="/zh/2021/docker-gym-nes/xlaunch.png"></p>
-<p>这里采用 XLaunch 是因为安装比较方便，安装包也很小。</p>
-<p>如果 XLaunch 正常启动的话，就会在系统托管的地方显示出来。接着我们来下载环境的 docker images。</p>
-<h2 id="拉取镜像">拉取镜像</h2>
-<p>用 docker pull 命令我们将预制的公开镜像拉下来</p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull myencyclopedia/gym-nes</span><br></pre></td></tr></tbody></table></figure>
-<p>拉下来以后，可以用 docker image命令来检查是否存在</p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></tbody></table></figure>
-<p>下一步，我们需要找到物理机或者 docker host 机器的 IP 地址。</p>
-<p>在windows上，我们执行 ipconfig 命令，注意我们要的是 WSL 对应的 IP 地址。</p>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ ipconfig.exe</span><br><span class="line"></span><br><span class="line">Windows IP 配置</span><br><span class="line"></span><br><span class="line">以太网适配器 以太网:</span><br><span class="line">   媒体状态  . . . . . . . . . . . . : 媒体已断开连接</span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">以太网适配器 vEthernet (WSL):</span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">   本地链接 IPv6 地址. . . . . . . . : fe80::8841:6bd8:5064:9a3c%45</span><br><span class="line">   IPv4 地址 . . . . . . . . . . . . : 172.23.0.1</span><br><span class="line">   子网掩码  . . . . . . . . . . . . : 255.255.240.0</span><br><span class="line">   默认网关. . . . . . . . . . . . . :</span><br></pre></td></tr></tbody></table></figure>
-<p>得到了物理机的 docker 网段地址以后，我们将地址保存在物理机的 Display 环境变量中，注意最后需要加上 <code>:0</code></p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> DISPLAY=172.23.0.1:0</span><br></pre></td></tr></tbody></table></figure>
-<p>至此，我们可以一键跑超级玛丽了。</p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash -c <span class="hljs-string">'python gym_nes_demo.py'</span></span><br></pre></td></tr></tbody></table></figure>
-<p>解释一点，<code>-e DISPLAY=$DISPLAY</code> 将 Display 环境变量从当前 shell 注入到 container 中。</p>
-<p>一切顺利的话，有个 X window的窗口会跳出来，无人控制得超级玛丽运行了起来，它会随机执行一些动作。</p>
-<p>结束程序记得要把 docker container 显示关掉，需要执行 <code>docker stop</code>。</p>
-<h2 id="各种游戏">各种游戏</h2>
-<p>其实，预制的 docker 环境给大家装了更多的游戏，大家也可以修改源码跑其他游戏</p>
-<p>具体方法是，将上面命令稍微修改一下 次我们进入 interactive bash。</p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it  -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash</span><br></pre></td></tr></tbody></table></figure>
-<p><img src="/zh/2021/docker-gym-nes/docker-bash.gif"></p>
-<p>进了 container 之后，我们发现之前执行的 python 原代码是当前目录的 <code>gym_nes_demo.py</code></p>
-<p>先列出所有的游戏的 rom 文件。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">(py3.7) root@aff72945133b:/proj/nes_py# find . -name '*.nes'</span><br><span class="line">./tests/games/excitebike.nes</span><br><span class="line">./tests/games/super-mario-bros-2.nes</span><br><span class="line">./tests/games/super-mario-bros-3.nes</span><br><span class="line">./tests/games/empty.nes</span><br><span class="line">./tests/games/super-mario-bros-lost-levels.nes</span><br><span class="line">./tests/games/super-mario-bros-1.nes</span><br><span class="line">./tests/games/the-legend-of-zelda.nes</span><br><span class="line">./tests/nes-roms/1942 (Japan, USA).nes</span><br><span class="line">./tests/nes-roms/contra.nes</span><br><span class="line">./tests/nes-roms/Battle City (J).nes</span><br><span class="line">./tests/nes-roms/red.nes</span><br><span class="line">./tests/nes-roms/Gradius 2 (J).nes</span><br><span class="line">./tests/nes-roms/super-mario.nes</span><br><span class="line">./tests/nes-roms/Contra Force (USA).nes</span><br><span class="line">./tests/nes-roms/Rush'n Attack (U).nes</span><br></pre></td></tr></tbody></table></figure><p></p>
-<p>文件夹里有很多游戏， 包括魂斗罗，坦克大战等等。</p>
-<p>修改 <code>gym_nes_demo.py</code>，将超级玛丽替换成魂斗罗 nes。</p>
-<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> nes_py <span class="hljs-keyword">import</span> NESEnv</span><br><span class="line"><span class="hljs-keyword">import</span> tqdm</span><br><span class="line">env = NESEnv(<span class="hljs-string">'/proj/nes_py/tests/games/super-mario-bros-1.nes'</span>)</span><br><span class="line"></span><br><span class="line">done = <span class="hljs-literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">try</span>:</span><br><span class="line">    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> tqdm.tqdm(<span class="hljs-built_in">range</span>(<span class="hljs-number">5000</span>)):</span><br><span class="line">        <span class="hljs-keyword">if</span> done:</span><br><span class="line">            state = env.reset()</span><br><span class="line">            done = <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            state, reward, done, info = env.step(env.action_space.sample())</span><br><span class="line">            env.render()</span><br><span class="line"><span class="hljs-keyword">except</span> KeyboardInterrupt:</span><br><span class="line">    <span class="hljs-keyword">pass</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env = NESEnv('./tests/nes-roms/contra.nes')</span><br></pre></td></tr></tbody></table></figure>
-<p>保存后，执行</p>
-<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python gym_nes_demo.py</span><br></pre></td></tr></tbody></table></figure>
-<p>魂斗罗的 random agent 也跑起来了。</p>
-<p><img src="/zh/2021/docker-gym-nes/contra.png"></p>
-<p>下一期，我会把一些很经典的深度强化学习的算法应用到这个环境中，让大家可以很方便得训练调试深度强化学习算法来挑战各种红白机游戏。</p>
-<p>最后，感谢大家关注 MyEncyclopedia 公众号，B站频道或者 Youtube 频道。谢谢大家再见。</p>
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-
-
-
-
-    
     
         
 <nav class="pagination is-centered is-rounded" role="navigation" aria-label="pagination">
@@ -1752,7 +1786,7 @@ b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
         
         <li><span class="pagination-ellipsis">&hellip;</span></li>
         
-        <li><a class="pagination-link" href="/categories/Tech-Blog/page/5/">5</a></li>
+        <li><a class="pagination-link" href="/categories/Tech-Blog/page/6/">6</a></li>
         
     </ul>
 </nav>

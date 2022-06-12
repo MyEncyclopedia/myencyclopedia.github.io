@@ -2,13 +2,13 @@
 <html class="has-navbar-fixed-top">
 <head>
     <meta charset="utf-8">
-<title>标签: NLP - MyEncyclopedia</title>
+<title>标签: nlp - MyEncyclopedia</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
 
 
-<link href="/en/tags/NLP/" rel="alternate" hreflang="en" />
+<link href="/en/tags/nlp/" rel="alternate" hreflang="en" />
     
 
 
@@ -20,7 +20,7 @@
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="MyEncyclopedia">
-<meta property="og:url" content="https://myencyclopedia.github.io/tags/NLP/">
+<meta property="og:url" content="https://myencyclopedia.github.io/tags/nlp/">
 <meta property="og:site_name" content="MyEncyclopedia">
 <meta property="og:locale">
 <meta property="article:author" content="MyEncyclopedia">
@@ -116,7 +116,7 @@
     <section class="section section-heading">
     <div class="container">
         <div class="content">
-            <h5>#NLP</h5>
+            <h5>#nlp</h5>
         </div>
     </div>
 </section>
@@ -174,13 +174,13 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
-            <a href="/zh/2021/service-arxiv/" itemprop="url">MyEncyclopedia Arxiv Trending 发现服务</a>
+            <a href="/zh/2022/docker-flair-transformer-zero-shot/" itemprop="url">玩转transformer+flair zero shot 短文本分类：无需翻墙或额外下载模型和数据集的CPU docker镜像</a>
         
     </h1>
     <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
         <span class="column is-narrow">
             
-                <time datetime="2021-12-25T10:45:01.000Z" itemprop="datePublished">12月 25 2021</time>
+                <time datetime="2022-06-10T10:45:01.000Z" itemprop="datePublished">6月 10 2022</time>
             
         </span>
         
@@ -193,76 +193,63 @@
         <span class="column is-narrow">
             
             
-            2 分钟 读完 (约 320 字)
+            8 分钟 读完 (约 1160 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><h2 id="获取服务地址">获取服务地址</h2>
-<h3 id="最直接方式">1. 最直接方式</h3>
-<p>在桌面版或者手机版浏览器中打开链接</p>
-<p>https://app.myencyclopedia.top/paper</p>
-<h3 id="微信扫码">2. 微信扫码</h3>
-<figure>
-<img src="/zh/2021/service-arxiv/qr-arxiv.png" width="250px">
-<figcaption>
-</figcaption>
-</figure>
-<h3 id="从公众号中获取">3. 从公众号中获取</h3>
-<h4 id="关注-myencyclopedia-公众号">关注 <code>MyEncyclopedia</code> 公众号</h4>
-<h4 id="在公众号对话中回复">在公众号对话中回复 <code>?</code></h4>
-<p>点击 <code>AI在线服务</code></p>
-<h4 id="section"></h4>
-<figure>
-<img src="/zh/2021/service-arxiv/start.png">
-<figcaption>
-</figcaption>
-</figure>
-<h4 id="在微信浏览器中直接打开">在微信浏览器中直接打开</h4>
-<h4 id="或者获取链接">或者获取链接</h4>
-<figure>
-<img src="/zh/2021/service-arxiv/open_browser.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-
-<p>进入服务后需要首次使用需要登录，见文末附录部分。</p>
-<h2 id="开始搜索主题关键词">开始搜索主题关键词</h2>
-<p>已最常见的 <code>deep learning</code> 为例，在搜索框中输入 <code>deep learning</code> 后稍等片刻，出现如下和其关联的词组对。</p>
-<p><img src="/zh/2021/service-arxiv/input_phrase.gif"></p>
-<h3 id="点击节点展开更多关联">点击节点展开更多关联</h3>
-<p>由于和 <code>deep learning</code> 关联的概念词语较多，每次只会展现 10 个。单击节点可以加载更多关联词。 <img src="/zh/2021/service-arxiv/expand.gif"></p>
-<h3 id="探索其他节点">探索其他节点</h3>
-<p><img src="/zh/2021/service-arxiv/more_nodes.gif"></p>
-<h3 id="双击节点增加至查询论文条件">双击节点增加至查询论文条件</h3>
-<p><img src="/zh/2021/service-arxiv/one_condition.gif"></p>
-<h3 id="查看综述">查看综述</h3>
-<p><img src="/zh/2021/service-arxiv/abstract.gif"></p>
-<h3 id="增加联合条件">增加联合条件</h3>
-<p><img src="/zh/2021/service-arxiv/two_conditions.gif"></p>
-<h2 id="登录流程">登录流程</h2>
-<p>目前提供两种方式。 在国内的小伙伴建议使用微信公众号的方式登录，在国外的朋友们可以使用 Google 账号登录。</p>
-<h3 id="微信登录按提示在为公众号中输入验证码">微信登录，按提示在为公众号中输入验证码</h3>
-<figure>
-<img src="/zh/2021/service-arxiv/wechat_code.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-<h3 id="google登录">Google登录</h3>
-<figure>
-<img src="/zh/2021/service-arxiv/google_login.png">
-<figcaption>
-</figcaption>
-</figure>
-<div>
-
-
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></div></div></div></body></html>
+        <html><head></head><body><p>在这一期中，我们来体验两个知名的 NLP 预训练类库 flair 和 transformer 的 zero-shot 短文本分类。所谓zero-shot 的意思是完全不需要数据集来训练，直接掉包解决问题。和以往一样，本期的 docker 镜像已经预装了 flair，transformer，pytorch，jupyter notebook等<strong>包依赖</strong>，并且还预先下载了 flair 和 transformer 的两个<strong>预训练模型</strong>和 <strong>yahoo 短文本主题数据集</strong>，整个 docker 镜像达到12GB，为了就是让大家无需翻墙下载额外数据或者模型，并且使用CPU就能体验最新的NLP zero shot 文本分类。</p>
+<h2 id="docker-镜像获取方式">Docker 镜像获取方式</h2>
+<p>关注 <code>MyEncyclopedia</code> 公众号后回复 <code>docker-transformer-zero-shot</code> 即可获取镜像地址和启动命令。</p>
+<h2 id="flair-zero-shot">Flair zero shot</h2>
+<p>先来看一个 flair 短文本 zero shot 短文本分类的例子。下面的代码将句子 <strong>Spain beat Swiss for first Nations League win</strong> 归类到 <strong>politics</strong>, <strong>sports</strong>，<strong>health</strong> 之一。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> flair.models <span class="hljs-keyword">import</span> TARSClassifier</span><br><span class="line"><span class="hljs-keyword">from</span> flair.data <span class="hljs-keyword">import</span> Sentence</span><br><span class="line"><span class="hljs-keyword">import</span> flair, torch</span><br><span class="line">flair.device = torch.device(<span class="hljs-string">'cpu'</span>)</span><br><span class="line"></span><br><span class="line">text = <span class="hljs-string">'Spain beat Swiss for first Nations League win'</span></span><br><span class="line">tars = TARSClassifier.load(<span class="hljs-string">'tars-base'</span>)</span><br><span class="line">sentence = Sentence(text)</span><br><span class="line">classes = [<span class="hljs-string">'politics'</span>, <span class="hljs-string">'sports'</span>, <span class="hljs-string">'health'</span>]</span><br><span class="line">tars.predict_zero_shot(sentence, classes)</span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">print</span>(sentence)</span><br><span class="line"><span class="hljs-built_in">print</span>(sentence.to_dict())</span><br></pre></td></tr></tbody></table></figure>
+<p>最后两行输出如下，<code>all labels</code> 字段显示概率最高的是 <code>sports</code>类别，达到 0.99+。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Sentence: <span class="hljs-string">"Spain beat Swiss for first Nations League win"</span> → sports (0.9952)</span><br><span class="line">{</span><br><span class="line">  <span class="hljs-string">'text'</span>: <span class="hljs-string">'Spain beat Swiss for first Nations League win'</span>, </span><br><span class="line">  <span class="hljs-string">'all labels'</span>: [{<span class="hljs-string">'value'</span>: <span class="hljs-string">'sports'</span>, <span class="hljs-string">'confidence'</span>: 0.9952359795570374}]</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">注意，在上面的代码中，`flair.device = torch.device(<span class="hljs-string">'cpu'</span>)` 强制使用了 cpu 资源，否则 flair 默认使用 gpu 会报错。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">## Transformer zero shot</span></span><br><span class="line">再来看看大名鼎鼎的 transformer zero shot 的结果。这里使用了默认的 transformer zero shot 分类的模型 Transformer Bart，小伙伴们可以使用其他模型，但是有些不兼容 zero shot 分类。代码如下</span><br><span class="line"></span><br><span class="line">​```python</span><br><span class="line">from transformers import pipeline</span><br><span class="line"></span><br><span class="line">text = <span class="hljs-string">'Spain beat Swiss for first Nations League win'</span></span><br><span class="line">classes = [<span class="hljs-string">'politics'</span>, <span class="hljs-string">'sports'</span>, <span class="hljs-string">'health'</span>]</span><br><span class="line">classifier = pipeline(<span class="hljs-string">"zero-shot-classification"</span>, device=-1)</span><br><span class="line">result = classifier(text, classes, multi_label=False)</span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">print</span>(result)</span><br><span class="line"><span class="hljs-built_in">print</span>(result[<span class="hljs-string">'labels'</span>][0])</span><br></pre></td></tr></tbody></table></figure>
+<p>最后两行输出为</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="hljs-string">'sequence'</span>: <span class="hljs-string">'Spain beat Swiss for first Nations League win'</span>, </span><br><span class="line">  <span class="hljs-string">'labels'</span>: [<span class="hljs-string">'sports'</span>, <span class="hljs-string">'health'</span>, <span class="hljs-string">'politics'</span>], </span><br><span class="line">  <span class="hljs-string">'scores'</span>: [0.9476209878921509, 0.03594793379306793, 0.016431059688329697]</span><br><span class="line">}</span><br><span class="line">sports</span><br></pre></td></tr></tbody></table></figure>
+<p><code>result</code> 的 <code>labels</code>中会按照最大概率排序输出类别和对应的分数。对于这句句子，也分的相当准确，<code>sports</code> 为 0.94+。</p>
+<p>也注意到 <code>pipeline("zero-shot-classification", device=-1)</code> 语句中 <strong>-1</strong> 表示强制使用 cpu。</p>
+<h2 id="yahoo-短文本主题数据分类效果">Yahoo 短文本主题数据分类效果</h2>
+<p>最后，来看一个真实数据集中这两者的实际效果，<code>yahoo_answers_topics</code> 是 <code>huggingface</code>的一个短文本分类数据集，可以通过以下命令下载并加载</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yahoo = load_dataset(<span class="hljs-string">'yahoo_answers_topics'</span>)</span><br></pre></td></tr></tbody></table></figure>
+<p>它的具体类别为</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line"><span class="hljs-string">'Society &amp; Culture'</span>, </span><br><span class="line"><span class="hljs-string">'Science &amp; Mathematics'</span>, </span><br><span class="line"><span class="hljs-string">'Health'</span>, </span><br><span class="line"><span class="hljs-string">'Education &amp; Reference'</span>, </span><br><span class="line"><span class="hljs-string">'Computers &amp; Internet'</span>, </span><br><span class="line"><span class="hljs-string">'Sports'</span>, </span><br><span class="line"><span class="hljs-string">'Business &amp; Finance'</span>, </span><br><span class="line"><span class="hljs-string">'Entertainment &amp; Music'</span>, </span><br><span class="line"><span class="hljs-string">'Family &amp; Relationships'</span>, </span><br><span class="line"><span class="hljs-string">'Politics &amp; Government'</span></span><br><span class="line">]</span><br></pre></td></tr></tbody></table></figure>
+<p>由于数量比较大，这里只取随机的1000个来测试，一些数据点如下</p>
+<table>
+<colgroup>
+<col style="width: 74%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Text</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A Permanent resident of Canada may stay out of Canada 3 years without losing status.</td>
+<td>Politics &amp; Government</td>
+</tr>
+<tr class="even">
+<td>The official major league opening game occurred on April 10, 2006, as the Cardinals defeated the Milwaukee Brewers 6-4. (Day Game)</td>
+<td>Sports</td>
+</tr>
+<tr class="odd">
+<td>Hold down the Command key while dragging and dropping files.</td>
+<td>Computers &amp; Internet</td>
+</tr>
+</tbody>
+</table>
+<p>接着，对于每条短文本用 flair 和 transformer 来预测类别，最终统计准确率。</p>
+<p>结果是 flair 准确率为 <strong>0.275</strong>，Transformer Bart 为 <strong>0.392</strong>，果然 transformer 显著胜出。其实，在 Yahoo数据集上取得 0.3 - 0.4 左右的效果已经不错了，毕竟有十个类别，全随机的准确率是 0.1。如果大家觉得这个效果一般的话，可以试试 tweet 情感分类数据集（具体在下面的链接中），Transformer 能达到惊人的 0.73。</p>
+<p>下面附部分代码，完整代码可以从镜像中获得，或者感兴趣的小伙伴也可以访问</p>
+<p>https://github.com/nlptown/nlp-notebooks/blob/master/Zero-Shot%20Text%20Classification.ipynb 获取所有五个数据集的代码，不过由于类库版本的关系，部分代码和模型或数据无法兼容，需要自行调试。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">evaluate_flair</span>(<span class="hljs-params">dataset, default_name=<span class="hljs-string">'neutral'</span></span>):</span></span><br><span class="line">    classifier = TARSClassifier.load(<span class="hljs-string">'tars-base'</span>)</span><br><span class="line">    total, correct = <span class="hljs-number">0</span>, <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">for</span> item, gold_label_idx <span class="hljs-keyword">in</span> tqdm(<span class="hljs-built_in">zip</span>(dataset[<span class="hljs-string">"test_texts"</span>], dataset[<span class="hljs-string">"test_labels"</span>]),</span><br><span class="line">                                     total=<span class="hljs-built_in">len</span>(dataset[<span class="hljs-string">"test_texts"</span>])):</span><br><span class="line">        sentence = Sentence(item)</span><br><span class="line">        classifier.predict_zero_shot(sentence, dataset[<span class="hljs-string">"class_names"</span>])</span><br><span class="line">        sorted_labels = <span class="hljs-built_in">sorted</span>(sentence.to_dict()[<span class="hljs-string">'all labels'</span>], key=<span class="hljs-keyword">lambda</span> k: k[<span class="hljs-string">'confidence'</span>], reverse=<span class="hljs-literal">True</span>)</span><br><span class="line">        gold_label = dataset[<span class="hljs-string">"class_names"</span>][gold_label_idx]</span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(sorted_labels) &gt; <span class="hljs-number">0</span>:</span><br><span class="line">            predicted_label = sorted_labels[<span class="hljs-number">0</span>][<span class="hljs-string">'value'</span>]</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            predicted_label = default_name</span><br><span class="line">        <span class="hljs-keyword">if</span> predicted_label == gold_label:</span><br><span class="line">            correct += <span class="hljs-number">1</span></span><br><span class="line">        total += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> correct / total</span><br><span class="line">    </span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">evaluate_huggingface</span>(<span class="hljs-params">dataset</span>):</span></span><br><span class="line">    classifier = pipeline(<span class="hljs-string">"zero-shot-classification"</span>, device=-<span class="hljs-number">1</span>)</span><br><span class="line">    correct = <span class="hljs-number">0</span></span><br><span class="line">    predictions, gold_labels = [], []</span><br><span class="line">    <span class="hljs-keyword">for</span> text, gold_label_idx <span class="hljs-keyword">in</span> tqdm(<span class="hljs-built_in">zip</span>(dataset[<span class="hljs-string">"test_texts"</span>], dataset[<span class="hljs-string">"test_labels"</span>]),</span><br><span class="line">                                     total=<span class="hljs-built_in">len</span>(dataset[<span class="hljs-string">"test_texts"</span>])):</span><br><span class="line"></span><br><span class="line">        result = classifier(text, dataset[<span class="hljs-string">"class_names"</span>], multi_label=<span class="hljs-literal">False</span>)</span><br><span class="line">        predicted_label = result[<span class="hljs-string">'labels'</span>][<span class="hljs-number">0</span>]</span><br><span class="line"></span><br><span class="line">        gold_label = dataset[<span class="hljs-string">"class_names"</span>][gold_label_idx]</span><br><span class="line"></span><br><span class="line">        predictions.append(predicted_label)</span><br><span class="line">        gold_labels.append(gold_label)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> predicted_label == gold_label:</span><br><span class="line">            correct += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">    accuracy = correct / <span class="hljs-built_in">len</span>(predictions)</span><br><span class="line">    <span class="hljs-keyword">return</span> accuracy</span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
     </div>
     
@@ -321,11 +308,11 @@
         <div class="dropdown-menu has-text-left" role="menu">
             <div class="dropdown-content">
             
-                <a href="/tags/NLP/" class="dropdown-item">
+                <a href="/tags/nlp/" class="dropdown-item">
                     简体中文
                 </a>
             
-                <a href="/en/tags/NLP/" class="dropdown-item">
+                <a href="/en/tags/nlp/" class="dropdown-item">
                     English
                 </a>
             

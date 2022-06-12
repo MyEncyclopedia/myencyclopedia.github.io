@@ -167,6 +167,147 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh/2020/rl-dqn-mario/" itemprop="url">深度强化学习之：DQN训练超级玛丽闯关</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-12-05T10:45:01.000Z" itemprop="datePublished">12月 5 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            12 分钟 读完 (约 1743 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>上一期 MyEncyclopedia公众号文章 <a href="/zh/2020/rl-dqn-mario/!--swig￼9--">从Q-Learning 演化到 DQN</a>，我们从原理上讲解了DQN算法，这一期，让我们通过代码来实现任天堂游戏机中经典的超级玛丽的自动通关吧。本文所有代码在 https://github.com/MyEncyclopedia/reinforcement-learning-2nd/tree/master/super_mario。</p>
+<h2 id="dqn-算法回顾">DQN 算法回顾</h2>
+<p>上期详细讲解了DQN中的两个重要的技术：Target Network 和 Experience Replay，正是有了它们才使得 Deep Q Network在实战中容易收敛，以下是Deepmind 发表在Nature 的 Human-level control through deep reinforcement learning 的完整算法流程。</p>
+<figure>
+<img src="/zh/2020/rl-dqn-mario/dqn_alg_nature.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="超级玛丽-nes-openai-环境">超级玛丽 NES OpenAI 环境</h2>
+<p>安装基于OpenAI gym的超级玛丽环境执行下面的 pip 命令即可。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install gym-super-mario-bros</span><br></pre></td></tr></tbody></table></figure>
+<p>我们先来看一下游戏环境的输入和输出。下面代码采用随机的action来和游戏交互。有了 <a href="/zh/2020/rl-dqn-mario/!--swig￼10--">组合游戏系列3: 井字棋、五子棋的OpenAI Gym GUI环境</a> 对于OpenAI Gym 接口的介绍，现在对于其基本的交互步骤已经不陌生了。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> gym_super_mario_bros</span><br><span class="line"><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> random, randrange</span><br><span class="line"><span class="hljs-keyword">from</span> gym_super_mario_bros.actions <span class="hljs-keyword">import</span> RIGHT_ONLY</span><br><span class="line"><span class="hljs-keyword">from</span> nes_py.wrappers <span class="hljs-keyword">import</span> JoypadSpace</span><br><span class="line"><span class="hljs-keyword">from</span> gym <span class="hljs-keyword">import</span> wrappers</span><br><span class="line"></span><br><span class="line">env = gym_super_mario_bros.make(<span class="hljs-string">'SuperMarioBros-v0'</span>)</span><br><span class="line">env = JoypadSpace(env, RIGHT_ONLY)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># Play randomly</span></span><br><span class="line">done = <span class="hljs-literal">False</span></span><br><span class="line">env.reset()</span><br><span class="line"></span><br><span class="line">step = <span class="hljs-number">0</span></span><br><span class="line"><span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> done:</span><br><span class="line">    action = randrange(<span class="hljs-built_in">len</span>(RIGHT_ONLY))</span><br><span class="line">    state, reward, done, info = env.step(action)</span><br><span class="line">    <span class="hljs-built_in">print</span>(done, step, info)</span><br><span class="line">    env.render()</span><br><span class="line">    step += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">env.close()</span><br></pre></td></tr></tbody></table></figure>
+<p>游戏render效果如下</p>
+<p>。。。</p>
+<p>注意我们在游戏环境初始化的时候用了参数 RIGHT_ONLY，它定义成五种动作的list，表示仅使用右键的一些组合，适用于快速训练来完成Mario第一关。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RIGHT_ONLY = [</span><br><span class="line">    [<span class="hljs-string">'NOOP'</span>],</span><br><span class="line">    [<span class="hljs-string">'right'</span>],</span><br><span class="line">    [<span class="hljs-string">'right'</span>, <span class="hljs-string">'A'</span>],</span><br><span class="line">    [<span class="hljs-string">'right'</span>, <span class="hljs-string">'B'</span>],</span><br><span class="line">    [<span class="hljs-string">'right'</span>, <span class="hljs-string">'A'</span>, <span class="hljs-string">'B'</span>],</span><br><span class="line">]</span><br></pre></td></tr></tbody></table></figure>
+<p>观察一些 info 输出内容，coins表示金币获得数量，flag_get 表示是否取得最后的旗子，time 剩余时间，以及 Mario 大小状态和所在的 x，y位置。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">   "coins":0,</span><br><span class="line">   "flag_get":False,</span><br><span class="line">   "life":2,</span><br><span class="line">   "score":0,</span><br><span class="line">   "stage":1,</span><br><span class="line">   "status":"small",</span><br><span class="line">   "time":381,</span><br><span class="line">   "world":1,</span><br><span class="line">   "x_pos":594,</span><br><span class="line">   "y_pos":89</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="游戏图像处理">游戏图像处理</h2>
+<p>Deep Reinforcement Learning 一般是 end-to-end learning，意味着游戏的 screen image 作为observation直接视为真实状态，喂给神经网络训练。于此相反的另一种做法是，通过游戏环境拿到内部状态，例如所有相关物品的位置和属性作为模型输入。这两种方式的区别有两点。第一点，用观察到的屏幕像素代替真正的状态 s，在partially observable 的环境时可能因为 non-stationarity 导致无法很好的工作，而拿内部状态利用了额外的作弊信息，在partially observable环境中也可以工作。第二点，第一种方式屏幕像素维度比较高，输入数据量大，需要神经网络的大量训练拟合，第二种方式，内部真实状态往往维度低得多，训练起来很快，但缺点是因为除了内部状态往往还需要游戏相关规则作为输入，因此generalization能力不如前者强。</p>
+<figure>
+<img src="/zh/2020/rl-dqn-mario/dqn.jpg">
+<figcaption>
+</figcaption>
+</figure>
+<p>这里，我们当然采样屏幕像素的 end-to-end 方式了，自然首要任务是将游戏帧图像有效处理。超级玛丽游戏环境的屏幕输出是 (240, 256, 3) shape的 numpy array，通过下面一系列的转换，尽可能的在不影响训练效果的情况下减小采样到的数据量。</p>
+<ol type="1">
+<li><p>MaxAndSkipFrameWrapper：每4个frame连在一起，采取同样的动作，降低frame数量。</p></li>
+<li><p>FrameDownsampleWrapper：将原始的 (240, 256, 3) down sample 到 (84, 84, 1)</p></li>
+<li><p>ImageToPyTorchWrapper：转换成适合 pytorch 的 (1, 84, 84) shape</p></li>
+<li><p>FrameBufferWrapper：保存最后4次屏幕采样</p></li>
+<li><p>NormalizeFloats：Normalize 成 [0., 1.0] 的浮点值</p></li>
+</ol>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">wrap_environment</span>(<span class="hljs-params">env_name: <span class="hljs-built_in">str</span>, action_space: <span class="hljs-built_in">list</span></span>) -&gt; Wrapper:</span></span><br><span class="line">    env = make(env_name)</span><br><span class="line">    env = JoypadSpace(env, action_space)</span><br><span class="line">    env = MaxAndSkipFrameWrapper(env)</span><br><span class="line">    env = FrameDownsampleWrapper(env)</span><br><span class="line">    env = ImageToPyTorchWrapper(env)</span><br><span class="line">    env = FrameBufferWrapper(env, <span class="hljs-number">4</span>)</span><br><span class="line">    env = NormalizeFloats(env)</span><br><span class="line">    <span class="hljs-keyword">return</span> env</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="cnn-模型">CNN 模型</h2>
+<p>模型比较简单，三个卷积层后做 softmax输出，输出维度数为离散动作数。act() 采用了epsilon-greedy 模式，即在epsilon小概率时采取随机动作来 explore，大于epsilon时采取估计的最可能动作来 exploit。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DQNModel</span>(<span class="hljs-params">nn.Module</span>):</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, input_shape, num_actions</span>):</span></span><br><span class="line">        <span class="hljs-built_in">super</span>(DQNModel, self).__init__()</span><br><span class="line">        self._input_shape = input_shape</span><br><span class="line">        self._num_actions = num_actions</span><br><span class="line"></span><br><span class="line">        self.features = nn.Sequential(</span><br><span class="line">            nn.Conv2d(input_shape[<span class="hljs-number">0</span>], <span class="hljs-number">32</span>, kernel_size=<span class="hljs-number">8</span>, stride=<span class="hljs-number">4</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Conv2d(<span class="hljs-number">32</span>, <span class="hljs-number">64</span>, kernel_size=<span class="hljs-number">4</span>, stride=<span class="hljs-number">2</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Conv2d(<span class="hljs-number">64</span>, <span class="hljs-number">64</span>, kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">1</span>),</span><br><span class="line">            nn.ReLU()</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        self.fc = nn.Sequential(</span><br><span class="line">            nn.Linear(self.feature_size, <span class="hljs-number">512</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Linear(<span class="hljs-number">512</span>, num_actions)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">forward</span>(<span class="hljs-params">self, x</span>):</span></span><br><span class="line">        x = self.features(x).view(x.size()[<span class="hljs-number">0</span>], -<span class="hljs-number">1</span>)</span><br><span class="line">        <span class="hljs-keyword">return</span> self.fc(x)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, state, epsilon, device</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> random() &gt; epsilon:</span><br><span class="line">            state = torch.FloatTensor(np.float32(state)).unsqueeze(<span class="hljs-number">0</span>).to(device)</span><br><span class="line">            q_value = self.forward(state)</span><br><span class="line">            action = q_value.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>)[<span class="hljs-number">1</span>].item()</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            action = randrange(self._num_actions)</span><br><span class="line">        <span class="hljs-keyword">return</span> action</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="experience-replay-缓存">Experience Replay 缓存</h2>
+<p>实现采用了 Pytorch CartPole DQN 的官方代码，本质是一个最大为 capacity 的 list 保存采样的 (s, a, r, s', is_done) 五元组。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Transition = namedtuple(<span class="hljs-string">'Transition'</span>, (<span class="hljs-string">'state'</span>, <span class="hljs-string">'action'</span>, <span class="hljs-string">'reward'</span>, <span class="hljs-string">'next_state'</span>, <span class="hljs-string">'done'</span>))</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ReplayMemory</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, capacity</span>):</span></span><br><span class="line">        self.capacity = capacity</span><br><span class="line">        self.memory = []</span><br><span class="line">        self.position = <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">push</span>(<span class="hljs-params">self, *args</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.memory) &lt; self.capacity:</span><br><span class="line">            self.memory.append(<span class="hljs-literal">None</span>)</span><br><span class="line">        self.memory[self.position] = Transition(*args)</span><br><span class="line">        self.position = (self.position + <span class="hljs-number">1</span>) % self.capacity</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sample</span>(<span class="hljs-params">self, batch_size</span>):</span></span><br><span class="line">        <span class="hljs-keyword">return</span> random.sample(self.memory, batch_size)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__len__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.memory)</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="dqnagent">DQNAgent</h2>
+<p>我们将 DQN 的逻辑封装在 DQNAgent 类中。DQNAgent 成员变量包括两个 DQNModel，一个ReplayMemory。</p>
+<p>train() 方法中会每隔一定时间将 Target Network 的参数同步成现行Network的参数。在td_loss_backprop()方法中采样 ReplayMemory 中的五元组，通过minimize TD error方式来改进现行 Network 参数 <span class="math inline">\(\theta\)</span>。Loss函数为：</p>
+<p><span class="math display">\[
+L\left(\theta_{i}\right)=\mathbb{E}_{\left(s, a, r, s^{\prime}\right) \sim \mathrm{U}(D)}\left[\left(r+\gamma \max _{a^{\prime}} Q_{target}\left(s^{\prime}, a^{\prime} ; \theta_{i}^{-}\right)-Q\left(s, a ; \theta_{i}\right)\right)^{2}\right]
+\]</span></p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DQNAgent</span>():</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, state, episode_idx</span>):</span></span><br><span class="line">        self.update_epsilon(episode_idx)</span><br><span class="line">        action = self.model.act(state, self.epsilon, self.device)</span><br><span class="line">        <span class="hljs-keyword">return</span> action</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">process</span>(<span class="hljs-params">self, episode_idx, state, action, reward, next_state, done</span>):</span></span><br><span class="line">        self.replay_mem.push(state, action, reward, next_state, done)</span><br><span class="line">        self.train(episode_idx)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">self, episode_idx</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.replay_mem) &gt; self.initial_learning:</span><br><span class="line">            <span class="hljs-keyword">if</span> episode_idx % self.target_update_frequency == <span class="hljs-number">0</span>:</span><br><span class="line">                self.target_model.load_state_dict(self.model.state_dict())</span><br><span class="line">            self.optimizer.zero_grad()</span><br><span class="line">            self.td_loss_backprop()</span><br><span class="line">            self.optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">td_loss_backprop</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        transitions = self.replay_mem.sample(self.batch_size)</span><br><span class="line">        batch = Transition(*<span class="hljs-built_in">zip</span>(*transitions))</span><br><span class="line"></span><br><span class="line">        state = Variable(FloatTensor(np.float32(batch.state))).to(self.device)</span><br><span class="line">        action = Variable(LongTensor(batch.action)).to(self.device)</span><br><span class="line">        reward = Variable(FloatTensor(batch.reward)).to(self.device)</span><br><span class="line">        next_state = Variable(FloatTensor(np.float32(batch.next_state))).to(self.device)</span><br><span class="line">        done = Variable(FloatTensor(batch.done)).to(self.device)</span><br><span class="line"></span><br><span class="line">        q_values = self.model(state)</span><br><span class="line">        next_q_values = self.target_net(next_state)</span><br><span class="line"></span><br><span class="line">        q_value = q_values.gather(<span class="hljs-number">1</span>, action.unsqueeze(-<span class="hljs-number">1</span>)).squeeze(-<span class="hljs-number">1</span>)</span><br><span class="line">        next_q_value = next_q_values.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]</span><br><span class="line">        expected_q_value = reward + self.gamma * next_q_value * (<span class="hljs-number">1</span> - done)</span><br><span class="line"></span><br><span class="line">        loss = (q_value - expected_q_value.detach()).<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>)</span><br><span class="line">        loss = loss.mean()</span><br><span class="line">        loss.backward()</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="外层-training-代码">外层 Training 代码</h2>
+<p>最后是外层调用代码，基本和以前文章一样。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">env, args, agent</span>):</span></span><br><span class="line">    <span class="hljs-keyword">for</span> episode_idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(args.num_episodes):</span><br><span class="line">        episode_reward = <span class="hljs-number">0.0</span></span><br><span class="line">        state = env.reset()</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            action = agent.act(state, episode_idx)</span><br><span class="line">            <span class="hljs-keyword">if</span> args.render:</span><br><span class="line">                env.render()</span><br><span class="line">            next_state, reward, done, stats = env.step(action)</span><br><span class="line">            agent.process(episode_idx, state, action, reward, next_state, done)</span><br><span class="line">            state = next_state</span><br><span class="line">            episode_reward += reward</span><br><span class="line">            <span class="hljs-keyword">if</span> done:</span><br><span class="line">                <span class="hljs-built_in">print</span>(<span class="hljs-string">f'<span class="hljs-subst">{episode_idx}</span>: <span class="hljs-subst">{episode_reward}</span>'</span>)</span><br><span class="line">                <span class="hljs-keyword">break</span></span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/zh/2020/tsp-4-search/" itemprop="url">TSP问题从DP算法到深度学习4：概率最大状态序列算法</a>
         
     </h1>
@@ -1947,166 +2088,6 @@ every-visit MC 10000次含有usable A的V值
 
 
     
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh/2020/tsp-2-dp-tour/" itemprop="url">TSP问题从DP算法到深度学习2：欧氏空间数据集的DP解</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2020-09-20T10:45:01.000Z" itemprop="datePublished">9月 20 2020</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            12 分钟 读完 (约 1761 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><p>本篇是TSP问题从DP算法到深度学习系列第二篇。</p>
-<ul>
-<li><p><a href="/zh/2020/tsp-2-dp-tour/!--swig￼11--">第一篇: 递归DP方法 AC AIZU TSP问题</a></p></li>
-<li><p><strong><a href="/zh/2020/tsp-2-dp-tour/!--swig￼12--">第二篇: 二维空间TSP数据集及其DP解法</a></strong></p></li>
-<li><p>第三篇: 深度学习 Pointer Networks 的 Pytorch实现</p></li>
-<li><p>第四篇: 搜寻最有可能路径：Viterbi算法和其他</p></li>
-<li><p>第五篇: 深度强化学习无监督算法的 Pytorch实现</p></li>
-</ul>
-<h2 id="aizu-tsp-自底向上迭代dp解">AIZU TSP 自底向上迭代DP解</h2>
-<p>上一篇中，我们用Python 3和Java 8完成了自顶向下递归版本的DP解。我们继续改进代码，将它转换成标准DP方式：自底向上的迭代DP版本。下图是3个点TSP问题的递归调用图。</p>
-<p><img src="/zh/2020/tsp-2-dp-tour/ver3-top-down.svg" title="3点TSP递归调用图"></p>
-<p>将这个图反过来检查状态的依赖关系，可以很容易发现规律：首先计算状态位含有一个1的点，接着是两个1的节点，最后是状态位三个1的点。简而言之，在计算状态位为n+1个1的节点时需要用到n个1的节点的计算结果，如果能依照这样的 topological 顺序来的话，就可以去除递归，写成迭代（循环）版本的DP。</p>
-<p><img src="/zh/2020/tsp-2-dp-tour/ver3-bottom-up.svg" title="3点TSP状态依赖"></p>
-<p>迭代算法的Java 伪代码如下</p>
-<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> bitset_num = N; bitset_num &gt;=<span class="hljs-number">0</span>; bitset_num++) {</span><br><span class="line">	<span class="hljs-keyword">while</span>(hasNextCombination(bitset_num)) {</span><br><span class="line">		<span class="hljs-keyword">int</span> state = nextCombination(bitset_num);</span><br><span class="line">		<span class="hljs-comment">// compute dp[state][v], v-th bit is set in state</span></span><br><span class="line">		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> v = <span class="hljs-number">0</span>; v &lt; n; v++) {</span><br><span class="line">			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> u = <span class="hljs-number">0</span>; u &lt; n; u++) {</span><br><span class="line">				<span class="hljs-comment">// for each u not reached by this state</span></span><br><span class="line">				<span class="hljs-keyword">if</span> (!include(state, u)) {</span><br><span class="line">					dp[state][v] = min(dp[state][v], </span><br><span class="line">						dp[new_state_include_u][u] + dist[v][u]);</span><br><span class="line">				}</span><br><span class="line">			}</span><br><span class="line">		}</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p>举例来说，dp[00010][1] 是从顶点0出发，刚经过顶点1的最小距离 <span class="math inline">\(0 \rightarrow 1 \rightarrow ? \rightarrow ? \rightarrow ? \rightarrow 0\)</span>。</p>
-<p>为了找到最小距离值，就必须遍历所有可能的下一个可能的顶点u （第一个问号位置）。 <span class="math display">\[
-(0 \rightarrow 1) + 
-\begin{align*}
-  \min \left\lbrace
-  \begin{array}{r@{}l}
-    2 \rightarrow ? \rightarrow ? \rightarrow 0 + dist(1,2) \qquad\text{    new_state=[00110][2] } \qquad\\\\
-    3 \rightarrow ? \rightarrow ?  \rightarrow 0 + dist(1,3) \qquad\text{    new_state=[01010][3] } \qquad\\\\
-    4 \rightarrow ? \rightarrow ?  \rightarrow 0 + dist(1,4) \qquad\text{    new_state=[10010][4] } \qquad
-  \end{array}
-  \right.
-\end{align*}
-\]</span></p>
-<h3 id="迭代dp-ac代码">迭代DP AC代码</h3>
-<p>以下是AC 的Java 算法核心代码。完整代码在 github/MyEncyclopedia 的<a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/blob/master/tsp/alg_aizu/Main_loop.java">tsp/alg_aizu/Main_loop.java</a>。</p>
-<figure class="highlight java hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">solve</span><span class="hljs-params">()</span> </span>{</span><br><span class="line">	<span class="hljs-keyword">int</span> N = g.V_NUM;</span><br><span class="line">	<span class="hljs-keyword">long</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">long</span>[<span class="hljs-number">1</span> &lt;&lt; N][N];</span><br><span class="line">	<span class="hljs-comment">// init dp[][] with MAX</span></span><br><span class="line">	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; dp.length; i++) {</span><br><span class="line">		Arrays.fill(dp[i], Integer.MAX_VALUE);</span><br><span class="line">	}</span><br><span class="line">	dp[(<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> state = (<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">2</span>; state &gt;= <span class="hljs-number">0</span>; state--) {</span><br><span class="line">		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> v = <span class="hljs-number">0</span>; v &lt; N; v++) {</span><br><span class="line">			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> u = <span class="hljs-number">0</span>; u &lt; N; u++) {</span><br><span class="line">				<span class="hljs-keyword">if</span> (((state &gt;&gt; u) &amp; <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>) {</span><br><span class="line">					dp[state][v] = Math.min(dp[state][v], dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] + g.edges[v][u]);</span><br><span class="line">				}</span><br><span class="line">			}</span><br><span class="line">		}</span><br><span class="line">	}</span><br><span class="line">	<span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] == Integer.MAX_VALUE ? -<span class="hljs-number">1</span> : dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>];</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-<p>很显然，时间算法复杂度对应了三重 for 循环，为 O(<span class="math inline">\(2^n * n * n\)</span>) = O(<span class="math inline">\(2^n*n^2\)</span> )。</p>
-<p>类似的，Python 3 AC 代码如下。完整代码在 github/MyEncyclopedia 的<a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/blob/master/tsp/alg_aizu/TSP_loop.py">tsp/alg_aizu/TSP_loop.py</a>。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TSPSolver</span>:</span></span><br><span class="line">    g: Graph</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, g: Graph</span>):</span></span><br><span class="line">        self.g = g</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">solve</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        :param v:</span></span><br><span class="line"><span class="hljs-string">        :param state:</span></span><br><span class="line"><span class="hljs-string">        :return: -1 means INF</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        N = self.g.v_num</span><br><span class="line">        dp = [[INT_INF <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span> &lt;&lt; N)]</span><br><span class="line"></span><br><span class="line">        dp[(<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> state <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>((<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">2</span>, -<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>):</span><br><span class="line">            <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">                <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">                    <span class="hljs-keyword">if</span> ((state &gt;&gt; u) &amp; <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>:</span><br><span class="line">                        <span class="hljs-keyword">if</span> dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] != INT_INF <span class="hljs-keyword">and</span> self.g.edges[v][u] != INT_INF:</span><br><span class="line">                            <span class="hljs-keyword">if</span> dp[state][v] == INT_INF:</span><br><span class="line">                                dp[state][v] = dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] + self.g.edges[v][u]</span><br><span class="line">                            <span class="hljs-keyword">else</span>:</span><br><span class="line">                                dp[state][v] = <span class="hljs-built_in">min</span>(dp[state][v], dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] + self.g.edges[v][u])</span><br><span class="line">        <span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>]</span><br></pre></td></tr></tbody></table></figure>
-<h2 id="一个欧式空间tsp数据集">一个欧式空间TSP数据集</h2>
-<p>至此，TSP的DP解法全部讲解完毕。接下去，我们引入一个二维欧式空间的TSP数据集 <a target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/0B2fg8yPGn2TCMzBtS0o4Q2RJaEU">PTR_NET on Google Drive</a> ，这个数据集是 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1506.03134">Pointer Networks</a> 的作者 Oriol Vinyals 用于模型的训练测试而引入的。</p>
-<p>数据集的每一行格式如下：</p>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x1, y1, x2, y2, ... output 1 v1 v2 v3 ... 1</span><br></pre></td></tr></tbody></table></figure>
-<p>一行开始为n个点的x， y坐标，接着是 output，再接着是1，表示从顶点1出发，经v1，v2，...，返回1，注意顶点编号从1开始。</p>
-<p>十个顶点数据集的一些数据示例如下：</p>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0.607122 0.664447 0.953593 0.021519 0.757626 0.921024 0.586376 0.433565 0.786837 0.052959 0.016088 0.581436 0.496714 0.633571 0.227777 0.971433 0.665490 0.074331 0.383556 0.104392 output 1 3 8 6 10 9 5 2 4 7 1 </span><br><span class="line">0.930534 0.747036 0.277412 0.938252 0.794592 0.794285 0.961946 0.261223 0.070796 0.384302 0.097035 0.796306 0.452332 0.412415 0.341413 0.566108 0.247172 0.890329 0.429978 0.232970 output 1 3 2 9 6 5 8 7 10 4 1 </span><br><span class="line">0.686712 0.087942 0.443054 0.277818 0.494769 0.985289 0.559706 0.861138 0.532884 0.351913 0.712561 0.199273 0.554681 0.657214 0.909986 0.277141 0.931064 0.639287 0.398927 0.406909 output 1 5 2 10 7 4 3 9 8 6 1 </span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p>画出第一个例子的全部顶点和边。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt</span><br><span class="line">points=<span class="hljs-string">'0.607122 0.664447 0.953593 0.021519 0.757626 0.921024 0.586376 0.433565 0.786837 0.052959 0.016088 0.581436 0.496714 0.633571 0.227777 0.971433 0.665490 0.074331 0.383556 0.104392'</span></span><br><span class="line">float_list = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">float</span>(x), points.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"></span><br><span class="line">x,y = [],[]</span><br><span class="line"><span class="hljs-keyword">for</span> idx, p <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(float_list):</span><br><span class="line">  <span class="hljs-keyword">if</span> idx % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>:</span><br><span class="line">    x.append(p)</span><br><span class="line">  <span class="hljs-keyword">else</span>:</span><br><span class="line">    y.append(p)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(x)):</span><br><span class="line">  <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(x)):</span><br><span class="line">    <span class="hljs-keyword">if</span> i == j:</span><br><span class="line">      <span class="hljs-keyword">continue</span></span><br><span class="line">    plt.plot((x[i],x[j]),(y[i],y[j]))</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></tbody></table></figure>
-<figure>
-<img src="/zh/2020/tsp-2-dp-tour/tsp10_full.png">
-<figcaption>
-全连接的图
-</figcaption>
-</figure>
-<p>这个例子的最短TSP旅程为 <span class="math display">\[
-1 \rightarrow 3 \rightarrow 8 \rightarrow 6 \rightarrow 10 \rightarrow 9 \rightarrow 5 \rightarrow 2 \rightarrow 4 \rightarrow 7 \rightarrow 1
-\]</span></p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tour_str = <span class="hljs-string">'1 3 8 6 10 9 5 2 4 7 1'</span></span><br><span class="line">tour = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x), tour_str.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(tour)-<span class="hljs-number">1</span>):</span><br><span class="line">  p1 = tour[i] - <span class="hljs-number">1</span></span><br><span class="line">  p2 = tour[i + <span class="hljs-number">1</span>] - <span class="hljs-number">1</span></span><br><span class="line">  plt.plot((x[p1],x[p2]),(y[p1],y[p2]))</span><br><span class="line">plt.show()</span><br></pre></td></tr></tbody></table></figure>
-<figure>
-<img src="/zh/2020/tsp-2-dp-tour/tsp10_tour.png">
-<figcaption>
-最短路径
-</figcaption>
-</figure>
-<h2 id="ptr_net-tsp-的python代码">PTR_NET TSP 的Python代码</h2>
-<h3 id="初始化init-graph-edges">初始化Init Graph Edges</h3>
-<p>在之前的自顶向下的递归版本中，需要做一些改动。首先，是图的初始化，我们依然延续之前的邻接矩阵来表示，由于这次的图是无向图，对于任意两个顶点，需要初始化双向的边。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">g: Graph = Graph(N)</span><br><span class="line"><span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">	<span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">		diff_x = coordinates[v][<span class="hljs-number">0</span>] - coordinates[u][<span class="hljs-number">0</span>]</span><br><span class="line">		diff_y = coordinates[v][<span class="hljs-number">1</span>] - coordinates[u][<span class="hljs-number">1</span>]</span><br><span class="line">		dist: <span class="hljs-built_in">float</span> = math.sqrt(diff_x * diff_x + diff_y * diff_y)</span><br><span class="line">		g.setDist(u, v, dist)</span><br><span class="line">		g.setDist(v, u, dist)</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="辅助变量记录父节点">辅助变量记录父节点</h3>
-<p>另一大改动是需要在遍历过程中保存的顶点关联信息，以便在最终找到最短路径值时可以回溯对应的完整路径。在下面代码中，使用parent[bitstate][v] 来保存此状态下最小路径对应的顶点u。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ret: <span class="hljs-built_in">float</span> = FLOAT_INF</span><br><span class="line">u_min: <span class="hljs-built_in">int</span> = -<span class="hljs-number">1</span></span><br><span class="line">	<span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.g.v_num):</span><br><span class="line">		<span class="hljs-keyword">if</span> (state &amp; (<span class="hljs-number">1</span> &lt;&lt; u)) == <span class="hljs-number">0</span>:</span><br><span class="line">			s: <span class="hljs-built_in">float</span> = self._recurse(u, state | <span class="hljs-number">1</span> &lt;&lt; u)</span><br><span class="line">				<span class="hljs-keyword">if</span> s + edges[v][u] &lt; ret:</span><br><span class="line">					ret = s + edges[v][u]</span><br><span class="line">					u_min = u</span><br><span class="line">	dp[state][v] = ret</span><br><span class="line">	self.parent[state][v] = u_min</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p>当最终最短行程确定后，根据parent的信息可以按图索骥找到完整的行程顶点信息。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_form_tour</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">	self.tour = [<span class="hljs-number">0</span>]</span><br><span class="line">	bit = <span class="hljs-number">0</span></span><br><span class="line">	v = <span class="hljs-number">0</span></span><br><span class="line">	<span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.g.v_num - <span class="hljs-number">1</span>):</span><br><span class="line">		v = self.parent[bit][v]</span><br><span class="line">		self.tour.append(v)</span><br><span class="line">		bit = bit | (<span class="hljs-number">1</span> &lt;&lt; v)</span><br><span class="line">	self.tour.append(<span class="hljs-number">0</span>)</span><br></pre></td></tr></tbody></table></figure><p></p>
-<p>需要注意的是，有可能存在多个最短行程，它们的距离值是一致的。这种情况下，代码输出的最短路径可能和数据集output后行程路径不一致，但是的两者的总距离是一致的。下面的代码验证了这一点。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">tsp: TSPSolver = TSPSolver(g)</span><br><span class="line">tsp.solve()</span><br><span class="line"></span><br><span class="line">output_dist: <span class="hljs-built_in">float</span> = <span class="hljs-number">0.0</span></span><br><span class="line">output_tour = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x) - <span class="hljs-number">1</span>, output.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"><span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(output_tour)):</span><br><span class="line">	pre_v = output_tour[v-<span class="hljs-number">1</span>]</span><br><span class="line">	curr_v = output_tour[v]</span><br><span class="line">	diff_x = coordinates[pre_v][<span class="hljs-number">0</span>] - coordinates[curr_v][<span class="hljs-number">0</span>]</span><br><span class="line">	diff_y = coordinates[pre_v][<span class="hljs-number">1</span>] - coordinates[curr_v][<span class="hljs-number">1</span>]</span><br><span class="line">	dist: <span class="hljs-built_in">float</span> = math.sqrt(diff_x * diff_x + diff_y * diff_y)</span><br><span class="line">	output_dist += dist</span><br><span class="line"></span><br><span class="line">	passed = <span class="hljs-built_in">abs</span>(tsp.dist - output_dist) &lt; <span class="hljs-number">10e-5</span></span><br><span class="line">	<span class="hljs-keyword">if</span> passed:</span><br><span class="line">		<span class="hljs-built_in">print</span>(<span class="hljs-string">f'passed dist=<span class="hljs-subst">{tsp.tour}</span>'</span>)</span><br><span class="line">	<span class="hljs-keyword">else</span>:</span><br><span class="line">		<span class="hljs-built_in">print</span>(<span class="hljs-string">f'Min Tour Distance = <span class="hljs-subst">{output_dist}</span>, Computed Tour Distance = <span class="hljs-subst">{tsp.dist}</span>, Expected Tour = <span class="hljs-subst">{output_tour}</span>, Result = <span class="hljs-subst">{tsp.tour}</span>'</span>)</span><br></pre></td></tr></tbody></table></figure><p></p>
-<p>本文所有代码在 github/MyEncyclopedia tsp/alg_plane 中。</p>
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-
-
-
-
-    
     
         
 <nav class="pagination is-centered is-rounded" role="navigation" aria-label="pagination">
@@ -2127,6 +2108,8 @@ every-visit MC 10000次含有usable A的V值
         <li><a class="pagination-link is-current" href="/page/4/">4</a></li>
         
         <li><a class="pagination-link" href="/page/5/">5</a></li>
+        
+        <li><a class="pagination-link" href="/page/6/">6</a></li>
         
     </ul>
 </nav>

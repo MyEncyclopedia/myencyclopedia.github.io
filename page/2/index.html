@@ -167,6 +167,138 @@
             </style>
     <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
         
+            <a href="/zh/2021/docker-gym-nes/" itemprop="url">跨平台任天堂红白机强化学习预制环境</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2021-11-21T10:45:01.000Z" itemprop="datePublished">11月 21 2021</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            6 分钟 读完 (约 966 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>今天和大家分享强化学习的经典训练环境，任天堂的红白机训练环境。</p>
+<p><img src="/zh/2021/docker-gym-nes/gym-demo.gif"></p>
+<p>这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux 甚至 Mac 上都可以运行。</p>
+<p>这里将通过大家最常用的 Windows 系统来演示环境的使用。</p>
+<h2 id="x-window-服务器">X window 服务器</h2>
+<p>在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 XLaunch。</p>
+<p><img src="/zh/2021/docker-gym-nes/xlaunch.png"></p>
+<p>这里采用 XLaunch 是因为安装比较方便，安装包也很小。</p>
+<p>如果 XLaunch 正常启动的话，就会在系统托管的地方显示出来。接着我们来下载环境的 docker images。</p>
+<h2 id="拉取镜像">拉取镜像</h2>
+<p>用 docker pull 命令我们将预制的公开镜像拉下来</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull myencyclopedia/gym-nes</span><br></pre></td></tr></tbody></table></figure>
+<p>拉下来以后，可以用 docker image命令来检查是否存在</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></tbody></table></figure>
+<p>下一步，我们需要找到物理机或者 docker host 机器的 IP 地址。</p>
+<p>在windows上，我们执行 ipconfig 命令，注意我们要的是 WSL 对应的 IP 地址。</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ ipconfig.exe</span><br><span class="line"></span><br><span class="line">Windows IP 配置</span><br><span class="line"></span><br><span class="line">以太网适配器 以太网:</span><br><span class="line">   媒体状态  . . . . . . . . . . . . : 媒体已断开连接</span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">以太网适配器 vEthernet (WSL):</span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">   本地链接 IPv6 地址. . . . . . . . : fe80::8841:6bd8:5064:9a3c%45</span><br><span class="line">   IPv4 地址 . . . . . . . . . . . . : 172.23.0.1</span><br><span class="line">   子网掩码  . . . . . . . . . . . . : 255.255.240.0</span><br><span class="line">   默认网关. . . . . . . . . . . . . :</span><br></pre></td></tr></tbody></table></figure>
+<p>得到了物理机的 docker 网段地址以后，我们将地址保存在物理机的 Display 环境变量中，注意最后需要加上 <code>:0</code></p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> DISPLAY=172.23.0.1:0</span><br></pre></td></tr></tbody></table></figure>
+<p>至此，我们可以一键跑超级玛丽了。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash -c <span class="hljs-string">'python gym_nes_demo.py'</span></span><br></pre></td></tr></tbody></table></figure>
+<p>解释一点，<code>-e DISPLAY=$DISPLAY</code> 将 Display 环境变量从当前 shell 注入到 container 中。</p>
+<p>一切顺利的话，有个 X window的窗口会跳出来，无人控制得超级玛丽运行了起来，它会随机执行一些动作。</p>
+<p>结束程序记得要把 docker container 显示关掉，需要执行 <code>docker stop</code>。</p>
+<h2 id="各种游戏">各种游戏</h2>
+<p>其实，预制的 docker 环境给大家装了更多的游戏，大家也可以修改源码跑其他游戏</p>
+<p>具体方法是，将上面命令稍微修改一下 次我们进入 interactive bash。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it  -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/zh/2021/docker-gym-nes/docker-bash.gif"></p>
+<p>进了 container 之后，我们发现之前执行的 python 原代码是当前目录的 <code>gym_nes_demo.py</code></p>
+<p>先列出所有的游戏的 rom 文件。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">(py3.7) root@aff72945133b:/proj/nes_py# find . -name '*.nes'</span><br><span class="line">./tests/games/excitebike.nes</span><br><span class="line">./tests/games/super-mario-bros-2.nes</span><br><span class="line">./tests/games/super-mario-bros-3.nes</span><br><span class="line">./tests/games/empty.nes</span><br><span class="line">./tests/games/super-mario-bros-lost-levels.nes</span><br><span class="line">./tests/games/super-mario-bros-1.nes</span><br><span class="line">./tests/games/the-legend-of-zelda.nes</span><br><span class="line">./tests/nes-roms/1942 (Japan, USA).nes</span><br><span class="line">./tests/nes-roms/contra.nes</span><br><span class="line">./tests/nes-roms/Battle City (J).nes</span><br><span class="line">./tests/nes-roms/red.nes</span><br><span class="line">./tests/nes-roms/Gradius 2 (J).nes</span><br><span class="line">./tests/nes-roms/super-mario.nes</span><br><span class="line">./tests/nes-roms/Contra Force (USA).nes</span><br><span class="line">./tests/nes-roms/Rush'n Attack (U).nes</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>文件夹里有很多游戏， 包括魂斗罗，坦克大战等等。</p>
+<p>修改 <code>gym_nes_demo.py</code>，将超级玛丽替换成魂斗罗 nes。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> nes_py <span class="hljs-keyword">import</span> NESEnv</span><br><span class="line"><span class="hljs-keyword">import</span> tqdm</span><br><span class="line">env = NESEnv(<span class="hljs-string">'/proj/nes_py/tests/games/super-mario-bros-1.nes'</span>)</span><br><span class="line"></span><br><span class="line">done = <span class="hljs-literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">try</span>:</span><br><span class="line">    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> tqdm.tqdm(<span class="hljs-built_in">range</span>(<span class="hljs-number">5000</span>)):</span><br><span class="line">        <span class="hljs-keyword">if</span> done:</span><br><span class="line">            state = env.reset()</span><br><span class="line">            done = <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            state, reward, done, info = env.step(env.action_space.sample())</span><br><span class="line">            env.render()</span><br><span class="line"><span class="hljs-keyword">except</span> KeyboardInterrupt:</span><br><span class="line">    <span class="hljs-keyword">pass</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env = NESEnv('./tests/nes-roms/contra.nes')</span><br></pre></td></tr></tbody></table></figure>
+<p>保存后，执行</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python gym_nes_demo.py</span><br></pre></td></tr></tbody></table></figure>
+<p>魂斗罗的 random agent 也跑起来了。</p>
+<p><img src="/zh/2021/docker-gym-nes/contra.png"></p>
+<p>下一期，我会把一些很经典的深度强化学习的算法应用到这个环境中，让大家可以很方便得训练调试深度强化学习算法来挑战各种红白机游戏。</p>
+<p>最后，感谢大家关注 MyEncyclopedia 公众号，B站频道或者 Youtube 频道。谢谢大家再见。</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
             <a href="/about/" itemprop="url">关于我</a>
         
     </h1>
@@ -1210,7 +1342,7 @@ z_{1}=\sqrt{-2 \ln U_{1}} \sin \left(2 \pi U_{2}\right)=\sqrt{-2 \ln s}\left(\fr
                 <p class="card-status">
                     <span class="play-num">
                         <i class="fa fa-youtube-play"></i>
-                        <span>86</span></span>
+                        <span>87</span></span>
                     <span>
                         <i class="fa fa-list-alt"></i>
                         <span>0</span></span></p>
@@ -1580,227 +1712,6 @@ z_{1}=\sqrt{-2 \ln U_{1}} \sin \left(2 \pi U_{2}\right)=\sqrt{-2 \ln s}\left(\fr
 
 
     
-        <article class="article content gallery" itemscope itemprop="blogPost">
-    <aside id='article-toc' role="navigation" class='fixed'>
-        <div id='article-toc-inner'>
-            
-        </div>
-        
-        </aside>
-                <style>
-            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
-                content: "";
-                display: table
-            }
-            
-            #article-toc-inner:after,.inner:after {
-                clear: both
-            }
-            @media screen {
-                #article-toc-inner,.inner {
-                    padding: 0 20px
-                }
-            }
-            #article-toc {
-                display: none;
-                float: left;
-                width: 25%;
-                margin-left: -220px;
-                opacity: .8
-            }
-            @media screen and (min-width:769px) {
-                #article-toc {
-                    display: block
-                }
-            }
- 
-           #article-toc.fixed {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 10 px;
-                padding-top: 55px;
-            }
-            .fixed #article-toc-inner {
-                position: fixed;
-                width: 220px;
-                top: 0;
-                bottom: 0;
-                padding-top: 55px;
-            }
-            </style>
-    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
-        
-            <a href="/zh/2021/leetcode-470-rand10/" itemprop="url">深入 LeetCode 470 拒绝采样，状态转移图求期望和一道经典统计求期望题目</a>
-        
-    </h1>
-    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
-        <span class="column is-narrow">
-            
-                <time datetime="2021-05-29T10:45:01.000Z" itemprop="datePublished">5月 29 2021</time>
-            
-        </span>
-        
-        <span class="column is-narrow article-category">
-            <i class="far fa-folder"></i>
-            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
-        </span>
-        
-        
-        <span class="column is-narrow">
-            
-            
-            16 分钟 读完 (约 2430 字)
-        </span>
-        
-    </div>
-    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
-    
-        <html><head></head><body><p>在这篇文章中，我们从一道LeetCode 470 题目出发，通过系统地思考，引出拒绝采样（Reject Sampling）的概念，并探索比较三种拒绝采样地解法；接着借助状态转移图来定量计算采样效率；最后，我们利用同样的方法来解一道稍微复杂些的经典抛硬币求期望的统计面试题目。</p>
-<h2 id="leetcode-470-用-rand7-实现-rand10">Leetcode 470 用 Rand7() 实现 Rand10()</h2>
-<p>已有方法 rand7 可生成 1 到 7 范围内的均匀随机整数，试写一个方法 rand10 生成 1 到 10 范围内的均匀随机整数。</p>
-<p>不要使用系统的 Math.random() 方法。</p>
-<p><strong>思考</strong></p>
-<ul>
-<li><p>rand7()调用次数的 期望值 是多少 ?</p></li>
-<li><p>你能否尽量少调用 rand7() ?</p></li>
-</ul>
-<h2 id="思维过程">思维过程</h2>
-<p>我们已有 rand7() 等概率生成了 [1, 7] 中的数字，我们需要等概率生成 [1, 10] 范围内的数字。第一反应是调用一次rand7() 肯定是不够的，因为覆盖的范围不够。那么，就需要至少2次调用 rand7() 才能生成一次 rand10()，但是还要保证 [1, 10] 的数字生成概率相等，这个是难点。 现在我们先来考虑反问题，给定rand10() 生成 rand7()。这个应该很简单，调用一次 rand10() 得到 [1, 10]，如果是 8, 9, 10 ，则丢弃，重新开始，否则返回。想必大家都能想到这个朴素的方法，这种思想就是统计模拟中的拒绝采样（Reject Sampling）。</p>
-<p>有了上面反问题的思考，我们可能会想到，rand7() 可以生成 rand5()，覆盖 [1, 5]的范围，如果将区间 [1, 10] 分成两个5个值的区间 [1, 5] 和 [6, 10]，那么 rand7() 可以通过先等概率选择区间 [1, 5] 或 [6, 10]，再通过rand7() 生成 rand5()就可以了。这个问题就<strong>等价于先用 rand7() 生成 rand2()，决定了 [1, 5] 还是 [6, 10]，再通过rand7() 生成 rand5() 。</strong></p>
-<h2 id="解法一rand2-rand5">解法一：rand2() + rand5()</h2>
-<p>我们来实现这种解法。下图为调用两次 rand7() 生成 rand10 数值的映射关系：横轴表示第一次调用，1，2，3决定选择区间 [1, 5] ，4，5，6选择区间 [6, 10]。灰色部分表示结果丢弃，重新开始 （注，若第一次得到7无需再次调用 rand7()）。</p>
-<figure>
-<img src="/zh/2021/leetcode-470-rand10/space_slow.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>有了上图，我们很容易写出如下 AC 代码。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 408 ms, faster than 23.80% of Python3 online submissions for Implement Rand10() Using Rand7().</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 16.7 MB, less than 90.76% of Python3 online submissions for Implement Rand10() Using Rand7().</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rand10</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            a = rand7()</span><br><span class="line">            <span class="hljs-keyword">if</span> a &lt;= <span class="hljs-number">3</span>:</span><br><span class="line">                b = rand7()</span><br><span class="line">                <span class="hljs-keyword">if</span> b &lt;= <span class="hljs-number">5</span>:</span><br><span class="line">                    <span class="hljs-keyword">return</span> b</span><br><span class="line">            <span class="hljs-keyword">elif</span> a &lt;= <span class="hljs-number">6</span>:</span><br><span class="line">                b = rand7()</span><br><span class="line">                <span class="hljs-keyword">if</span> b &lt;= <span class="hljs-number">5</span>:</span><br><span class="line">                    <span class="hljs-keyword">return</span> b + <span class="hljs-number">5</span></span><br></pre></td></tr></tbody></table></figure><p></p>
-<h2 id="标准解法rand49">标准解法：rand49()</h2>
-<p>从提交的结果来看，第一种解法慢于多数解法。原因是我们的调用 rand7() 的采样效率比较低，第一次有 1/7 的概率结果丢弃，第二次有 2/7的概率被丢弃。</p>
-<p>如何在第一种解法的基础上提高采样效率呢？直觉告诉我们一种做法是降低上述 7x7 表格中灰色格子的面积。此时，会想到我们<strong>通过两次 rand7() 已经构建出来 rand49()</strong>了，那么再生成 rand10() 也规约成基本问题了。</p>
-<p>下图为 rand49() 和 rand10() 的数字对应关系。</p>
-<figure>
-<img src="/zh/2021/leetcode-470-rand10/space_std.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>实现代码比较简单。注意，while True 可以去掉，用递归来代替。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 376 ms, faster than 54.71% of Python3 online submissions for Implement Rand10() Using Rand7().</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 16.9 MB, less than 38.54% of Python3 online submissions for Implement Rand10() Using Rand7().</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rand10</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            a, b = rand7(),  rand7()</span><br><span class="line">            num = (a - <span class="hljs-number">1</span>) * <span class="hljs-number">7</span> + b</span><br><span class="line">            <span class="hljs-keyword">if</span> num &lt;= <span class="hljs-number">40</span>:</span><br><span class="line">                <span class="hljs-keyword">return</span> num % <span class="hljs-number">10</span> + <span class="hljs-number">1</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<h2 id="更快的做法">更快的做法</h2>
-<p>上面的提交结果发现标准解法在运行时间上有了不少提高，处于中等位置。我们继续思考，看看能否再提高采样效率。</p>
-<p>观察发现，rand49() 有 9/49 的概率，生成的值被丢弃，原因是 [41, 49] 只有 9 个数，不足10个。倘若此时能够将这种状态保持下去，那么只需再调用一次 rand7() 而不是从新开始情况下至少调用两次 rand7()， 就可以得到 rand10()了。也就是说，当 rand49() 生成了 [41, 49] 范围内的数的话等价于我们先调用了一次 rand9()，那么依样画葫芦，我们接着调用 rand7() 得到了 rand63()。63 分成了6个10个值的区间后，剩余 3 个数。此时，又等价于 rand3()，循环往复，调用了 rand7() 得到了 rand21()，最后若rand21() 不幸得到21，等价于 rand1()，此时似乎我们走投无路，只能回到最初的状态，一切从头再来了。</p>
-<figure>
-<img src="/zh/2021/leetcode-470-rand10/space_fast.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>改进算法代码如下。注意这次击败了 92.7%的提交。</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 344 ms, faster than 92.72% of Python3 online submissions for Implement Rand10() Using Rand7().</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 16.7 MB, less than 90.76% of Python3 online submissions for Implement Rand10() Using Rand7().</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rand10</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            a, b = rand7(),  rand7()</span><br><span class="line">            num = (a - <span class="hljs-number">1</span>) * <span class="hljs-number">7</span> + b</span><br><span class="line">            <span class="hljs-keyword">if</span> num &lt;= <span class="hljs-number">40</span>: <span class="hljs-keyword">return</span> num % <span class="hljs-number">10</span> + <span class="hljs-number">1</span></span><br><span class="line">            a = num - <span class="hljs-number">40</span></span><br><span class="line">            b = rand7()</span><br><span class="line">            num = (a - <span class="hljs-number">1</span>) * <span class="hljs-number">7</span> + b</span><br><span class="line">            <span class="hljs-keyword">if</span> num &lt;= <span class="hljs-number">60</span>: <span class="hljs-keyword">return</span> num % <span class="hljs-number">10</span> + <span class="hljs-number">1</span></span><br><span class="line">            a = num - <span class="hljs-number">60</span></span><br><span class="line">            b = rand7()</span><br><span class="line">            num = (a - <span class="hljs-number">1</span>) * <span class="hljs-number">7</span> + b</span><br><span class="line">            <span class="hljs-keyword">if</span> num &lt;= <span class="hljs-number">20</span>: <span class="hljs-keyword">return</span> num % <span class="hljs-number">10</span> + <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
-<h2 id="采样效率计算">采样效率计算</h2>
-<p>通过代码提交的结果和大致的分析，我们已经知道三个解法在采样效率依次变得更快。现在我们来定量计算这三个解法。</p>
-<p>我们考虑生成一个 rand10() 平均需要调用多少次 rand7()，作为采样效率的标准。</p>
-<p>一种思路是可以通过模拟方法，即将上述每个解法模拟多次，然后用总的 rand7() 调用次数除以 rand10() 的生成次数即可。下面以解法三为例写出代码</p>
-<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># The rand7() API is already defined for you.</span></span><br><span class="line">rand7_c = <span class="hljs-number">0</span></span><br><span class="line">rand10_c = <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rand7</span>():</span></span><br><span class="line">    <span class="hljs-keyword">global</span> rand7_c</span><br><span class="line">    rand7_c += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">import</span> random</span><br><span class="line">    <span class="hljs-keyword">return</span> random.randint(<span class="hljs-number">1</span>, <span class="hljs-number">7</span>)</span><br><span class="line">    </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rand10</span>():</span></span><br><span class="line">    <span class="hljs-keyword">global</span> rand10_c</span><br><span class="line">    rand10_c += <span class="hljs-number">1</span></span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">        a, b = rand7(), rand7()</span><br><span class="line">        num = (a - <span class="hljs-number">1</span>) * <span class="hljs-number">7</span> + b</span><br><span class="line">        <span class="hljs-keyword">if</span> num &lt;= <span class="hljs-number">40</span>: <span class="hljs-keyword">return</span> num % <span class="hljs-number">10</span> + <span class="hljs-number">1</span></span><br><span class="line">        a = num - <span class="hljs-number">40</span>   <span class="hljs-comment"># [1, 9]</span></span><br><span class="line">        b = rand7()</span><br><span class="line">        num = (a - <span class="hljs-number">1</span>) * <span class="hljs-number">7</span> + b  <span class="hljs-comment"># [1, 63]</span></span><br><span class="line">        <span class="hljs-keyword">if</span> num &lt;= <span class="hljs-number">60</span>: <span class="hljs-keyword">return</span> num % <span class="hljs-number">10</span> + <span class="hljs-number">1</span></span><br><span class="line">        a = num - <span class="hljs-number">60</span>  <span class="hljs-comment"># [1, 3]</span></span><br><span class="line">        b = rand7()</span><br><span class="line">        num = (a - <span class="hljs-number">1</span>) * <span class="hljs-number">7</span> + b  <span class="hljs-comment"># [1, 21]</span></span><br><span class="line">        <span class="hljs-keyword">if</span> num &lt;= <span class="hljs-number">20</span>: <span class="hljs-keyword">return</span> num % <span class="hljs-number">10</span> + <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">        rand10()</span><br><span class="line">        <span class="hljs-built_in">print</span>(<span class="hljs-string">f'<span class="hljs-subst">{rand10_c}</span> <span class="hljs-subst">{<span class="hljs-built_in">round</span>(rand7_c/rand10_c, <span class="hljs-number">2</span>)}</span>'</span>)</span><br></pre></td></tr></tbody></table></figure>
-<p>运行代码，发现解法三的采样效率稳定在 2.19。</p>
-<h2 id="采样效率精确计算">采样效率精确计算</h2>
-<h3 id="计算解法二">计算解法二</h3>
-<p>为了精确计算三个解法的采样效率，我们通过代码得到对应的状态转移图来帮助计算。</p>
-<p>例如，解法一可以对应到下图：初始状态 Start 节点中的 +2 表示经过此节点会产生 2次 rand7() 的代价。从 Start 节点有 40/49 的概率到达被接受状态 AC，有 9/49 概率到达拒绝状态 REJ。REJ 需要从头开始，则用虚线表示重新回到 Start节点，<strong>也就是说 REJ 的代价等价于 Start</strong>。注意，从某个节点出发的所有边之和为1。</p>
-<figure>
-<img src="/zh/2021/leetcode-470-rand10/graph_std.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>有了上述状态转移关系图，我们令初始状态的平均代价为 <span class="math inline">\(C_2\)</span>，则可以写成递归表达式，因为其中 REJ 的代价就是 <span class="math inline">\(C_2\)</span>，即</p>
-<p><span class="math display">\[
-C_2 = 2 + (\frac{40}{49}\cdot0 + \frac{9}{49} C_2)
-\]</span></p>
-<p>解得 <span class="math inline">\(C_2\)</span></p>
-<p><span class="math display">\[
-C_2 = 2.45
-\]</span></p>
-<h3 id="计算解法一">计算解法一</h3>
-<p>同样的，对于另外两种解法，虽然略微复杂，也可以用同样的方法求得。</p>
-<p>解法一的状态转移图为</p>
-<figure>
-<img src="/zh/2021/leetcode-470-rand10/graph_slow.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>递归方程表达式为</p>
-<p><span class="math display">\[
-C_1 = 1+\frac{3}{7} \cdot (1+\frac{5}{7} \cdot 0 + \frac{2}{7} \cdot C_1) \cdot2+ \frac{1}{7} \cdot (C_1)
-\]</span></p>
-<p>解得 <span class="math inline">\(C_1\)</span></p>
-<p><span class="math display">\[
-C_1 = \frac{91}{30} \approx 3.03
-\]</span></p>
-<h3 id="计算解法三">计算解法三</h3>
-<p>最快的解法三状态转移图为</p>
-<figure>
-<img src="/zh/2021/leetcode-470-rand10/graph_fast.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>递归方程表达式为</p>
-<p><span class="math display">\[
-C_3 = 2+\frac{40}{49} \cdot 0 + \frac{9}{49} (1+\frac{60}{63} \cdot 0 + \frac{3}{63} \cdot (1+\frac{20}{21} \cdot 0 + \frac{1}{21} \cdot C_3))
-\]</span></p>
-<p>解得 <span class="math inline">\(C_3\)</span> <span class="math display">\[
-C_3 = \frac{329}{150} \approx 2.193
-\]</span></p>
-<p>至此总结一下，三个解法的平均代价为 <span class="math display">\[
-C_1 \approx 3.03 &gt; C_2 = 2.45 &gt; C_3 \approx 2.193
-\]</span> 这些值和我们通过模拟得到的结果一致。</p>
-<h2 id="稍难些的经典概率求期望题目">稍难些的经典概率求期望题目</h2>
-<p>至此，LeetCode 470 我们已经分析透彻。现在，我们已经可以很熟练的将此类拒绝采样的问题转变成有概率的状态转移图，再写成递推公式去求平均采样的代价（即期望）。这里，如果大家感兴趣的话不妨再来看一道略微深入的经典统计概率求期望的题目。</p>
-<p>问题：给定一枚抛正反面概率一样的硬币，求连续抛硬币直到两个正面（正面记为H，两个正面HH）的平均次数。例如：HTTHH是一个连续次数为5的第一次出现HH的序列。</p>
-<p>分析问题画出状态转移图：我们令初始状态下得到第一个HH的平均长度记为 S，那么下一次抛硬币有 1/2 机会是 T，此时状态等价于初始状态，另有 1/2 机会是 H，我们记这个状态下第一次遇见HH的平均长度为 H（下图蓝色节点）。从此蓝色节点出发，当下一枚硬币是H则结束，是T是返回初始状态。于是构建出下图。</p>
-<figure>
-<img src="/zh/2021/leetcode-470-rand10/graph_hh.png">
-<figcaption>
-</figcaption>
-</figure>
-<p>这个问题稍微复杂的地方在于我们有两个未知状态互相依赖，但问题的本质和方法是一样的，分别从 S 和 H 出发考虑状态的概率转移，可以写成如下两个方程式：</p>
-<div>
-<p><span class="math display">\[
-\left\{ 
-\begin{array}{c}
-S =&amp;\frac{1}{2} \cdot(1+H) + \frac{1}{2} \cdot(1+S) \\ 
-H =&amp;\frac{1}{2} \cdot 1 + \frac{1}{2} \cdot(1+S) 
-\end{array}
-\right.
-\]</span></p>
-</div>
-<p>解得</p>
-<div>
-<p><span class="math display">\[
-\left\{ 
-\begin{array}{c}
-H= 4 \\
-S = 6
-\end{array}
-\right.
-\]</span></p>
-</div>
-<p>因此，平均下来，需要6次抛硬币才能得到 HH，这个是否和你直觉的猜测一致呢？</p>
-<p>这个问题还可以有另外一问，可以作为思考题让大家来练习一下：第一次得到 HT 的平均次数是多少？这个是否和 HH 一样呢？</p>
-<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
-    
-    </div>
-    
-    
-</article>
-
-
-
-
-
-
-
-
-    
     
         
 <nav class="pagination is-centered is-rounded" role="navigation" aria-label="pagination">
@@ -1818,9 +1729,9 @@ S = 6
         
         <li><a class="pagination-link" href="/page/3/">3</a></li>
         
-        <li><a class="pagination-link" href="/page/4/">4</a></li>
+        <li><span class="pagination-ellipsis">&hellip;</span></li>
         
-        <li><a class="pagination-link" href="/page/5/">5</a></li>
+        <li><a class="pagination-link" href="/page/6/">6</a></li>
         
     </ul>
 </nav>
