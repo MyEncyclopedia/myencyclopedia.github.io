@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>组合游戏系列3: 井字棋、五子棋的OpenAI Gym GUI环境 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/combinatorial-game-3-openai-gym-pygame/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="继上一篇完成了井字棋（N子棋）的minimax 最佳策略后，我们基于Pygame来创造一个图形游戏环境，可供人机和机器对弈，为后续模拟AlphaGo的自我强化学习算法做环境准备。OpenAI Gym 在强化学习领域是事实标准，我们最终封装成OpenAI Gym的接口。本篇所有代码都在github.com&#x2F;MyEncyclopedia&#x2F;ConnectNGym。  第一篇: Leetcode中的Min">
+<meta property="og:type" content="article">
+<meta property="og:title" content="组合游戏系列3: 井字棋、五子棋的OpenAI Gym GUI环境">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="继上一篇完成了井字棋（N子棋）的minimax 最佳策略后，我们基于Pygame来创造一个图形游戏环境，可供人机和机器对弈，为后续模拟AlphaGo的自我强化学习算法做环境准备。OpenAI Gym 在强化学习领域是事实标准，我们最终封装成OpenAI Gym的接口。本篇所有代码都在github.com&#x2F;MyEncyclopedia&#x2F;ConnectNGym。  第一篇: Leetcode中的Min">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/pygame.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/diagram-pygameboard.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/s0.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/s1.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/s2.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/s5.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/self_play.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/pos.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/pos_others.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/diagram-agent.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/diagram-overview.svg">
+<meta property="article:published_time" content="2020-07-23T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:17.930Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Gaming">
+<meta property="article:tag" content="OpenAI Gym">
+<meta property="article:tag" content="Pygame">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/pygame.gif">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#井字棋五子棋-pygame-实现">1&nbsp;&nbsp;<b>井字棋、五子棋 Pygame 实现</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#pygameboard-主体代码">1.1&nbsp;&nbsp;PyGameBoard 主体代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#openai-gym-接口规范">2&nbsp;&nbsp;<b>OpenAI Gym 接口规范</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#reset-方法">2.1&nbsp;&nbsp;reset 方法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#step-方法">2.2&nbsp;&nbsp;step 方法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#render-方法">2.3&nbsp;&nbsp;render 方法</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#connectngym-代码">2.4&nbsp;&nbsp;ConnectNGym 代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#井字棋n子棋minimax策略玩家">3&nbsp;&nbsp;<b>井字棋（N子棋）Minimax策略玩家</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#镜像游戏状态的dp处理">3.1&nbsp;&nbsp;镜像游戏状态的DP处理</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#minimax-策略预计算">3.2&nbsp;&nbsp;Minimax 策略预计算</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#agent-类和对弈逻辑">4&nbsp;&nbsp;<b>Agent 类和对弈逻辑</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%95%E5%AD%97%E6%A3%8B%E4%BA%94%E5%AD%90%E6%A3%8B-pygame-%E5%AE%9E%E7%8E%B0"><span class="toc-text">井字棋、五子棋 Pygame 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#pygameboard-%E4%B8%BB%E4%BD%93%E4%BB%A3%E7%A0%81"><span class="toc-text">PyGameBoard 主体代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#openai-gym-%E6%8E%A5%E5%8F%A3%E8%A7%84%E8%8C%83"><span class="toc-text">OpenAI Gym 接口规范</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#reset-%E6%96%B9%E6%B3%95"><span class="toc-text">reset 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#step-%E6%96%B9%E6%B3%95"><span class="toc-text">step 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#render-%E6%96%B9%E6%B3%95"><span class="toc-text">render 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#connectngym-%E4%BB%A3%E7%A0%81"><span class="toc-text">ConnectNGym 代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%95%E5%AD%97%E6%A3%8Bn%E5%AD%90%E6%A3%8Bminimax%E7%AD%96%E7%95%A5%E7%8E%A9%E5%AE%B6"><span class="toc-text">井字棋（N子棋）Minimax策略玩家</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%95%9C%E5%83%8F%E6%B8%B8%E6%88%8F%E7%8A%B6%E6%80%81%E7%9A%84dp%E5%A4%84%E7%90%86"><span class="toc-text">镜像游戏状态的DP处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#minimax-%E7%AD%96%E7%95%A5%E9%A2%84%E8%AE%A1%E7%AE%97"><span class="toc-text">Minimax 策略预计算</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#agent-%E7%B1%BB%E5%92%8C%E5%AF%B9%E5%BC%88%E9%80%BB%E8%BE%91"><span class="toc-text">Agent 类和对弈逻辑</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            组合游戏系列3: 井字棋、五子棋的OpenAI Gym GUI环境
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-07-23T18:45:01.000Z" itemprop="datePublished">7月 24 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            18 分钟 读完 (约 2749 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>继上一篇完成了井字棋（N子棋）的minimax
+最佳策略后，我们基于Pygame来创造一个图形游戏环境，可供人机和机器对弈，为后续模拟AlphaGo的自我强化学习算法做环境准备。OpenAI
+Gym 在强化学习领域是事实标准，我们最终封装成OpenAI
+Gym的接口。本篇所有代码都在<a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/ConnectNGym">github.com/MyEncyclopedia/ConnectNGym</a>。</p>
+<ul>
+<li><p><a href="/zh/2020/combinatorial-game-3-openai-gym-pygame/zh/combinatorial-game-1-minimax.md">第一篇:
+Leetcode中的Minimax 和 Alpha Beta剪枝</a></p></li>
+<li><p><a href="/zh/2020/combinatorial-game-3-openai-gym-pygame/zh/combinatorial-game-2-tictactoe.md">第二篇:
+井字棋Leetcode系列题解和Minimax最佳策略实现</a></p></li>
+<li><p><strong><a href="/zh/2020/combinatorial-game-3-openai-gym-pygame/zh/combinatorial-game-3-openai-gym-pygame.md">第三篇:
+井字棋、五子棋的OpenAI Gym GUI环境</a></strong></p></li>
+<li><p><a href="/zh/2020/combinatorial-game-3-openai-gym-pygame/zh/combinatorial-game-4-alphago-zero-theory/index.md">第四篇:
+AlphaGo Zero 强化学习算法原理深度分析</a></p></li>
+<li><p><a href="/zh/2020/combinatorial-game-3-openai-gym-pygame/zh/combinatorial-game-5-alphago-zero-connect-n/index.md">第五篇:
+井字棋、五子棋AlphaGo Zero 算法实战</a></p></li>
+</ul>
+<h2 id="井字棋五子棋-pygame-实现">井字棋、五子棋 Pygame 实现</h2>
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/pygame.gif">
+<figcaption>
+Pygame 井字棋玩家对弈效果
+</figcaption>
+</figure>
+<p>Python
+上有Tkinter，PyQt等跨平台GUI类库，主要用于桌面程序编程，但此类库容量较大，编程也相对麻烦。Pygame具有代码少，开发快的优势，比较适合快速开发五子棋这类桌面小游戏。
+### Pygame 极简入门</p>
+<p>与所有的GUI开发相同，Pygame也是基于事件的单线程编程模型。下面的例子包含了显示一个最简单GUI窗口，操作系统产生事件并发送到Pygame窗口，while
+True
+控制了python主线程永远轮询事件。我们在这里仅仅判断了当前是否是关闭应用程序事件，如果是则退出进程。此外，clock
+用于控制FPS。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> sys</span><br><span class="line"><span class="hljs-keyword">import</span> pygame</span><br><span class="line">pygame.init()</span><br><span class="line">display = pygame.display.set_mode((<span class="hljs-number">800</span>,<span class="hljs-number">600</span>))</span><br><span class="line">clock = pygame.time.Clock()</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">	<span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> pygame.event.get():</span><br><span class="line">		<span class="hljs-keyword">if</span> event.<span class="hljs-built_in">type</span> == pygame.QUIT:</span><br><span class="line">			sys.exit(<span class="hljs-number">0</span>)</span><br><span class="line">		<span class="hljs-keyword">else</span>:</span><br><span class="line">			pygame.display.update()</span><br><span class="line">			clock.tick(<span class="hljs-number">1</span>)</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="pygameboard-主体代码">PyGameBoard 主体代码</h3>
+PyGameBoard类封装了Pygame实现游戏交互和显示的逻辑。上一篇中，我们完成了ConnectNGame逻辑，这里PyGameBoard需要在初始化时，指定传入ConnectNGame
+实例（见下图），支持通过API
+方式改变其状态，也支持GUI交互方式等待人类玩家的输入。next_user_input(self)实现了等待人类玩家输入的逻辑，本质上是循环检查GUI事件直到有合法的落子产生。
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/diagram-pygameboard.svg">
+<figcaption>
+PyGameBoard Class Diagram
+</figcaption>
+</figure>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PyGameBoard</span>:</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, connectNGame: ConnectNGame</span>):</span></span><br><span class="line">		self.connectNGame = connectNGame</span><br><span class="line">		pygame.init()</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">next_user_input</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]:</span></span><br><span class="line">		self.action = <span class="hljs-literal">None</span></span><br><span class="line">		<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> self.action:</span><br><span class="line">			self.check_event()</span><br><span class="line">			self._render()</span><br><span class="line">			self.clock.tick(<span class="hljs-number">60</span>)</span><br><span class="line">		<span class="hljs-keyword">return</span> self.action</span><br><span class="line">  </span><br><span class="line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">move</span>(<span class="hljs-params">self, r: <span class="hljs-built_in">int</span>, c: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">		<span class="hljs-keyword">return</span> self.connectNGame.move(r, c)</span><br><span class="line">  </span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">	connectNGame = ConnectNGame()</span><br><span class="line">	pygameBoard = PyGameBoard(connectNGame)</span><br><span class="line">	<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> pygameBoard.isGameOver():</span><br><span class="line">		pos = pygameBoard.next_user_input()</span><br><span class="line">		pygameBoard.move(*pos)</span><br><span class="line"></span><br><span class="line">	pygame.quit()</span><br></pre></td></tr></tbody></table></figure>
+<p>check_event
+较之极简版本增加了处理用户输入事件，这里我们仅支持人类玩家鼠标输入。方法_handle_user_input
+将鼠标点击事件转换成棋盘行列值，并判断点击位置是否合法，合法则返回落子位置，类型为Tuple[int,
+int]，例如(0, 0)表示棋盘最左上角位置。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check_event</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">	<span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pygame.event.get():</span><br><span class="line">		<span class="hljs-keyword">if</span> e.<span class="hljs-built_in">type</span> == pygame.QUIT:</span><br><span class="line">			pygame.quit()</span><br><span class="line">			sys.exit(<span class="hljs-number">0</span>)</span><br><span class="line">		<span class="hljs-keyword">elif</span> e.<span class="hljs-built_in">type</span> == pygame.MOUSEBUTTONDOWN:</span><br><span class="line">			self._handle_user_input(e)</span><br><span class="line">    </span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_handle_user_input</span>(<span class="hljs-params">self, e: Event</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]:</span></span><br><span class="line">	origin_x = self.start_x - self.edge_size</span><br><span class="line">	origin_y = self.start_y - self.edge_size</span><br><span class="line">	size = (self.board_size - <span class="hljs-number">1</span>) * self.grid_size + self.edge_size * <span class="hljs-number">2</span></span><br><span class="line">	pos = e.pos</span><br><span class="line">	<span class="hljs-keyword">if</span> origin_x &lt;= pos[<span class="hljs-number">0</span>] &lt;= origin_x + size <span class="hljs-keyword">and</span> origin_y &lt;= pos[<span class="hljs-number">1</span>] &lt;= origin_y + size:</span><br><span class="line">		<span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.connectNGame.gameOver:</span><br><span class="line">			x = pos[<span class="hljs-number">0</span>] - origin_x</span><br><span class="line">			y = pos[<span class="hljs-number">1</span>] - origin_y</span><br><span class="line">			r = <span class="hljs-built_in">int</span>(y // self.grid_size)</span><br><span class="line">			c = <span class="hljs-built_in">int</span>(x // self.grid_size)</span><br><span class="line">			valid = self.connectNGame.checkAction(r, c)</span><br><span class="line">			<span class="hljs-keyword">if</span> valid:</span><br><span class="line">				self.action = (r, c)</span><br><span class="line">				<span class="hljs-keyword">return</span> self.action</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="openai-gym-接口规范">OpenAI Gym 接口规范</h2>
+<p>OpenAI
+Gym规范了Agent和环境（Env）之间的互动，核心抽象接口类是gym.Env，自定义的游戏环境需要继承Env，并实现
+reset、step和render方法。下面我们看一下如何具体实现ConnectNGym的这几个方法：</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConnectNGym</span>(<span class="hljs-params">gym.Env</span>):</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reset</span>(<span class="hljs-params">self</span>) -&gt; ConnectNGame:</span></span><br><span class="line">		<span class="hljs-string">"""Resets the state of the environment and returns an initial observation.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Returns:</span></span><br><span class="line"><span class="hljs-string">			observation (object): the initial observation.</span></span><br><span class="line"><span class="hljs-string">		"""</span></span><br><span class="line">		<span class="hljs-keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span>(<span class="hljs-params">self, action: <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-type">Tuple</span>[ConnectNGame, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">bool</span>, <span class="hljs-literal">None</span>]:</span></span><br><span class="line">		<span class="hljs-string">"""Run one timestep of the environment's dynamics. When end of</span></span><br><span class="line"><span class="hljs-string">		episode is reached, you are responsible for calling `reset()`</span></span><br><span class="line"><span class="hljs-string">		to reset this environment's state.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Accepts an action and returns a tuple (observation, reward, done, info).</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Args:</span></span><br><span class="line"><span class="hljs-string">			action (object): an action provided by the agent</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Returns:</span></span><br><span class="line"><span class="hljs-string">			observation (object): agent's observation of the current environment</span></span><br><span class="line"><span class="hljs-string">			reward (float) : amount of reward returned after previous action</span></span><br><span class="line"><span class="hljs-string">			done (bool): whether the episode has ended, in which case further step() calls will return undefined results</span></span><br><span class="line"><span class="hljs-string">			info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)</span></span><br><span class="line"><span class="hljs-string">		"""</span></span><br><span class="line">		<span class="hljs-keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">render</span>(<span class="hljs-params">self, mode=<span class="hljs-string">'human'</span></span>):</span></span><br><span class="line">		<span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">		Renders the environment.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		The set of supported modes varies per environment. (And some</span></span><br><span class="line"><span class="hljs-string">		environments do not support rendering at all.) By convention,</span></span><br><span class="line"><span class="hljs-string">		if mode is:</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		- human: render to the current display or terminal and</span></span><br><span class="line"><span class="hljs-string">			return nothing. Usually for human consumption.</span></span><br><span class="line"><span class="hljs-string">		- rgb_array: Return an numpy.ndarray with shape (x, y, 3),</span></span><br><span class="line"><span class="hljs-string">			representing RGB values for an x-by-y pixel image, suitable</span></span><br><span class="line"><span class="hljs-string">			for turning into a video.</span></span><br><span class="line"><span class="hljs-string">		- ansi: Return a string (str) or StringIO.StringIO containing a</span></span><br><span class="line"><span class="hljs-string">			terminal-style text representation. The text can include newlines</span></span><br><span class="line"><span class="hljs-string">			and ANSI escape sequences (e.g. for colors).</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Note:</span></span><br><span class="line"><span class="hljs-string">		Make sure that your class's metadata 'render.modes' key includes</span></span><br><span class="line"><span class="hljs-string">		the list of supported modes. It's recommended to call super()</span></span><br><span class="line"><span class="hljs-string">		in implementations to use the functionality of this method.</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">		Args:</span></span><br><span class="line"><span class="hljs-string">			mode (str): the mode to render with</span></span><br><span class="line"><span class="hljs-string">		"""</span></span><br><span class="line">		<span class="hljs-keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<h3 id="reset-方法">reset 方法</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reset</span>(<span class="hljs-params">self</span>) -&gt; ConnectNGame</span></span><br></pre></td></tr></tbody></table></figure>
+<p>重置环境状态，并返回给Agent重置后环境下观察到的状态。ConnectNGym内部维护了ConnectNGame实例作为自身状态，每个agent落子后会更新这个实例。由于棋类游戏对于玩家来说是完全信息的，我们直接返回ConnectNGame的deepcopy。</p>
+<h3 id="step-方法">step 方法</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span>(<span class="hljs-params">self, action: <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-type">Tuple</span>[ConnectNGame, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">bool</span>, <span class="hljs-literal">None</span>]</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Agent 选择了某一action后，由环境来执行这个action并返回4个值：1.
+执行后的环境Agent观察到的状态；2.
+环境执行了这个action回馈给agent的reward；3. 环境是否结束；4.
+其余信息。</p>
+<p>step方法是最核心的接口，因此举例来说明ConnectNGym中的输入和输出：</p>
+初始状态
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/s0.png">
+<figcaption>
+状态 ((0, 0, 0), (0, 0, 0), (0, 0, 0))
+</figcaption>
+</figure>
+<p>Agent A 选择action = (0, 0)，执行ConnectNGym.step 后返回值：status =
+((1, 0, 0), (0, 0, 0), (0, 0, 0))，reward = 0，game_end = False</p>
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/s1.png">
+<figcaption>
+状态 ((1, 0, 0), (0, 0, 0), (0, 0, 0))
+</figcaption>
+</figure>
+<p>Agent B 选择action = (1, 1)，执行ConnectNGym.step 后返回值：status =
+((1, 0, 0), (0, -1, 0), (0, 0, 0))，reward = 0，game_end = False</p>
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/s2.png">
+<figcaption>
+状态 ((1, 0, 0), (0, -1, 0), (0, 0, 0))
+</figcaption>
+</figure>
+重复此过程直至游戏结束，下面是5步后游戏可能达到的最终状态
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/s5.png">
+<figcaption>
+终结状态 ((1, 1, 1), (-1, -1, 0), (0, 0, 0))
+</figcaption>
+</figure>
+<p>此时step的返回值为：status = ((1, 1, 1), (-1, -1, 0), (0, 0,
+0))，reward = 1，game_end = True</p>
+<h3 id="render-方法">render 方法</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">render</span>(<span class="hljs-params">self, mode=<span class="hljs-string">'human'</span></span>)</span></span><br></pre></td></tr></tbody></table></figure>
+<p>展现环境，通过mode区分是否是人类玩家。</p>
+<h3 id="connectngym-代码">ConnectNGym 代码</h3>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ConnectNGym</span>(<span class="hljs-params">gym.Env</span>):</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, pygameBoard: PyGameBoard, isGUI=<span class="hljs-literal">True</span>, displaySec=<span class="hljs-number">2</span></span>):</span></span><br><span class="line">		self.pygameBoard = pygameBoard</span><br><span class="line">		self.isGUI = isGUI</span><br><span class="line">		self.displaySec = displaySec</span><br><span class="line">		self.action_space = spaces.Discrete(pygameBoard.board_size * pygameBoard.board_size)</span><br><span class="line">		self.observation_space = spaces.Discrete(pygameBoard.board_size * pygameBoard.board_size)</span><br><span class="line">		self.seed()</span><br><span class="line">		self.reset()</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reset</span>(<span class="hljs-params">self</span>) -&gt; ConnectNGame:</span></span><br><span class="line">		self.pygameBoard.connectNGame.reset()</span><br><span class="line">		<span class="hljs-keyword">return</span> copy.deepcopy(self.pygameBoard.connectNGame)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span>(<span class="hljs-params">self, action: <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-type">Tuple</span>[ConnectNGame, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">bool</span>, <span class="hljs-literal">None</span>]:</span></span><br><span class="line">		<span class="hljs-comment"># assert self.action_space.contains(action)</span></span><br><span class="line"></span><br><span class="line">		r, c = action</span><br><span class="line">		reward = REWARD_NONE</span><br><span class="line">		result = self.pygameBoard.move(r, c)</span><br><span class="line">		<span class="hljs-keyword">if</span> self.pygameBoard.isGameOver():</span><br><span class="line">			reward = result</span><br><span class="line"></span><br><span class="line">		<span class="hljs-keyword">return</span> copy.deepcopy(self.pygameBoard.connectNGame), reward, <span class="hljs-keyword">not</span> result <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>, <span class="hljs-literal">None</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">render</span>(<span class="hljs-params">self, mode=<span class="hljs-string">'human'</span></span>):</span></span><br><span class="line">		<span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.isGUI:</span><br><span class="line">			self.pygameBoard.connectNGame.drawText()</span><br><span class="line">			time.sleep(self.displaySec)</span><br><span class="line">		<span class="hljs-keyword">else</span>:</span><br><span class="line">			self.pygameBoard.display(sec=self.displaySec)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_available_actions</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">		<span class="hljs-keyword">return</span> self.pygameBoard.getAvailablePositions()</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="井字棋n子棋minimax策略玩家">井字棋（N子棋）Minimax策略玩家</h2>
+<p>图中当k=3,m=n=3即井字棋游戏中，两个minimax策略玩家的对弈效果，游戏结局符合已知的结论：井字棋的解是先手被对方逼平。</p>
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/self_play.gif">
+<figcaption>
+Minimax策略AI对弈
+</figcaption>
+</figure>
+<h3 id="镜像游戏状态的dp处理">镜像游戏状态的DP处理</h3>
+<p>上一篇中，我们确认了井字棋的总状态数是5478。当k=3,
+m=n=4时是6035992，k=4,
+m=n=4时是9722011，总的来说游戏状态数是以指数级增长的。上一版minimax
+DP策略还有改善的空间，第一种是旋转格局的处理。对于任意一种棋盘格局可以得到90度旋转后的另外三种格局，它们的最佳结局是一致的。因此，我们在递归过程中解得某一棋盘格局后，将其另外三种旋转后格局的解也一起缓存起来。例如：</p>
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/pos.png">
+<figcaption>
+游戏状态1
+</figcaption>
+</figure>
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/pos_others.png">
+<figcaption>
+旋转后的三种游戏状态
+</figcaption>
+</figure>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">similarStatus</span>(<span class="hljs-params">self, status: <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]</span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]]:</span></span><br><span class="line">	ret = []</span><br><span class="line">	rotatedS = status</span><br><span class="line">	<span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>):</span><br><span class="line">		rotatedS = self.rotate(rotatedS)</span><br><span class="line">		ret.append(rotatedS)</span><br><span class="line">	<span class="hljs-keyword">return</span> ret</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rotate</span>(<span class="hljs-params">self, status: <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, ...]]:</span></span><br><span class="line">	N = <span class="hljs-built_in">len</span>(status)</span><br><span class="line">	board = [[ConnectNGame.AVAILABLE] * N <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">		<span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">			board[c][N - <span class="hljs-number">1</span> - r] = status[r][c]</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-built_in">tuple</span>([<span class="hljs-built_in">tuple</span>(board[i]) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)])</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="minimax-策略预计算">Minimax 策略预计算</h3>
+<p>之前我们对每个棋局去计算最佳的下一步，并在此过程中做了剪枝，即当已经找到当前玩家必胜落子时直接返回。这对于单一局面的计算是较优的，但是AI
+Agent
+需要在每一步都重复这个过程，当棋盘大小&gt;3时运算非常耗时，因此我们来做第二种优化。初始空棋盘时使用Minimax来保证遍历所有状态，缓存所有棋局的最佳结果。对于AI
+Agent面临的每个棋局只需查找此棋局下所有的可能落子位置，并返回最佳决定，这样大大减少了每次棋局下重复的minimax递归计算。相关代码如下。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PlannedMinimaxStrategy</span>(<span class="hljs-params">Strategy</span>):</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, game: ConnectNGame</span>):</span></span><br><span class="line">		<span class="hljs-built_in">super</span>().__init__()</span><br><span class="line">		self.game = copy.deepcopy(game)</span><br><span class="line">		self.dpMap = {}  <span class="hljs-comment"># game_status =&gt; result, move</span></span><br><span class="line">		self.result = self.minimax(game.getStatus())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">action</span>(<span class="hljs-params">self, game: ConnectNGame</span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">		game = copy.deepcopy(game)</span><br><span class="line"></span><br><span class="line">		player = game.currentPlayer</span><br><span class="line">		bestResult = player * -<span class="hljs-number">1</span>  <span class="hljs-comment"># assume opponent win as worst result</span></span><br><span class="line">		bestMove = <span class="hljs-literal">None</span></span><br><span class="line">		<span class="hljs-keyword">for</span> move <span class="hljs-keyword">in</span> game.getAvailablePositions():</span><br><span class="line">			game.move(*move)</span><br><span class="line">			status = game.getStatus()</span><br><span class="line">			game.undo()</span><br><span class="line"></span><br><span class="line">			result = self.dpMap[status]</span><br><span class="line"></span><br><span class="line">			<span class="hljs-keyword">if</span> player == ConnectNGame.PLAYER_A:</span><br><span class="line">				bestResult = <span class="hljs-built_in">max</span>(bestResult, result)</span><br><span class="line">			<span class="hljs-keyword">else</span>:</span><br><span class="line">				bestResult = <span class="hljs-built_in">min</span>(bestResult, result)</span><br><span class="line">			<span class="hljs-comment"># update bestMove if any improvement</span></span><br><span class="line">			bestMove = move <span class="hljs-keyword">if</span> bestResult == result <span class="hljs-keyword">else</span> bestMove</span><br><span class="line">			<span class="hljs-built_in">print</span>(<span class="hljs-string">f'move <span class="hljs-subst">{move}</span> =&gt; <span class="hljs-subst">{result}</span>'</span>)</span><br><span class="line"></span><br><span class="line">		<span class="hljs-keyword">return</span> bestResult, bestMove</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="agent-类和对弈逻辑">Agent 类和对弈逻辑</h2>
+<p>Agent 类的抽象并不是 OpenAI
+Gym的规范，出于代码扩展性，我们也封装了Agent基类及其子类，包括AI玩家和人类玩家。BaseAgent需要子类实现
+act方法，默认实现为随机决定。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BaseAgent</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">		<span class="hljs-keyword">pass</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, game: PyGameBoard, available_actions</span>):</span></span><br><span class="line">		<span class="hljs-keyword">return</span> random.choice(available_actions)</span><br></pre></td></tr></tbody></table></figure>
+<p>AIAgent 实现act并代理给 strategy 的action方法。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AIAgent</span>(<span class="hljs-params">BaseAgent</span>):</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, strategy: Strategy</span>):</span></span><br><span class="line">		self.strategy = strategy</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, game: PyGameBoard, available_actions</span>):</span></span><br><span class="line">		result, move = self.strategy.action(game.connectNGame)</span><br><span class="line">		<span class="hljs-keyword">assert</span> move <span class="hljs-keyword">in</span> available_actions</span><br><span class="line">		<span class="hljs-keyword">return</span> move</span><br></pre></td></tr></tbody></table></figure>
+<p>HumanAgent 实现act并代理给 PyGameBoard 的next_user_input方法。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HumanAgent</span>(<span class="hljs-params">BaseAgent</span>):</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">		<span class="hljs-keyword">pass</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, game: PyGameBoard, available_actions</span>):</span></span><br><span class="line">		<span class="hljs-keyword">return</span> game.next_user_input()</span><br></pre></td></tr></tbody></table></figure>
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/diagram-agent.svg">
+<figcaption>
+Agent Class Diagram
+</figcaption>
+</figure>
+<p>下面代码展示如何将Agent，ConnectNGym，PyGameBoard
+等所有上述类串联起来，完成人人对弈，人机对弈。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">play_ai_vs_ai</span>(<span class="hljs-params">env: ConnectNGym</span>):</span></span><br><span class="line">	plannedMinimaxAgent = AIAgent(PlannedMinimaxStrategy(env.pygameBoard.connectNGame))</span><br><span class="line">	play(env, plannedMinimaxAgent, plannedMinimaxAgent)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">play</span>(<span class="hljs-params">env: ConnectNGym, agent1: BaseAgent, agent2: BaseAgent</span>):</span></span><br><span class="line">	agents = [agent1, agent2]</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">		env.reset()</span><br><span class="line">		done = <span class="hljs-literal">False</span></span><br><span class="line">		agent_id = -<span class="hljs-number">1</span></span><br><span class="line">		<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> done:</span><br><span class="line">			agent_id = (agent_id + <span class="hljs-number">1</span>) % <span class="hljs-number">2</span></span><br><span class="line">			available_actions = env.get_available_actions()</span><br><span class="line">			agent = agents[agent_id]</span><br><span class="line">			action = agent.act(pygameBoard, available_actions)</span><br><span class="line">			_, reward, done, info = env.step(action)</span><br><span class="line">			env.render(<span class="hljs-literal">True</span>)</span><br><span class="line"></span><br><span class="line">			<span class="hljs-keyword">if</span> done:</span><br><span class="line">				<span class="hljs-built_in">print</span>(<span class="hljs-string">f'result=<span class="hljs-subst">{reward}</span>'</span>)</span><br><span class="line">				time.sleep(<span class="hljs-number">3</span>)</span><br><span class="line">				<span class="hljs-keyword">break</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">	pygameBoard = PyGameBoard(connectNGame=ConnectNGame(board_size=<span class="hljs-number">3</span>, N=<span class="hljs-number">3</span>))</span><br><span class="line">	env = ConnectNGym(pygameBoard)</span><br><span class="line">	env.render(<span class="hljs-literal">True</span>)</span><br><span class="line"></span><br><span class="line">	play_ai_vs_ai(env)</span><br></pre></td></tr></tbody></table></figure>
+<figure>
+<img src="/zh/2020/combinatorial-game-3-openai-gym-pygame/diagram-overview.svg">
+<figcaption>
+Class Diagram 总览
+</figcaption>
+</figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Algorithm/">#Algorithm</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Gaming/">#Gaming</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/OpenAI-Gym/">#OpenAI Gym</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Pygame/">#Pygame</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/combinatorial-game-4-alphago-zero-theory/">组合游戏系列4: AlphaGo Zero 强化学习算法原理深度分析</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/combinatorial-game-2-tictactoe/">组合游戏系列2: 井字棋Leetcode系列题解和Minimax最佳策略实现</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/combinatorial-game-3-openai-gym-pygame/">https://blog.myencyclopedia.top/zh/2020/combinatorial-game-3-openai-gym-pygame/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/">https://myencyclopedia.github.io/zh/2020/combinatorial-game-3-openai-gym-pygame/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/combinatorial-game-3-openai-gym-pygame/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/combinatorial-game-3-openai-gym-pygame/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

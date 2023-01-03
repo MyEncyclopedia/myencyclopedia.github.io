@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>用逆变换采样方法构建随机变量生成器 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2021/distribution-inverse-transformation-method/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="上期 从零构建统计随机变量生成器之离散基础篇，我们从零出发构建了基于伯努利的基础离散分布，这一期我们来详细介绍广泛使用的 Inverse Transform Method（逆变换采样方法）。  从零构建统计随机变量生成器之 离散基础篇 从零构建统计随机变量生成器之 用逆变换采样方法构建随机变量生成器 深入 LeetCode 470 拒绝采样，状态转移图求期望和一道经典统计求期望题目 从零构建统计随">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用逆变换采样方法构建随机变量生成器">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="上期 从零构建统计随机变量生成器之离散基础篇，我们从零出发构建了基于伯努利的基础离散分布，这一期我们来详细介绍广泛使用的 Inverse Transform Method（逆变换采样方法）。  从零构建统计随机变量生成器之 离散基础篇 从零构建统计随机变量生成器之 用逆变换采样方法构建随机变量生成器 深入 LeetCode 470 拒绝采样，状态转移图求期望和一道经典统计求期望题目 从零构建统计随">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/categorical_cdf.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/inverse-discrete-continuous.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/distrib_exp_inv.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/exp_cdf.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/distrib_category.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/distrib_binomial.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/distrib_hypergeo.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/distrib_geometric.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/distrib_normal.png">
+<meta property="article:published_time" content="2021-01-29T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.042Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Statistics">
+<meta property="article:tag" content="Simulation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/categorical_cdf.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#逆变换采样方法">1&nbsp;&nbsp;<b>逆变换采样方法</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#离散例子">1.1&nbsp;&nbsp;离散例子</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#扩展到连续分布">1.2&nbsp;&nbsp;扩展到连续分布</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#指数分布连续">2&nbsp;&nbsp;<b>指数分布（连续）</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#实现代码">2.1&nbsp;&nbsp;实现代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#类别分布离散">3&nbsp;&nbsp;<b>类别分布（离散）</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#实现代码-1">3.1&nbsp;&nbsp;实现代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#二项分布离散">4&nbsp;&nbsp;<b>二项分布（离散）</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概率质量函数pmf">4.1&nbsp;&nbsp;概率质量函数（PMF）</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#实现代码-2">4.2&nbsp;&nbsp;实现代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#超几何分布离散">5&nbsp;&nbsp;<b>超几何分布（离散）</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概率质量函数pmf-1">5.1&nbsp;&nbsp;概率质量函数（PMF）</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#实现代码-3">5.2&nbsp;&nbsp;实现代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#几何分布离散">6&nbsp;&nbsp;<b>几何分布（离散）</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#概率质量函数pmf-2">6.1&nbsp;&nbsp;概率质量函数（PMF）</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#cdf">6.2&nbsp;&nbsp;CDF</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#inverse-cdf">6.3&nbsp;&nbsp;Inverse CDF</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#实现代码-4">6.4&nbsp;&nbsp;实现代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#标准正态分布">7&nbsp;&nbsp;<b>标准正态分布</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#实现代码-5">7.1&nbsp;&nbsp;实现代码</a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%86%E5%8F%98%E6%8D%A2%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95"><span class="toc-text">逆变换采样方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%BB%E6%95%A3%E4%BE%8B%E5%AD%90"><span class="toc-text">离散例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E5%88%B0%E8%BF%9E%E7%BB%AD%E5%88%86%E5%B8%83"><span class="toc-text">扩展到连续分布</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E6%95%B0%E5%88%86%E5%B8%83%E8%BF%9E%E7%BB%AD"><span class="toc-text">指数分布（连续）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81"><span class="toc-text">实现代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%88%AB%E5%88%86%E5%B8%83%E7%A6%BB%E6%95%A3"><span class="toc-text">类别分布（离散）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81-1"><span class="toc-text">实现代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E9%A1%B9%E5%88%86%E5%B8%83%E7%A6%BB%E6%95%A3"><span class="toc-text">二项分布（离散）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E7%8E%87%E8%B4%A8%E9%87%8F%E5%87%BD%E6%95%B0pmf"><span class="toc-text">概率质量函数（PMF）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81-2"><span class="toc-text">实现代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B6%85%E5%87%A0%E4%BD%95%E5%88%86%E5%B8%83%E7%A6%BB%E6%95%A3"><span class="toc-text">超几何分布（离散）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E7%8E%87%E8%B4%A8%E9%87%8F%E5%87%BD%E6%95%B0pmf-1"><span class="toc-text">概率质量函数（PMF）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81-3"><span class="toc-text">实现代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E4%BD%95%E5%88%86%E5%B8%83%E7%A6%BB%E6%95%A3"><span class="toc-text">几何分布（离散）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E7%8E%87%E8%B4%A8%E9%87%8F%E5%87%BD%E6%95%B0pmf-2"><span class="toc-text">概率质量函数（PMF）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cdf"><span class="toc-text">CDF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inverse-cdf"><span class="toc-text">Inverse CDF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81-4"><span class="toc-text">实现代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83"><span class="toc-text">标准正态分布</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81-5"><span class="toc-text">实现代码</span></a></li></ol></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            用逆变换采样方法构建随机变量生成器
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2021-01-29T18:45:01.000Z" itemprop="datePublished">1月 30 2021</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            13 分钟 读完 (约 1887 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>上期 <a href="/zh/2021/distribution-inverse-transformation-method/zh/distribution-discrete-generator.md">从零构建统计随机变量生成器之离散基础篇</a>，我们从零出发构建了基于伯努利的基础离散分布，这一期我们来详细介绍广泛使用的
+Inverse Transform Method（逆变换采样方法）。</p>
+<ul>
+<li><a href="/zh/2021/distribution-inverse-transformation-method/zh/distribution-discrete-generator.md">从零构建统计随机变量生成器之
+离散基础篇</a></li>
+<li><strong><a href="/zh/2021/distribution-inverse-transformation-method/zh/distribution-inverse-transformation-method.md">从零构建统计随机变量生成器之
+用逆变换采样方法构建随机变量生成器</a></strong></li>
+<li><a href="/zh/2021/distribution-inverse-transformation-method/zh/leetcode-470-rand10.md">深入 LeetCode 470
+拒绝采样，状态转移图求期望和一道经典统计求期望题目</a></li>
+<li><a href="/zh/2021/distribution-inverse-transformation-method/zh/distribution-normal.md">从零构建统计随机变量生成器之
+正态分布 Box-Muller方法</a></li>
+</ul>
+<h2 id="逆变换采样方法">逆变换采样方法</h2>
+<p>Inverse Transform Method
+是最基础常见的方法，可用于离散分布和连续分布。常见的分布一般都能通过此方法生成，只需要随机变量CDF的解析表达式。假设随机变量
+<span class="math inline">\(X\)</span>，其CDF为 <span class="math inline">\(F^{-1}\)</span>，则 Inverse Transform Method
+仅有两步</p>
+<ol type="1">
+<li>通过生成 [0, 1] 之间的均匀随机数 <span class="math inline">\(u\)</span></li>
+<li>代入 <span class="math inline">\(F^{-1}\)</span> 即产生满足<span class="math inline">\(X\)</span>分布的实例 <span class="math inline">\(x
+= F^{-1}(u)\)</span></li>
+</ol>
+<h3 id="离散例子">离散例子</h3>
+<p>我们先举一个离散分布来直观感受一下其工作机制。有如下PMF的离散类别分布，范围在
+[1, 5]。 <span class="math display">\[
+P(X = 1)=\frac{1}{15}
+\]</span></p>
+<p><span class="math display">\[
+P(X = 2)=\frac{2}{15}
+\]</span></p>
+<p><span class="math display">\[
+P(X = 3)=\frac{1}{5}
+\]</span></p>
+<p><span class="math display">\[
+P(X = 4)=\frac{4}{15}
+\]</span></p>
+<p><span class="math display">\[
+P(X = 5)=\frac{1}{3}
+\]</span></p>
+<p>转换成CDF为</p>
+<p><span class="math display">\[
+P(X \leq 1)=\frac{1}{15}
+\]</span></p>
+<p><span class="math display">\[
+P(X \leq 2)=\frac{1}{15}+\frac{2}{15}=\frac{1}{5}
+\]</span></p>
+<p><span class="math display">\[
+P(X \leq 3)=\frac{1}{15}+\frac{2}{15}+\frac{1}{5}=\frac{6}{15}
+\]</span></p>
+<p><span class="math display">\[
+P(X \leq
+4)=\frac{1}{15}+\frac{2}{15}+\frac{1}{5}+\frac{4}{15}=\frac{2}{3}
+\]</span></p>
+<p><span class="math display">\[
+P(X \leq
+5)=\frac{1}{15}+\frac{2}{15}+\frac{1}{5}+\frac{4}{15}+\frac{1}{3}=1
+\]</span></p>
+<p>画出对应的CDF图</p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/categorical_cdf.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>那么Inverse Transformation Method 的第一步，随机生成 0-1 之间的数
+u，可以直观的认为是在 y 轴上生成一个随机的点
+u。注意到5段竖虚线对应了5个离散的取值，它们的长度和为1，并且每一段长度代表了每个值的权重。因此，通过在
+y 轴上的均匀采样可以生成给定PMF的 x 的分布。</p>
+<p>离散分布的逆变换采样方法用数学公式可以表述为：找到第一个
+x，其CDF的范围包括了 u，即</p>
+<p><span class="math display">\[
+F^{-1}(u)=\min \{x: F(x) \geq u\}
+\]</span></p>
+<h3 id="扩展到连续分布">扩展到连续分布</h3>
+<p>有了离散类别分布的直观感受，扩展到连续分布也就不难理解了。类似于微积分中将连续空间做离散切分，再通过极限的方法，连续光滑函数在
+y 轴上可以切分成长度为 <span class="math inline">\(\Delta u\)</span>
+的线段，那么生成的 x 值就是其近似值。随着 $ _{u } $，最终 $ x=F^{-1}(u)
+$ 即为满足要求的分布。</p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/inverse-discrete-continuous.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="指数分布连续">指数分布（连续）</h2>
+<p>以最为常见的指数分布为例，我们来看看具体的步骤。</p>
+<p>我们知道指数分布的PDF如下</p>
+<div>
+<p><span class="math display">\[
+f(x)=\left\{\begin{array}{ll}\lambda e^{-\lambda x}, &amp; x \geq 0 \\
+0, &amp; x&lt;0\end{array}\right.
+\]</span></p>
+</div>
+<p>PDF 图为</p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/distrib_exp_inv.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>计算CDF为</p>
+<div>
+<p><span class="math display">\[
+F(x)=\int_{-\infty}^{x} f(t) d t=\left\{\begin{array}{ll}1-e^{-\lambda
+x}, &amp; x \geq 0 \\ 0, &amp; x&lt;0\end{array}\right.
+\]</span></p>
+</div>
+<p>CDF 图</p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/exp_cdf.jpg">
+<figcaption>
+</figcaption>
+</figure>
+<p>可以求得逆函数为</p>
+<p><span class="math display">\[
+x=F^{-1}(u)=-\frac{1}{\lambda} \ln (1-u)
+\]</span></p>
+<p>由于 1-u 在 [0, 1] 范围上的随机数等价于 u，因此，x
+的生成公式等价于</p>
+<p><span class="math display">\[
+x=-\frac{1}{\lambda} \ln (u)
+\]</span></p>
+<h3 id="实现代码">实现代码</h3>
+<p>对应代码很简单</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> log2 <span class="hljs-keyword">as</span> ln</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">exp_gen</span>(<span class="hljs-params">lambbda: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">float</span>:</span></span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> -ln(u) / lambbda</span><br></pre></td></tr></tbody></table></figure>
+<p>Github 代码地址：</p>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/coutinous_exp_inv.py</p>
+<h2 id="类别分布离散">类别分布（离散）</h2>
+<p>我们再来看基于类别分布 Inverse Transformation
+Method的其他离散分布例子。在<a href="/zh/2021/distribution-inverse-transformation-method/!--swig￼6--">从零构建统计随机变量生成器之离散基础篇</a>中，我们已经介绍了类别分布（Categorical
+Distribution）的逆变换采样算法，同时还介绍了通过模拟 Bernoulli
+实验来生成二项，几何，超几何分布的方法。在这一篇中，我们通过逆变换采样算法再来生成这些分布。</p>
+<p>先回顾一下类别分布的逆变换采样实现。</p>
+<p>给定如下的类别分布， $p = [0.2, 0.3, 0.1, 0.4] $</p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/distrib_category.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="实现代码-1">实现代码</h3>
+<p>类别分布的逆变换采样实现需要找到第一个大于 u
+的元素的索引序号，在我们的实现中，将 $p = [0.2, 0.3, 0.1, 0.4] $
+转换成累计概率 $c = [0.2, 0.5, 0.6, 1] $ 后，由于 <span class="math inline">\(\vec c\)</span>
+数组是非递减的，因此我们可以用二分法代替线性查找，将时间复杂度降到 <span class="math inline">\(O(log(n))\)</span>。下面的实现中直接调用 python
+bisect 函数即可。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> bisect</span><br><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">categorical</span>(<span class="hljs-params">probs: <span class="hljs-type">List</span>[<span class="hljs-built_in">float</span>]</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">assert</span> <span class="hljs-built_in">abs</span>(<span class="hljs-built_in">sum</span>(probs) - <span class="hljs-number">1.0</span>) &lt; <span class="hljs-number">0.001</span></span><br><span class="line">    cum = probs.copy()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(cum)):</span><br><span class="line">        cum[i] = cum[i-<span class="hljs-number">1</span>] + probs[i]</span><br><span class="line"></span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> bisect.bisect(cum, u)</span><br></pre></td></tr></tbody></table></figure>
+<p>Github 代码地址：</p>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_categorical.py</p>
+<h2 id="二项分布离散">二项分布（离散）</h2>
+<p>二项分布（Binomial Distribution）有两个参数 n 和
+p，表示伯努利实验做n次后成功的次数。图中为 n=6，p=0.5的二项分布。</p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/distrib_binomial.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="概率质量函数pmf">概率质量函数（PMF）</h3>
+<div>
+<p><span class="math display">\[
+\operatorname{P}_\text{Binomial}(X=k)=\left(\begin{array}{c}n \\
+k\end{array}\right)p^{k}(1- p)^{n-k}
+\]</span></p>
+</div>
+<h3 id="实现代码-2">实现代码</h3>
+<p>根据上面的PMF定义，我们将 [0, 6]
+上的PMF计算出来，然后调用类别分布的逆变换采样实现即可：</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> scipy.special <span class="hljs-keyword">import</span> comb</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">from</span> discrete_categorical <span class="hljs-keyword">import</span> categorical</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> <span class="hljs-built_in">pow</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">binomial</span>(<span class="hljs-params">n: <span class="hljs-built_in">int</span>, p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    pmf = [comb(n, k, exact=<span class="hljs-literal">True</span>) * <span class="hljs-built_in">pow</span>(p, k) * <span class="hljs-built_in">pow</span>(<span class="hljs-number">1</span>-p, n-k) <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, n + <span class="hljs-number">1</span>)]</span><br><span class="line">    <span class="hljs-keyword">return</span> categorical(pmf)</span><br></pre></td></tr></tbody></table></figure>
+<p>Github 代码地址：</p>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_binomial_inv.py</p>
+<h2 id="超几何分布离散">超几何分布（离散）</h2>
+<p>同样的，超几何分布（HyperGeometric Distribution）也可以如法炮制。</p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/distrib_hypergeo.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="概率质量函数pmf-1">概率质量函数（PMF）</h3>
+<div>
+<p><span class="math display">\[
+\operatorname{P}_\text{Hypergeo}(X=k)=\frac{\left(\begin{array}{c}K \\
+k\end{array}\right)\left(\begin{array}{c}N-k \\
+n-k\end{array}\right)}{\left(\begin{array}{l}N \\ n\end{array}\right)}
+\]</span></p>
+</div>
+<h3 id="实现代码-3">实现代码</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> scipy.special <span class="hljs-keyword">import</span> comb</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">from</span> discrete_categorical <span class="hljs-keyword">import</span> categorical</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hypergeometric</span>(<span class="hljs-params">N: <span class="hljs-built_in">int</span>, K_succ_num: <span class="hljs-built_in">int</span>, n_trial_num: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    pmf = [comb(K_succ_num, k, exact=<span class="hljs-literal">True</span>) * comb(N - K_succ_num, n_trial_num - k, exact=<span class="hljs-literal">True</span>) / comb(N, n_trial_num, exact=<span class="hljs-literal">True</span>)</span><br><span class="line">           <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, n_trial_num - (N - K_succ_num)), <span class="hljs-built_in">min</span>(K_succ_num, n_trial_num) + <span class="hljs-number">1</span>)]</span><br><span class="line">    <span class="hljs-keyword">return</span> categorical(pmf)</span><br></pre></td></tr></tbody></table></figure>
+<p>Github 代码地址：</p>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_hypergeometric_inv.py</p>
+<h2 id="几何分布离散">几何分布（离散）</h2>
+<p>几何分布（Geometric
+Distribution）和上面的二项分布以及超几何分布不同的是，它的 support
+是所有非负整数，因此，我们无法穷举计算所有 x
+的概率。但是，我们可以通过将CDF 推出 Inverse
+CDF的解析表达式来直接实现。</p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/distrib_geometric.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="概率质量函数pmf-2">概率质量函数（PMF）</h3>
+<p><span class="math display">\[
+\operatorname{P}_\text{Geometric}(X=k)=(1-p)^{k-1} p
+\]</span></p>
+<h3 id="cdf">CDF</h3>
+<p><span class="math display">\[
+F_X(x) = 1- (1-p)^x
+\]</span></p>
+<h3 id="inverse-cdf">Inverse CDF</h3>
+<p>反函数求得为 <span class="math display">\[
+F^{-1}(u) = \lfloor { log(1-u) \over log(1-p) }\rfloor
+\]</span></p>
+<h3 id="实现代码-4">实现代码</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> floor</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> log2 <span class="hljs-keyword">as</span> ln</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">geometric</span>(<span class="hljs-params">p: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> floor(ln(u) / ln(<span class="hljs-number">1</span>-p))</span><br></pre></td></tr></tbody></table></figure>
+<p>Github 代码地址：</p>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/discrete_geometric_inv.py</p>
+<h2 id="标准正态分布">标准正态分布</h2>
+<p>一般，标准正态分布用Box-Muller
+方法来生成，这个后续将做详细介绍。这里我们用 Schmeiser 提出的基于Inverse
+Transformation Method的近似方法来生成：</p>
+<p><span class="math display">\[
+X=F^{-1}(u) \approx \frac{u^{0.135}-(1-u)^{0.135}}{0.1975}
+\]</span></p>
+<figure>
+<img src="/zh/2021/distribution-inverse-transformation-method/distrib_normal.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="实现代码-5">实现代码</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">normal</span>():</span></span><br><span class="line">    <span class="hljs-keyword">import</span> math</span><br><span class="line">    u = random.random()</span><br><span class="line">    <span class="hljs-keyword">return</span> (math.<span class="hljs-built_in">pow</span>(u, <span class="hljs-number">0.135</span>) - math.<span class="hljs-built_in">pow</span>(<span class="hljs-number">1</span>-u, <span class="hljs-number">0.135</span>)) / <span class="hljs-number">0.1975</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Github 代码地址：</p>
+<p>https://github.com/MyEncyclopedia/stats_simulation/blob/main/distrib_sim/coutinous_normal_apprx.py</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Statistics/">#Statistics</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Simulation/">#Simulation</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2021/vlog-paper-neural-combinatorial-optimization/">视频论文解读：组合优化的强化学习方法</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2021/distribution-poisson/">从零构建统计随机变量生成器之泊松分布</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2021/distribution-inverse-transformation-method/">https://blog.myencyclopedia.top/zh/2021/distribution-inverse-transformation-method/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/">https://myencyclopedia.github.io/zh/2021/distribution-inverse-transformation-method/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2021/distribution-inverse-transformation-method/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2021/distribution-inverse-transformation-method/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

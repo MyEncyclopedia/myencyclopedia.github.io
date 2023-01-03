@@ -1,0 +1,24 @@
+classDiagram
+  PyGameBoard
+  ConnectNGame
+  PyGameBoard..>ConnectNGame:Encapsulates
+	BaseAgent <|-- AIAgent
+	BaseAgent <|-- HumanAgent
+  BaseAgent..>PyGameBoard:Operates
+
+  class BaseAgent {
+    act(game: PyGameBoard, available_actions)
+  }
+	class ConnectNGame{
+		move()
+    undo()
+	}
+	class PyGameBoard{
+  	ConnectNGame connectNGame
+		next_user_input()
+    move()
+	}
+
+  class AIAgent {
+    Strategy strategy
+  }

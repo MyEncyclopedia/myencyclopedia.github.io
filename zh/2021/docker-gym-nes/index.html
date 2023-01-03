@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>跨平台任天堂红白机强化学习预制环境 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2021/docker-gym-nes/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="今天和大家分享强化学习的经典训练环境，任天堂的红白机训练环境。  这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux 甚至 Mac 上都可以运行。 这里将通过大家最常用的 Windows 系统来演示环境的使用。 X window 服务器 在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 XLaunch。  这里采">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨平台任天堂红白机强化学习预制环境">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2021/docker-gym-nes/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="今天和大家分享强化学习的经典训练环境，任天堂的红白机训练环境。  这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux 甚至 Mac 上都可以运行。 这里将通过大家最常用的 Windows 系统来演示环境的使用。 X window 服务器 在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是 XLaunch。  这里采">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/docker-gym-nes/gym-demo.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/docker-gym-nes/xlaunch.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/docker-gym-nes/docker-bash.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/docker-gym-nes/contra.png">
+<meta property="article:published_time" content="2021-11-20T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.062Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="强化学习">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2021/docker-gym-nes/gym-demo.gif">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#x-window-服务器">1&nbsp;&nbsp;<b>X window 服务器</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#拉取镜像">2&nbsp;&nbsp;<b>拉取镜像</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#各种游戏">3&nbsp;&nbsp;<b>各种游戏</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#x-window-%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-text">X window 服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%89%E5%8F%96%E9%95%9C%E5%83%8F"><span class="toc-text">拉取镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E6%B8%B8%E6%88%8F"><span class="toc-text">各种游戏</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            跨平台任天堂红白机强化学习预制环境
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2021-11-20T18:45:01.000Z" itemprop="datePublished">11月 21 2021</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            6 分钟 读完 (约 966 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>今天和大家分享强化学习的经典训练环境，任天堂的红白机训练环境。</p>
+<p><img src="/zh/2021/docker-gym-nes/gym-demo.gif"></p>
+<p>这次的环境，我将分装成 docker 镜像，这样在任何平台：Windows，Linux
+甚至 Mac 上都可以运行。</p>
+<p>这里将通过大家最常用的 Windows 系统来演示环境的使用。</p>
+<h2 id="x-window-服务器">X window 服务器</h2>
+<p>在 Windows上，首先，我们要装 X Window Server。可以用 Cygwin 或者是
+XLaunch。</p>
+<p><img src="/zh/2021/docker-gym-nes/xlaunch.png"></p>
+<p>这里采用 XLaunch 是因为安装比较方便，安装包也很小。</p>
+<p>如果 XLaunch
+正常启动的话，就会在系统托管的地方显示出来。接着我们来下载环境的 docker
+images。</p>
+<h2 id="拉取镜像">拉取镜像</h2>
+<p>用 docker pull 命令我们将预制的公开镜像拉下来</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull myencyclopedia/gym-nes</span><br></pre></td></tr></tbody></table></figure>
+<p>拉下来以后，可以用 docker image命令来检查是否存在</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></tbody></table></figure>
+<p>下一步，我们需要找到物理机或者 docker host 机器的 IP 地址。</p>
+<p>在windows上，我们执行 ipconfig 命令，注意我们要的是 WSL 对应的 IP
+地址。</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ ipconfig.exe</span><br><span class="line"></span><br><span class="line">Windows IP 配置</span><br><span class="line"></span><br><span class="line">以太网适配器 以太网:</span><br><span class="line">   媒体状态  . . . . . . . . . . . . : 媒体已断开连接</span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">以太网适配器 vEthernet (WSL):</span><br><span class="line">   连接特定的 DNS 后缀 . . . . . . . :</span><br><span class="line">   本地链接 IPv6 地址. . . . . . . . : fe80::8841:6bd8:5064:9a3c%45</span><br><span class="line">   IPv4 地址 . . . . . . . . . . . . : 172.23.0.1</span><br><span class="line">   子网掩码  . . . . . . . . . . . . : 255.255.240.0</span><br><span class="line">   默认网关. . . . . . . . . . . . . :</span><br></pre></td></tr></tbody></table></figure>
+<p>得到了物理机的 docker 网段地址以后，我们将地址保存在物理机的 Display
+环境变量中，注意最后需要加上 <code>:0</code></p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">export</span> DISPLAY=172.23.0.1:0</span><br></pre></td></tr></tbody></table></figure>
+<p>至此，我们可以一键跑超级玛丽了。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash -c <span class="hljs-string">'python gym_nes_demo.py'</span></span><br></pre></td></tr></tbody></table></figure>
+<p>解释一点，<code>-e DISPLAY=$DISPLAY</code> 将 Display 环境变量从当前
+shell 注入到 container 中。</p>
+<p>一切顺利的话，有个 X
+window的窗口会跳出来，无人控制得超级玛丽运行了起来，它会随机执行一些动作。</p>
+<p>结束程序记得要把 docker container 显示关掉，需要执行 <code>docker
+stop</code>。</p>
+<h2 id="各种游戏">各种游戏</h2>
+<p>其实，预制的 docker
+环境给大家装了更多的游戏，大家也可以修改源码跑其他游戏</p>
+<p>具体方法是，将上面命令稍微修改一下 次我们进入 interactive bash。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it  -e DISPLAY=<span class="hljs-variable">$DISPLAY</span> myencyclopedia/gym-nes bash</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/zh/2021/docker-gym-nes/docker-bash.gif"></p>
+<p>进了 container 之后，我们发现之前执行的 python 原代码是当前目录的
+<code>gym_nes_demo.py</code></p>
+<p>先列出所有的游戏的 rom 文件。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">(py3.7) root@aff72945133b:/proj/nes_py# find . -name '*.nes'</span><br><span class="line">./tests/games/excitebike.nes</span><br><span class="line">./tests/games/super-mario-bros-2.nes</span><br><span class="line">./tests/games/super-mario-bros-3.nes</span><br><span class="line">./tests/games/empty.nes</span><br><span class="line">./tests/games/super-mario-bros-lost-levels.nes</span><br><span class="line">./tests/games/super-mario-bros-1.nes</span><br><span class="line">./tests/games/the-legend-of-zelda.nes</span><br><span class="line">./tests/nes-roms/1942 (Japan, USA).nes</span><br><span class="line">./tests/nes-roms/contra.nes</span><br><span class="line">./tests/nes-roms/Battle City (J).nes</span><br><span class="line">./tests/nes-roms/red.nes</span><br><span class="line">./tests/nes-roms/Gradius 2 (J).nes</span><br><span class="line">./tests/nes-roms/super-mario.nes</span><br><span class="line">./tests/nes-roms/Contra Force (USA).nes</span><br><span class="line">./tests/nes-roms/Rush'n Attack (U).nes</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>文件夹里有很多游戏， 包括魂斗罗，坦克大战等等。</p>
+<p>修改 <code>gym_nes_demo.py</code>，将超级玛丽替换成魂斗罗 nes。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> nes_py <span class="hljs-keyword">import</span> NESEnv</span><br><span class="line"><span class="hljs-keyword">import</span> tqdm</span><br><span class="line">env = NESEnv(<span class="hljs-string">'/proj/nes_py/tests/games/super-mario-bros-1.nes'</span>)</span><br><span class="line"></span><br><span class="line">done = <span class="hljs-literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">try</span>:</span><br><span class="line">    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> tqdm.tqdm(<span class="hljs-built_in">range</span>(<span class="hljs-number">5000</span>)):</span><br><span class="line">        <span class="hljs-keyword">if</span> done:</span><br><span class="line">            state = env.reset()</span><br><span class="line">            done = <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            state, reward, done, info = env.step(env.action_space.sample())</span><br><span class="line">            env.render()</span><br><span class="line"><span class="hljs-keyword">except</span> KeyboardInterrupt:</span><br><span class="line">    <span class="hljs-keyword">pass</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env = NESEnv('./tests/nes-roms/contra.nes')</span><br></pre></td></tr></tbody></table></figure>
+<p>保存后，执行</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python gym_nes_demo.py</span><br></pre></td></tr></tbody></table></figure>
+<p>魂斗罗的 random agent 也跑起来了。</p>
+<p><img src="/zh/2021/docker-gym-nes/contra.png"></p>
+<p>下一期，我会把一些很经典的深度强化学习的算法应用到这个环境中，让大家可以很方便得训练调试深度强化学习算法来挑战各种红白机游戏。</p>
+<p>最后，感谢大家关注 MyEncyclopedia 公众号，B站频道或者 Youtube
+频道。谢谢大家再见。</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/">#强化学习</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/docker/">#docker</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2021/service-arxiv/">MyEncyclopedia Arxiv Trending 发现服务</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2021/general-hexo/">为什么我将博客从 Hugo 切换到了 Hexo</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2021/docker-gym-nes/">https://blog.myencyclopedia.top/zh/2021/docker-gym-nes/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2021/docker-gym-nes/">https://myencyclopedia.github.io/zh/2021/docker-gym-nes/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2021/docker-gym-nes/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2021/docker-gym-nes/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

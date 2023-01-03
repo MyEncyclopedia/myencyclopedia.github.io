@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2022/linear-algebra-strang-01-matrix-product/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="在 MIT Gilbert Strang 教授经典的线性代数课程第三节中详细解释了矩阵相乘的5种方法及其理解，本文用彩色的 Latex 公式呈现出来，便于大家回顾复习。 01 - 矩阵乘法的五种理解 02 - 解方程组的意义和过程 假定 \(A \times B &#x3D;C\) 中， A 是 \(m\) 行 \(n\) 列的矩阵， \(B\) 是 \(n\) 行 \(p\) 列的矩阵，\(C\) 为 \">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="在 MIT Gilbert Strang 教授经典的线性代数课程第三节中详细解释了矩阵相乘的5种方法及其理解，本文用彩色的 Latex 公式呈现出来，便于大家回顾复习。 01 - 矩阵乘法的五种理解 02 - 解方程组的意义和过程 假定 \(A \times B &#x3D;C\) 中， A 是 \(m\) 行 \(n\) 列的矩阵， \(B\) 是 \(n\) 行 \(p\) 列的矩阵，\(C\) 为 \">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/col_w.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/row_w.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/matrix_sum_w.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/block.png">
+<meta property="article:published_time" content="2022-01-22T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-02-03T07:09:17.289Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Maths">
+<meta property="article:tag" content="Linear Algebra">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/col_w.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b矩阵的列组合列列切分">1&nbsp;&nbsp;<b>B矩阵的列组合：列列切分</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#a矩阵行组合行行切分">2&nbsp;&nbsp;<b>A矩阵行组合：行行切分</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#a行-x-b列-点乘行列切分">3&nbsp;&nbsp;<b>A行 x B列 点乘：行列切分</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#a列-x-b行-矩阵和列行切分">4&nbsp;&nbsp;<b>A列 x B行 矩阵和：列行切分</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#分块相乘">5&nbsp;&nbsp;<b>分块相乘</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#b%E7%9F%A9%E9%98%B5%E7%9A%84%E5%88%97%E7%BB%84%E5%90%88%E5%88%97%E5%88%97%E5%88%87%E5%88%86"><span class="toc-text">B矩阵的列组合：列列切分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#a%E7%9F%A9%E9%98%B5%E8%A1%8C%E7%BB%84%E5%90%88%E8%A1%8C%E8%A1%8C%E5%88%87%E5%88%86"><span class="toc-text">A矩阵行组合：行行切分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#a%E8%A1%8C-x-b%E5%88%97-%E7%82%B9%E4%B9%98%E8%A1%8C%E5%88%97%E5%88%87%E5%88%86"><span class="toc-text">A行 x B列 点乘：行列切分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#a%E5%88%97-x-b%E8%A1%8C-%E7%9F%A9%E9%98%B5%E5%92%8C%E5%88%97%E8%A1%8C%E5%88%87%E5%88%86"><span class="toc-text">A列 x B行 矩阵和：列行切分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%9D%97%E7%9B%B8%E4%B9%98"><span class="toc-text">分块相乘</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-01-22T18:45:01.000Z" itemprop="datePublished">1月 23 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            5 分钟 读完 (约 763 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>在 MIT Gilbert Strang
+教授经典的线性代数课程第三节中详细解释了矩阵相乘的5种方法及其理解，本文用彩色的
+Latex 公式呈现出来，便于大家回顾复习。</p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-01-matrix-product/../linear-algebra-strang-01-matrix-product">01 -
+矩阵乘法的五种理解</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-01-matrix-product/../linear-algebra-strang-02-solving-equations">02 -
+解方程组的意义和过程</a></strong></p>
+<p>假定 <span class="math inline">\(A \times B =C\)</span> 中， A 是
+<span class="math inline">\(m\)</span> 行 <span class="math inline">\(n\)</span> 列的矩阵， <span class="math inline">\(B\)</span> 是 <span class="math inline">\(n\)</span> 行 <span class="math inline">\(p\)</span> 列的矩阵，<span class="math inline">\(C\)</span> 为 <span class="math inline">\(m\)</span> 行 <span class="math inline">\(p\)</span> 列矩阵：</p>
+<p><span class="math display">\[
+A_{m \cdot n} \times B_{n \cdot p} = C_{m \cdot p}
+\]</span></p>
+<h2 id="b矩阵的列组合列列切分">B矩阵的列组合：列列切分</h2>
+<p>这是最经典的理解方式，沿袭了第一部分 <span class="math inline">\(A
+\vec x= \vec b\)</span> 的方式。</p>
+<p>回顾可以将 <span class="math inline">\(A \vec x\)</span> 视为 <span class="math inline">\(A\)</span> 的列向量关于每个 <span class="math inline">\(x\)</span> 分量的线性组合。</p>
+<p>那么 <span class="math inline">\(A B\)</span> 相乘可以理解为将矩阵
+<span class="math inline">\(B\)</span> 按列切分成列向量，即 <span class="math display">\[
+B = [\vec B_{col_1} \vec B_{col_2} \cdots \vec B_{col_p} ]
+\]</span></p>
+<p>如此，结果矩阵的第 <span class="math inline">\(j\)</span> 列就是
+<span class="math inline">\(A \vec B_{col_j}\)</span>：<span class="math inline">\(A\)</span> 的列向量关于 $ B_{col_j} $
+的线性组合。</p>
+<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/col_w.png"></p>
+<p>由于我们将 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 都按列来切，这种方式可以助记成
+<strong>列列</strong> 切分。</p>
+<h2 id="a矩阵行组合行行切分">A矩阵行组合：行行切分</h2>
+<p>同样的，对应与 <span class="math inline">\(A\)</span>
+右乘向量等同于<span class="math inline">\(A\)</span>列的组合，<span class="math inline">\(A\)</span> 左乘行向量等同于 <span class="math inline">\(A\)</span> 行的组合： <span class="math display">\[
+[x_1, x_2, ..., x_n]\begin{bmatrix} A_{row_1} \\ A_{row_2} \\ \vdots
+\\A_{row_n} \end{bmatrix}
+= x_1 \cdot A_{row_1} + x_2 \cdot A_{row_2} +...+ x_n \cdot A_{row_n}
+\]</span> 其结果是一个行向量。</p>
+<p>那么 <span class="math inline">\(A B\)</span> 相乘可以理解为将矩阵
+<span class="math inline">\(A\)</span> 按行切分成行向量，即 <span class="math display">\[
+A = \begin{bmatrix} A_{row_1} \\  A_{row_2}\\ \vdots \\ A_{row_m}
+\end{bmatrix}
+\]</span></p>
+<p>如此，结果矩阵的第 <span class="math inline">\(i\)</span> 行就是
+<span class="math inline">\(\vec A_{row_i} B\)</span>：<span class="math inline">\(B\)</span> 的行向量关于 $ A_{row_i} $
+的线性组合。</p>
+<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/row_w.png"></p>
+<p>这种方式可以助记成 <strong>行行</strong> 切分。</p>
+<h2 id="a行-x-b列-点乘行列切分">A行 x B列 点乘：行列切分</h2>
+<p>如 <span class="math inline">\(A\)</span> 矩阵按行切，<span class="math inline">\(B\)</span> 矩阵按列切，即住记成
+<strong>行列</strong> 切分时如下所示。</p>
+<p><span class="math display">\[
+\begin{eqnarray*}
+&amp;&amp; A_{m \cdot n} \times B_{n \cdot p} \\
+&amp;=&amp;
+\begin{bmatrix}
+A_{row_1} \\
+A_{row_2} \\
+\vdots \\
+A_{row_i} \\
+\vdots \\
+\end{bmatrix}_{m \cdot n}
+\begin{bmatrix}
+B_{col_1} &amp;  B_{col_2} &amp; \cdots &amp; B_{col_p}
+\end{bmatrix}_{n \cdot p} \\
+&amp;=&amp;
+\begin{bmatrix}
+&amp;\vdots&amp;\\&amp;
+A_{row_i}&amp;\\&amp;\vdots&amp;
+\end{bmatrix}_{m \cdot n}
+\begin{bmatrix}
+&amp;&amp;\\\cdots&amp; B_{col_j} &amp; \cdots\\&amp;&amp;
+\end{bmatrix}_{n \cdot p} \\
+&amp;=&amp;
+\begin{bmatrix}
+&amp;\vdots&amp;\\\cdots&amp;c_{ij}&amp;\cdots\\&amp;
+\vdots
+\end{bmatrix}_{m \cdot p}
+\end{eqnarray*}
+\]</span></p>
+<p>行乘以列即列向量点乘，结果是一个标量。因此 <span class="math inline">\(c_{ij}\)</span> 为结果矩阵 <span class="math inline">\(C\)</span> 的第 <span class="math inline">\(i\)</span> 行 <span class="math inline">\(j\)</span> 列的值。</p>
+<p><span class="math display">\[
+c_{ij}=A_{row_i} \cdot B_{col_j}
+=
+\begin{bmatrix}
+a_{i1} &amp; a_{i2} &amp; \cdots &amp; a_{in}
+\end{bmatrix}
+\begin{bmatrix}
+b_{1j} \\  b_{2j} \\ \vdots \\ b_{nj}
+\end{bmatrix}
+=\sum_{k=i}^na_{ik}b_{kj}
+\]</span></p>
+<h2 id="a列-x-b行-矩阵和列行切分">A列 x B行 矩阵和：列行切分</h2>
+<p>最后，也可也按<strong>列行</strong>来切分。注意列乘以行时的结果是一个矩阵。</p>
+<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/matrix_sum_w.png"></p>
+<h2 id="分块相乘">分块相乘</h2>
+<p>第五种方式是分块相乘，可以认为是点乘理解下的扩展。</p>
+<p><img src="/zh/2022/linear-algebra-strang-01-matrix-product/block.png"></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Maths/">#Maths</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Linear-Algebra/">#Linear Algebra</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2022/linear-algebra-strang-02-solving-equations/">Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2021/service-arxiv/">MyEncyclopedia Arxiv Trending 发现服务</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2022/linear-algebra-strang-01-matrix-product/">https://blog.myencyclopedia.top/zh/2022/linear-algebra-strang-01-matrix-product/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/">https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-01-matrix-product/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2022/linear-algebra-strang-01-matrix-product/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2022/linear-algebra-strang-01-matrix-product/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

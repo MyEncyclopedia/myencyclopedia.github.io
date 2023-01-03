@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>一键即起开箱即用部署强悍中英文OCR本地服务 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2022/docker-paddleocr/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="PaddleOCR CPU 镜像 本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。 众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练自己的数据集和调参，只要用成熟的模型就足够">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一键即起开箱即用部署强悍中英文OCR本地服务">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="PaddleOCR CPU 镜像 本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。 众所周知 PaddleOCR 是一个百度 PaddlePaddle 中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的 docker 镜像，但是基于 GPU 的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练自己的数据集和调参，只要用成熟的模型就足够">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/scene-out.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/scene-out.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/engtest-out.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/me-out.png">
+<meta property="article:published_time" content="2022-04-15T18:45:01.000Z">
+<meta property="article:modified_time" content="2023-01-03T02:30:32.121Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="OCR">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Deep Learning Practice">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/scene-out.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#paddleocr-cpu-镜像">1&nbsp;&nbsp;<b>PaddleOCR CPU 镜像</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#文字效果">1.1&nbsp;&nbsp;文字效果</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#获取镜像">2&nbsp;&nbsp;<b>获取镜像</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#命令行识别">3&nbsp;&nbsp;<b>命令行识别</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#代码识别">4&nbsp;&nbsp;<b>代码识别</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#结果展示">4.1&nbsp;&nbsp;结果展示</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#demo_ch.py">4.2&nbsp;&nbsp;demo_ch.py</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#结束语">5&nbsp;&nbsp;<b>结束语</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#paddleocr-cpu-%E9%95%9C%E5%83%8F"><span class="toc-text">PaddleOCR CPU 镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E5%AD%97%E6%95%88%E6%9E%9C"><span class="toc-text">文字效果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E9%95%9C%E5%83%8F"><span class="toc-text">获取镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AF%86%E5%88%AB"><span class="toc-text">命令行识别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%AF%86%E5%88%AB"><span class="toc-text">代码识别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="toc-text">结果展示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#demo_ch.py"><span class="toc-text">demo_ch.py</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9D%9F%E8%AF%AD"><span class="toc-text">结束语</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            一键即起开箱即用部署强悍中英文OCR本地服务
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-04-15T18:45:01.000Z" itemprop="datePublished">4月 16 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            6 分钟 读完 (约 930 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><h2 id="paddleocr-cpu-镜像">PaddleOCR CPU 镜像</h2>
+<p>本期和大家分享一个一键就可以开箱集用的OCR docker 本地服务。</p>
+<p>众所周知 PaddleOCR 是一个百度 PaddlePaddle
+中非常有名的OCR框架，它包含了丰富的中英文模型。官方也提供给了 GPU 的
+docker 镜像，但是基于 GPU
+的镜像，对于很多小伙伴来说有点大材小用了。因为很多小伙伴不需要去训练自己的数据集和调参，只要用成熟的模型就足够了。另外，无论在
+Windows 还是 Linux 中，大家配置安装 nvidia GPU
+镜像都是比较麻烦。因此，这次特地为大家打造了这样一个 CPU 的 PaddleOCR
+镜像，并且把常规的模型都预装到镜像中了，大家一键就能部署强悍的本地 OCR
+服务。只需要安装 Docker 即可，也支持 Mac。</p>
+<h3 id="文字效果">文字效果</h3>
+<p>先来看一个文字识别的效果吧，图片中这家店铺使用了非常规的中文字体，但PaddleOCR依然完全识别了出来。
+<img src="/zh/2022/docker-paddleocr/scene-out.png"></p>
+<h2 id="获取镜像">获取镜像</h2>
+<p>具体获取方式为：关注 <code>MyEncyclopedia</code> 公众号，回复
+<code>docker-paddleocr</code></p>
+<p>下面的命令一键起了这个镜像，注意，<strong>大家要将
+<code>me-paddleocr</code> 替换成公众号中的镜像名</strong>。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it me-paddleocr bash </span><br></pre></td></tr></tbody></table></figure>
+<p>进入容器后，我们已经在 <code>/proj</code>目录，通过 <code>ls</code>
+可以发现有如下文件，三个图片demo输入文件，<code>scene.png</code>,
+<code>engtest.jpg</code>, <code>me.png</code> 和
+<code>demo_ch.py</code>。</p>
+<h2 id="命令行识别">命令行识别</h2>
+<p>通过 PaddleOCR 内置的命令可以最快捷地识别文字，命令格式如下。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">paddleocr --image_dir scene.png --use_angle_cls <span class="hljs-literal">true</span> --lang ch --use_gpu <span class="hljs-literal">false</span></span><br></pre></td></tr></tbody></table></figure>
+<p>输出为，最后两行为识别出的两处文字及其位置。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ppocr INFO: **********scene.png**********</span><br><span class="line">ppocr DEBUG: dt_boxes num : 2, elapse : 0.1184682846069336</span><br><span class="line">ppocr DEBUG: cls num  : 2, elapse : 0.016251802444458008</span><br><span class="line">ppocr DEBUG: rec_res num  : 2, elapse : 0.041384220123291016</span><br><span class="line">ppocr INFO: [[[152.0, 83.0], [402.0, 81.0], [402.0, 135.0], [153.0, 137.0]], ('匠牛饺子', 0.94130754)]</span><br><span class="line">ppocr INFO: [[[412.0, 183.0], [450.0, 183.0], [450.0, 206.0], [412.0, 206.0]], ('匠牛', 0.7368352)]</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="代码识别">代码识别</h2>
+<p>当然了，为了方便查看结果，需要通过代码来实现。下面展示镜像内置的三个demo图片的执行python
+代码 <code>demo_ch.py</code> 后的输出效果。</p>
+<h3 id="结果展示">结果展示</h3>
+<p>图片一：门头照片 <img src="/zh/2022/docker-paddleocr/scene-out.png"></p>
+<p>图片二：中英文混合的试卷 <img src="/zh/2022/docker-paddleocr/engtest-out.png"></p>
+<p>图片三：中英文混合Logo <img src="/zh/2022/docker-paddleocr/me-out.png"></p>
+<h3 id="demo_ch.py">demo_ch.py</h3>
+<p>附上 <code>demo_ch.py</code> 源代码，不做赘述。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> paddleocr <span class="hljs-keyword">import</span> PaddleOCR</span><br><span class="line"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line"><span class="hljs-keyword">import</span> cv2</span><br><span class="line"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt</span><br><span class="line"><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image, ImageDraw, ImageFont</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cv2ImgAddText</span>(<span class="hljs-params">img, text, left, top, textColor=(<span class="hljs-params"><span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span></span>), textSize=<span class="hljs-number">20</span></span>):</span></span><br><span class="line">    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isinstance</span>(img, np.ndarray)):</span><br><span class="line">        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))</span><br><span class="line">    draw = ImageDraw.Draw(img)</span><br><span class="line">    fontStyle = ImageFont.truetype(<span class="hljs-string">'wqy-zenhei.ttc'</span>, textSize, encoding=<span class="hljs-string">"utf-8"</span>)</span><br><span class="line">    draw.text((left, top), text, textColor, font=fontStyle)</span><br><span class="line">    <span class="hljs-keyword">return</span> cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)</span><br><span class="line"></span><br><span class="line">ocr = PaddleOCR()</span><br><span class="line">img_path = <span class="hljs-string">'/proj/scene.png'</span></span><br><span class="line"></span><br><span class="line">result = ocr.ocr(img_path, rec=<span class="hljs-literal">True</span>)</span><br><span class="line"><span class="hljs-built_in">print</span>(<span class="hljs-string">f"The predicted text box of <span class="hljs-subst">{img_path}</span> are follows."</span>)</span><br><span class="line"></span><br><span class="line">image = cv2.imread(img_path)</span><br><span class="line">boxes = [[line[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">2</span>], line[<span class="hljs-number">0</span>][<span class="hljs-number">3</span>]] <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> result]</span><br><span class="line">texts = [line[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> result]</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> box, text <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(boxes, texts):</span><br><span class="line">    box = np.reshape(np.array(box), [-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]).astype(np.int64)</span><br><span class="line">    <span class="hljs-built_in">print</span>(box)</span><br><span class="line">    image = cv2.polylines(np.array(image), [box], <span class="hljs-literal">True</span>, (<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), <span class="hljs-number">2</span>)</span><br><span class="line">    image = cv2ImgAddText(image, text, box[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] - <span class="hljs-number">10</span>, box[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>][<span class="hljs-number">1</span>] - <span class="hljs-number">10</span>, textColor=(<span class="hljs-number">0</span>, <span class="hljs-number">255</span>, <span class="hljs-number">0</span>), textSize=<span class="hljs-number">20</span>)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>))</span><br><span class="line">plt.imshow(image)</span><br><span class="line">plt.savefig(<span class="hljs-string">'/proj/result.jpg'</span>)</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="结束语">结束语</h2>
+<p>PaddleOCR最为市面上最好的开源中文 OCR
+引擎之一，其强悍的效果可以达到开箱即用，本期基于 CPU
+的预制镜像更降低了大家使用的门槛。本系列后续会和大家分享如何在 PaddleOCR
+GPU
+镜像中去训练自己的数据集，来提升特定字体的准确度，大家喜欢的话不要忘记一键三连哦。同时也可以关注
+MyEncyclopedia 微信公众号以及B站频道，下次再见。</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/OCR/">#OCR</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Docker/">#Docker</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Deep-Learning-Practice/">#Deep Learning Practice</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2022/linear-algebra-strang-04-gauss-jordan/">Strang MIT 18.06 线性代数精髓 04：Gauss-Jordan 求矩阵逆</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2022/docker-paddleocr/">https://blog.myencyclopedia.top/zh/2022/docker-paddleocr/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/docker-paddleocr/">https://myencyclopedia.github.io/zh/2022/docker-paddleocr/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2022/docker-paddleocr/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2022/docker-paddleocr/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

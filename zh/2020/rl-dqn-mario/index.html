@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>深度强化学习之：DQN训练超级玛丽闯关 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/rl-dqn-mario/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="上一期 MyEncyclopedia公众号文章 从Q-Learning 演化到 DQN，我们从原理上讲解了DQN算法，这一期，让我们通过代码来实现任天堂游戏机中经典的超级玛丽的自动通关吧。本文所有代码在 https:&#x2F;&#x2F;github.com&#x2F;MyEncyclopedia&#x2F;reinforcement-learning-2nd&#x2F;tree&#x2F;master&#x2F;super_mario。 DQN 算法回顾 上期详">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深度强化学习之：DQN训练超级玛丽闯关">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/rl-dqn-mario/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="上一期 MyEncyclopedia公众号文章 从Q-Learning 演化到 DQN，我们从原理上讲解了DQN算法，这一期，让我们通过代码来实现任天堂游戏机中经典的超级玛丽的自动通关吧。本文所有代码在 https:&#x2F;&#x2F;github.com&#x2F;MyEncyclopedia&#x2F;reinforcement-learning-2nd&#x2F;tree&#x2F;master&#x2F;super_mario。 DQN 算法回顾 上期详">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-dqn-mario/dqn_alg_nature.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-dqn-mario/dqn.jpg">
+<meta property="article:published_time" content="2020-12-04T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:17.974Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="PyTorch">
+<meta property="article:tag" content="DQN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/rl-dqn-mario/dqn_alg_nature.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#dqn-算法回顾">1&nbsp;&nbsp;<b>DQN 算法回顾</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#超级玛丽-nes-openai-环境">2&nbsp;&nbsp;<b>超级玛丽 NES OpenAI 环境</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#游戏图像处理">3&nbsp;&nbsp;<b>游戏图像处理</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#cnn-模型">4&nbsp;&nbsp;<b>CNN 模型</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#experience-replay-缓存">5&nbsp;&nbsp;<b>Experience Replay 缓存</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#dqnagent">6&nbsp;&nbsp;<b>DQNAgent</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#外层-training-代码">7&nbsp;&nbsp;<b>外层 Training 代码</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#dqn-%E7%AE%97%E6%B3%95%E5%9B%9E%E9%A1%BE"><span class="toc-text">DQN 算法回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B6%85%E7%BA%A7%E7%8E%9B%E4%B8%BD-nes-openai-%E7%8E%AF%E5%A2%83"><span class="toc-text">超级玛丽 NES OpenAI 环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%B8%E6%88%8F%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86"><span class="toc-text">游戏图像处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cnn-%E6%A8%A1%E5%9E%8B"><span class="toc-text">CNN 模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#experience-replay-%E7%BC%93%E5%AD%98"><span class="toc-text">Experience Replay 缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dqnagent"><span class="toc-text">DQNAgent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E5%B1%82-training-%E4%BB%A3%E7%A0%81"><span class="toc-text">外层 Training 代码</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            深度强化学习之：DQN训练超级玛丽闯关
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-12-04T18:45:01.000Z" itemprop="datePublished">12月 5 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            12 分钟 读完 (约 1743 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>上一期 MyEncyclopedia公众号文章 <a href="/zh/2020/rl-dqn-mario/!--swig￼9--">从Q-Learning
+演化到
+DQN</a>，我们从原理上讲解了DQN算法，这一期，让我们通过代码来实现任天堂游戏机中经典的超级玛丽的自动通关吧。本文所有代码在
+https://github.com/MyEncyclopedia/reinforcement-learning-2nd/tree/master/super_mario。</p>
+<h2 id="dqn-算法回顾">DQN 算法回顾</h2>
+<p>上期详细讲解了DQN中的两个重要的技术：Target Network 和 Experience
+Replay，正是有了它们才使得 Deep Q
+Network在实战中容易收敛，以下是Deepmind 发表在Nature 的 Human-level
+control through deep reinforcement learning 的完整算法流程。</p>
+<figure>
+<img src="/zh/2020/rl-dqn-mario/dqn_alg_nature.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="超级玛丽-nes-openai-环境">超级玛丽 NES OpenAI 环境</h2>
+<p>安装基于OpenAI gym的超级玛丽环境执行下面的 pip 命令即可。</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install gym-super-mario-bros</span><br></pre></td></tr></tbody></table></figure>
+<p>我们先来看一下游戏环境的输入和输出。下面代码采用随机的action来和游戏交互。有了
+<a href="/zh/2020/rl-dqn-mario/!--swig￼10--">组合游戏系列3: 井字棋、五子棋的OpenAI Gym
+GUI环境</a> 对于OpenAI Gym
+接口的介绍，现在对于其基本的交互步骤已经不陌生了。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> gym_super_mario_bros</span><br><span class="line"><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> random, randrange</span><br><span class="line"><span class="hljs-keyword">from</span> gym_super_mario_bros.actions <span class="hljs-keyword">import</span> RIGHT_ONLY</span><br><span class="line"><span class="hljs-keyword">from</span> nes_py.wrappers <span class="hljs-keyword">import</span> JoypadSpace</span><br><span class="line"><span class="hljs-keyword">from</span> gym <span class="hljs-keyword">import</span> wrappers</span><br><span class="line"></span><br><span class="line">env = gym_super_mario_bros.make(<span class="hljs-string">'SuperMarioBros-v0'</span>)</span><br><span class="line">env = JoypadSpace(env, RIGHT_ONLY)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># Play randomly</span></span><br><span class="line">done = <span class="hljs-literal">False</span></span><br><span class="line">env.reset()</span><br><span class="line"></span><br><span class="line">step = <span class="hljs-number">0</span></span><br><span class="line"><span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> done:</span><br><span class="line">    action = randrange(<span class="hljs-built_in">len</span>(RIGHT_ONLY))</span><br><span class="line">    state, reward, done, info = env.step(action)</span><br><span class="line">    <span class="hljs-built_in">print</span>(done, step, info)</span><br><span class="line">    env.render()</span><br><span class="line">    step += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">env.close()</span><br></pre></td></tr></tbody></table></figure>
+<p>游戏render效果如下</p>
+<p>。。。</p>
+<p>注意我们在游戏环境初始化的时候用了参数
+RIGHT_ONLY，它定义成五种动作的list，表示仅使用右键的一些组合，适用于快速训练来完成Mario第一关。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RIGHT_ONLY = [</span><br><span class="line">    [<span class="hljs-string">'NOOP'</span>],</span><br><span class="line">    [<span class="hljs-string">'right'</span>],</span><br><span class="line">    [<span class="hljs-string">'right'</span>, <span class="hljs-string">'A'</span>],</span><br><span class="line">    [<span class="hljs-string">'right'</span>, <span class="hljs-string">'B'</span>],</span><br><span class="line">    [<span class="hljs-string">'right'</span>, <span class="hljs-string">'A'</span>, <span class="hljs-string">'B'</span>],</span><br><span class="line">]</span><br></pre></td></tr></tbody></table></figure>
+<p>观察一些 info 输出内容，coins表示金币获得数量，flag_get
+表示是否取得最后的旗子，time 剩余时间，以及 Mario 大小状态和所在的
+x，y位置。 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">   "coins":0,</span><br><span class="line">   "flag_get":False,</span><br><span class="line">   "life":2,</span><br><span class="line">   "score":0,</span><br><span class="line">   "stage":1,</span><br><span class="line">   "status":"small",</span><br><span class="line">   "time":381,</span><br><span class="line">   "world":1,</span><br><span class="line">   "x_pos":594,</span><br><span class="line">   "y_pos":89</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="游戏图像处理">游戏图像处理</h2>
+<p>Deep Reinforcement Learning 一般是 end-to-end learning，意味着游戏的
+screen image
+作为observation直接视为真实状态，喂给神经网络训练。于此相反的另一种做法是，通过游戏环境拿到内部状态，例如所有相关物品的位置和属性作为模型输入。这两种方式的区别有两点。第一点，用观察到的屏幕像素代替真正的状态
+s，在partially observable 的环境时可能因为 non-stationarity
+导致无法很好的工作，而拿内部状态利用了额外的作弊信息，在partially
+observable环境中也可以工作。第二点，第一种方式屏幕像素维度比较高，输入数据量大，需要神经网络的大量训练拟合，第二种方式，内部真实状态往往维度低得多，训练起来很快，但缺点是因为除了内部状态往往还需要游戏相关规则作为输入，因此generalization能力不如前者强。</p>
+<figure>
+<img src="/zh/2020/rl-dqn-mario/dqn.jpg">
+<figcaption>
+</figcaption>
+</figure>
+<p>这里，我们当然采样屏幕像素的 end-to-end
+方式了，自然首要任务是将游戏帧图像有效处理。超级玛丽游戏环境的屏幕输出是
+(240, 256, 3) shape的 numpy
+array，通过下面一系列的转换，尽可能的在不影响训练效果的情况下减小采样到的数据量。</p>
+<ol type="1">
+<li><p>MaxAndSkipFrameWrapper：每4个frame连在一起，采取同样的动作，降低frame数量。</p></li>
+<li><p>FrameDownsampleWrapper：将原始的 (240, 256, 3) down sample 到
+(84, 84, 1)</p></li>
+<li><p>ImageToPyTorchWrapper：转换成适合 pytorch 的 (1, 84, 84)
+shape</p></li>
+<li><p>FrameBufferWrapper：保存最后4次屏幕采样</p></li>
+<li><p>NormalizeFloats：Normalize 成 [0., 1.0] 的浮点值</p></li>
+</ol>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">wrap_environment</span>(<span class="hljs-params">env_name: <span class="hljs-built_in">str</span>, action_space: <span class="hljs-built_in">list</span></span>) -&gt; Wrapper:</span></span><br><span class="line">    env = make(env_name)</span><br><span class="line">    env = JoypadSpace(env, action_space)</span><br><span class="line">    env = MaxAndSkipFrameWrapper(env)</span><br><span class="line">    env = FrameDownsampleWrapper(env)</span><br><span class="line">    env = ImageToPyTorchWrapper(env)</span><br><span class="line">    env = FrameBufferWrapper(env, <span class="hljs-number">4</span>)</span><br><span class="line">    env = NormalizeFloats(env)</span><br><span class="line">    <span class="hljs-keyword">return</span> env</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="cnn-模型">CNN 模型</h2>
+<p>模型比较简单，三个卷积层后做
+softmax输出，输出维度数为离散动作数。act() 采用了epsilon-greedy
+模式，即在epsilon小概率时采取随机动作来
+explore，大于epsilon时采取估计的最可能动作来 exploit。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DQNModel</span>(<span class="hljs-params">nn.Module</span>):</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, input_shape, num_actions</span>):</span></span><br><span class="line">        <span class="hljs-built_in">super</span>(DQNModel, self).__init__()</span><br><span class="line">        self._input_shape = input_shape</span><br><span class="line">        self._num_actions = num_actions</span><br><span class="line"></span><br><span class="line">        self.features = nn.Sequential(</span><br><span class="line">            nn.Conv2d(input_shape[<span class="hljs-number">0</span>], <span class="hljs-number">32</span>, kernel_size=<span class="hljs-number">8</span>, stride=<span class="hljs-number">4</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Conv2d(<span class="hljs-number">32</span>, <span class="hljs-number">64</span>, kernel_size=<span class="hljs-number">4</span>, stride=<span class="hljs-number">2</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Conv2d(<span class="hljs-number">64</span>, <span class="hljs-number">64</span>, kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">1</span>),</span><br><span class="line">            nn.ReLU()</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        self.fc = nn.Sequential(</span><br><span class="line">            nn.Linear(self.feature_size, <span class="hljs-number">512</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Linear(<span class="hljs-number">512</span>, num_actions)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">forward</span>(<span class="hljs-params">self, x</span>):</span></span><br><span class="line">        x = self.features(x).view(x.size()[<span class="hljs-number">0</span>], -<span class="hljs-number">1</span>)</span><br><span class="line">        <span class="hljs-keyword">return</span> self.fc(x)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, state, epsilon, device</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> random() &gt; epsilon:</span><br><span class="line">            state = torch.FloatTensor(np.float32(state)).unsqueeze(<span class="hljs-number">0</span>).to(device)</span><br><span class="line">            q_value = self.forward(state)</span><br><span class="line">            action = q_value.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>)[<span class="hljs-number">1</span>].item()</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            action = randrange(self._num_actions)</span><br><span class="line">        <span class="hljs-keyword">return</span> action</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="experience-replay-缓存">Experience Replay 缓存</h2>
+<p>实现采用了 Pytorch CartPole DQN 的官方代码，本质是一个最大为 capacity
+的 list 保存采样的 (s, a, r, s', is_done) 五元组。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Transition = namedtuple(<span class="hljs-string">'Transition'</span>, (<span class="hljs-string">'state'</span>, <span class="hljs-string">'action'</span>, <span class="hljs-string">'reward'</span>, <span class="hljs-string">'next_state'</span>, <span class="hljs-string">'done'</span>))</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ReplayMemory</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, capacity</span>):</span></span><br><span class="line">        self.capacity = capacity</span><br><span class="line">        self.memory = []</span><br><span class="line">        self.position = <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">push</span>(<span class="hljs-params">self, *args</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.memory) &lt; self.capacity:</span><br><span class="line">            self.memory.append(<span class="hljs-literal">None</span>)</span><br><span class="line">        self.memory[self.position] = Transition(*args)</span><br><span class="line">        self.position = (self.position + <span class="hljs-number">1</span>) % self.capacity</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sample</span>(<span class="hljs-params">self, batch_size</span>):</span></span><br><span class="line">        <span class="hljs-keyword">return</span> random.sample(self.memory, batch_size)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__len__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.memory)</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="dqnagent">DQNAgent</h2>
+<p>我们将 DQN 的逻辑封装在 DQNAgent 类中。DQNAgent 成员变量包括两个
+DQNModel，一个ReplayMemory。</p>
+<p>train() 方法中会每隔一定时间将 Target Network
+的参数同步成现行Network的参数。在td_loss_backprop()方法中采样
+ReplayMemory 中的五元组，通过minimize TD error方式来改进现行 Network
+参数 <span class="math inline">\(\theta\)</span>。Loss函数为：</p>
+<p><span class="math display">\[
+L\left(\theta_{i}\right)=\mathbb{E}_{\left(s, a, r, s^{\prime}\right)
+\sim \mathrm{U}(D)}\left[\left(r+\gamma \max _{a^{\prime}}
+Q_{target}\left(s^{\prime}, a^{\prime} ; \theta_{i}^{-}\right)-Q\left(s,
+a ; \theta_{i}\right)\right)^{2}\right]
+\]</span></p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DQNAgent</span>():</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">act</span>(<span class="hljs-params">self, state, episode_idx</span>):</span></span><br><span class="line">        self.update_epsilon(episode_idx)</span><br><span class="line">        action = self.model.act(state, self.epsilon, self.device)</span><br><span class="line">        <span class="hljs-keyword">return</span> action</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">process</span>(<span class="hljs-params">self, episode_idx, state, action, reward, next_state, done</span>):</span></span><br><span class="line">        self.replay_mem.push(state, action, reward, next_state, done)</span><br><span class="line">        self.train(episode_idx)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">self, episode_idx</span>):</span></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.replay_mem) &gt; self.initial_learning:</span><br><span class="line">            <span class="hljs-keyword">if</span> episode_idx % self.target_update_frequency == <span class="hljs-number">0</span>:</span><br><span class="line">                self.target_model.load_state_dict(self.model.state_dict())</span><br><span class="line">            self.optimizer.zero_grad()</span><br><span class="line">            self.td_loss_backprop()</span><br><span class="line">            self.optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">td_loss_backprop</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        transitions = self.replay_mem.sample(self.batch_size)</span><br><span class="line">        batch = Transition(*<span class="hljs-built_in">zip</span>(*transitions))</span><br><span class="line"></span><br><span class="line">        state = Variable(FloatTensor(np.float32(batch.state))).to(self.device)</span><br><span class="line">        action = Variable(LongTensor(batch.action)).to(self.device)</span><br><span class="line">        reward = Variable(FloatTensor(batch.reward)).to(self.device)</span><br><span class="line">        next_state = Variable(FloatTensor(np.float32(batch.next_state))).to(self.device)</span><br><span class="line">        done = Variable(FloatTensor(batch.done)).to(self.device)</span><br><span class="line"></span><br><span class="line">        q_values = self.model(state)</span><br><span class="line">        next_q_values = self.target_net(next_state)</span><br><span class="line"></span><br><span class="line">        q_value = q_values.gather(<span class="hljs-number">1</span>, action.unsqueeze(-<span class="hljs-number">1</span>)).squeeze(-<span class="hljs-number">1</span>)</span><br><span class="line">        next_q_value = next_q_values.<span class="hljs-built_in">max</span>(<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]</span><br><span class="line">        expected_q_value = reward + self.gamma * next_q_value * (<span class="hljs-number">1</span> - done)</span><br><span class="line"></span><br><span class="line">        loss = (q_value - expected_q_value.detach()).<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>)</span><br><span class="line">        loss = loss.mean()</span><br><span class="line">        loss.backward()</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="外层-training-代码">外层 Training 代码</h2>
+<p>最后是外层调用代码，基本和以前文章一样。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">env, args, agent</span>):</span></span><br><span class="line">    <span class="hljs-keyword">for</span> episode_idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(args.num_episodes):</span><br><span class="line">        episode_reward = <span class="hljs-number">0.0</span></span><br><span class="line">        state = env.reset()</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            action = agent.act(state, episode_idx)</span><br><span class="line">            <span class="hljs-keyword">if</span> args.render:</span><br><span class="line">                env.render()</span><br><span class="line">            next_state, reward, done, stats = env.step(action)</span><br><span class="line">            agent.process(episode_idx, state, action, reward, next_state, done)</span><br><span class="line">            state = next_state</span><br><span class="line">            episode_reward += reward</span><br><span class="line">            <span class="hljs-keyword">if</span> done:</span><br><span class="line">                <span class="hljs-built_in">print</span>(<span class="hljs-string">f'<span class="hljs-subst">{episode_idx}</span>: <span class="hljs-subst">{episode_reward}</span>'</span>)</span><br><span class="line">                <span class="hljs-keyword">break</span></span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Deep-Learning/">#Deep Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/PyTorch/">#PyTorch</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/DQN/">#DQN</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/rl-policy-gradient/">深度强化学习之：Policy Gradient Theorem 一些理解</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/tsp-4-search/">TSP问题从DP算法到深度学习4：概率最大状态序列算法</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/rl-dqn-mario/">https://blog.myencyclopedia.top/zh/2020/rl-dqn-mario/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/rl-dqn-mario/">https://myencyclopedia.github.io/zh/2020/rl-dqn-mario/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/rl-dqn-mario/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/rl-dqn-mario/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>解读深度强化学习基石论文：函数近似的策略梯度方法 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/paper-rl-pg-sutton-1999/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="导读：这篇式1999 年Richard Sutton 在强化学习领域中的经典论文，论文证明了策略梯度定理和在用函数近似 Q 值时策略梯度定理依然成立，本文奠定了后续以深度强化学习策略梯度方法的基石。理解熟悉本论文对 Policy Gradient，Actor Critic 方法有很好的指导意义。 论文分成四部分。第一部分指出策略梯度在两种期望回报定义下都成立（定理一）。第二部分提出，如果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解读深度强化学习基石论文：函数近似的策略梯度方法">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="导读：这篇式1999 年Richard Sutton 在强化学习领域中的经典论文，论文证明了策略梯度定理和在用函数近似 Q 值时策略梯度定理依然成立，本文奠定了后续以深度强化学习策略梯度方法的基石。理解熟悉本论文对 Policy Gradient，Actor Critic 方法有很好的指导意义。 论文分成四部分。第一部分指出策略梯度在两种期望回报定义下都成立（定理一）。第二部分提出，如果">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/0-paper-title.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-average-reward-rou.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-average-reward-d.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-average-reward-q.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-start-state-rou.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-start-state-q.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-start-state-d.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-pg-theorem.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-sum-a.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/1-rt.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/2-dw.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/2-(3).png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/2-pg-func-approx-theorem.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/3-pi.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/3-deriv.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/3-fw.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/3-fw-mean.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/3-a-pi.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-bound.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-alpha.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-wk.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-theta.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-converge.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-avg-1.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-avg-2.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-avg-3.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-avg-4.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-avg-5.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-avg-6.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-avg-7.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-start-state-1.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-start-state-2.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-start-state-3.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-start-state-4.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-start-state-5.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-start-state-6.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/5-start-state-7.png">
+<meta property="article:published_time" content="2020-12-11T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:17.962Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta property="article:tag" content="Paper Dive">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/0-paper-title.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#策略梯度定理">1&nbsp;&nbsp;<b>1. 策略梯度定理</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#a.-平均reward定义">1.1&nbsp;&nbsp;A. 平均reward定义</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b.-开始状态定义">1.2&nbsp;&nbsp;B. 开始状态定义</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#策略梯度定理-1">1.3&nbsp;&nbsp;策略梯度定理</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#函数近似的策略梯度">2&nbsp;&nbsp;<b>2. 函数近似的策略梯度</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#一个应用示例">3&nbsp;&nbsp;<b>3. 一个应用示例</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#函数近似的策略梯度收敛性证明">4&nbsp;&nbsp;<b>4.
+函数近似的策略梯度收敛性证明</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#策略梯度定理的两种情况下的证明">5&nbsp;&nbsp;<b>5.
+策略梯度定理的两种情况下的证明</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#a.-平均reward-定义下的证明">5.1&nbsp;&nbsp;A. 平均reward 定义下的证明</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b.-start-state-定义下的证明">5.2&nbsp;&nbsp;B. Start-state 定义下的证明</a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E5%AE%9A%E7%90%86"><span class="toc-text">1. 策略梯度定理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a.-%E5%B9%B3%E5%9D%87reward%E5%AE%9A%E4%B9%89"><span class="toc-text">A. 平均reward定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b.-%E5%BC%80%E5%A7%8B%E7%8A%B6%E6%80%81%E5%AE%9A%E4%B9%89"><span class="toc-text">B. 开始状态定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E5%AE%9A%E7%90%86-1"><span class="toc-text">策略梯度定理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E8%BF%91%E4%BC%BC%E7%9A%84%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6"><span class="toc-text">2. 函数近似的策略梯度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="toc-text">3. 一个应用示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E8%BF%91%E4%BC%BC%E7%9A%84%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E6%94%B6%E6%95%9B%E6%80%A7%E8%AF%81%E6%98%8E"><span class="toc-text">4.
+函数近似的策略梯度收敛性证明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E5%AE%9A%E7%90%86%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%83%85%E5%86%B5%E4%B8%8B%E7%9A%84%E8%AF%81%E6%98%8E"><span class="toc-text">5.
+策略梯度定理的两种情况下的证明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a.-%E5%B9%B3%E5%9D%87reward-%E5%AE%9A%E4%B9%89%E4%B8%8B%E7%9A%84%E8%AF%81%E6%98%8E"><span class="toc-text">A. 平均reward 定义下的证明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b.-start-state-%E5%AE%9A%E4%B9%89%E4%B8%8B%E7%9A%84%E8%AF%81%E6%98%8E"><span class="toc-text">B. Start-state 定义下的证明</span></a></li></ol></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            解读深度强化学习基石论文：函数近似的策略梯度方法
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-12-11T18:45:01.000Z" itemprop="datePublished">12月 12 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            12 分钟 读完 (约 1769 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/0-paper-title.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>导读：这篇式1999 年Richard Sutton
+在强化学习领域中的经典论文，论文证明了策略梯度定理和在用函数近似 Q
+值时策略梯度定理依然成立，本文奠定了后续以深度强化学习策略梯度方法的基石。理解熟悉本论文对
+Policy Gradient，Actor Critic 方法有很好的指导意义。</p>
+<p>论文分成四部分。第一部分指出策略梯度在两种期望回报定义下都成立（定理一）。第二部分提出，如果
+<span class="math inline">\(Q^{\pi}\)</span> 被函数 <span class="math inline">\(f_w\)</span>
+近似时且满足兼容（compatible）条件，以 <span class="math inline">\(f_w\)</span> 替换策略梯度中的 <span class="math inline">\(Q^{\pi}\)</span>公式也成立（定理二）。第三部分举Gibbs分布的策略为例，如何应用
+<span class="math inline">\(Q^{\pi}\)</span>近似函数来实现策略梯度算法。第四部分证明了近似函数的策略梯度迭代法一定能收敛到局部最优解。附录部分证明了两种定义下的策略梯度定理。</p>
+<h2 id="策略梯度定理">1. 策略梯度定理</h2>
+<p>对于Agent和环境而言，可以分成episode和non-episode，后者的时间步骤可以趋近于无穷大，但一般都可以适用两种期望回报定义。一种是单步平均reward
+，另一种是指定唯一开始状态并对trajectory求 <span class="math inline">\(\gamma\)</span>-discounted
+之和，称为开始状态定义。两种定义都考虑到了reward的sum会趋近于无穷大，通过不同的方式降低了此问题的概率。</p>
+<h3 id="a.-平均reward定义">A. 平均reward定义</h3>
+<p>目标函数 <span class="math inline">\(\rho(\pi)\)</span>
+定义成单步的平均reward，这种情况下等价于稳定状态分布下期望值。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-average-reward-rou.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>稳定状态分布定义成无限次数后状态的分布。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-average-reward-d.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>此时，<span class="math inline">\(Q^{\pi}\)</span>
+定义为无限步的reward sum 减去累积的单步平均 reward <span class="math inline">\(\rho(\pi)\)</span>，这里减去<span class="math inline">\(\rho(\pi)\)</span>是为了一定程度防止 <span class="math inline">\(Q^{\pi}\)</span>没有上界。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-average-reward-q.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="b.-开始状态定义">B. 开始状态定义</h3>
+<p>在开始状态定义方式中，某指定状态<span class="math inline">\(s_0\)</span>作为起始状态，<span class="math inline">\(\rho(\pi)\)</span> 的定义为 trajectory
+的期望回报，注意由于时间步骤 t 趋近于无穷大，必须要乘以discount 系数
+<span class="math inline">\(\gamma &lt; 1\)</span>
+保证期望不会趋近无穷大。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-start-state-rou.png">
+<figcaption>
+</figcaption>
+</figure>
+<span class="math inline">\(Q^{\pi}\)</span> 也直接定义成 trajectory
+的期望回报。
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-start-state-q.png">
+<figcaption>
+</figcaption>
+</figure>
+<p><span class="math inline">\(d^{\pi}\)</span>
+依然为无限次数后状态的稳定分布。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-start-state-d.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="策略梯度定理-1">策略梯度定理</h3>
+<p>论文指出上述两种定义都满足策略梯度定理，即目标 <span class="math inline">\(\rho\)</span> 对于参数 <span class="math inline">\(\theta\)</span> 的偏导不依赖于 <span class="math inline">\(d^{\pi}\)</span> 对于 <span class="math inline">\(\theta\)</span> 偏导，仅取决</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-pg-theorem.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>关于策略梯度定理的一些综述，可以参考。</p>
+<p>论文中还提到策略梯度定理公式和经典的William
+REINFORCE算法之间的联系。REINFORCE算法即策略梯度的蒙特卡洛实现。</p>
+<p>联系如下：</p>
+<p>首先，根据策略梯度定理，如果状态 s 是通过 <span class="math inline">\(\pi\)</span> 采样得到，则下式是$$
+的无偏估计。注意，这里action的summation和 <span class="math inline">\(\pi\)</span> 是无关的。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-sum-a.png">
+<figcaption>
+</figcaption>
+</figure>
+在William REINFORCE算法中，采用<span class="math inline">\(R_t\)</span>
+作为 <span class="math inline">\(Q^{\pi}(s_t, a_t)\)</span>的近似，但是
+<span class="math inline">\(R_t\)</span> 取决于 on-policy <span class="math inline">\(\pi\)</span> 的动作分布，因此必须除掉 <span class="math inline">\(\pi(s_t, a_t)\)</span>项，去除引入<span class="math inline">\(R_t\)</span> 后导致oversample动作空间。
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/1-rt.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="函数近似的策略梯度">2. 函数近似的策略梯度</h2>
+<p>论文第二部分，进一步引入 <span class="math inline">\(Q_{\pi}\)</span>
+的近似函数 <span class="math inline">\(f_w\)</span>: $ $。</p>
+<p>如果我们有<span class="math inline">\(Q_{\pi}(s_t,
+a_t)\)</span>的无偏估计，例如 <span class="math inline">\(R_t\)</span>，很自然，可以让 <span class="math inline">\(\partial f_w \over \partial w\)</span> 通过最小化
+<span class="math inline">\(R_t\)</span> 和 <span class="math inline">\(f_w\)</span>之间的差距来计算。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/2-dw.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>当拟合过程收敛到局部最优时，策略梯度定理中右边项对于 <span class="math inline">\(w\)</span> 求导为0，可得(3)式。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/2-(3).png">
+<figcaption>
+</figcaption>
+</figure>
+<p>至此，引出策略梯度定理的延续，即定理2：当 <span class="math inline">\(f_w\)</span>
+满足(3)式同时满足(4)式（称为compatible条件时），可以用 <span class="math inline">\(f_w(s, a)\)</span>替换原策略梯度中的 <span class="math inline">\(Q_{\pi}(s,a)\)</span></p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/2-pg-func-approx-theorem.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="一个应用示例">3. 一个应用示例</h2>
+<p>假设一个策略用features的线性组合后的 Gibbs分布来生成，即：</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/3-pi.png">
+<figcaption>
+</figcaption>
+</figure>
+注意，<span class="math inline">\(\phi_{sa}\)</span> 和 <span class="math inline">\(\theta\)</span> 都是 <span class="math inline">\(l\)</span> 维的。 当 <span class="math inline">\(f_w\)</span> 满足compatible
+条件，由公式（4）可得<span class="math inline">\(\partial f_w \over
+\partial w\)</span>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/3-deriv.png">
+<figcaption>
+</figcaption>
+</figure>
+注意，<span class="math inline">\(\partial f_w \over \partial w\)</span>
+也是 <span class="math inline">\(l\)</span>维。<span class="math inline">\(f_w\)</span> 可以很自然的参数化为
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/3-fw.png">
+<figcaption>
+</figcaption>
+</figure>
+即 <span class="math inline">\(f_w\)</span> 和 策略 <span class="math inline">\(\pi\)</span> 一样是features的线性关系。当然 <span class="math inline">\(f_w\)</span> 还满足对于所有状态，在 <span class="math inline">\(\pi\)</span> 动作分布下均值为0。
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/3-fw-mean.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>上式和advantage 函数 <span class="math inline">\(A^{\pi}(s,
+a)\)</span> 定义一致，因此可以认为 <span class="math inline">\(f_w\)</span> 的意义是 <span class="math inline">\(A^{\pi}\)</span> 的近似。</p>
+<p><span class="math inline">\(A^{\pi}\)</span>具体定义如下</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/3-a-pi.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="函数近似的策略梯度收敛性证明">4.
+函数近似的策略梯度收敛性证明</h2>
+<p>这一部分证明了在满足一定条件后，<span class="math inline">\(\theta\)</span> 可以收敛到局部最优点。</p>
+<p>条件为</p>
+<ol type="1">
+<li>Compatible 条件，公式（4）</li>
+<li>任意两个 <span class="math inline">\(\partial \pi \over \partial
+\theta\)</span> 偏导是有限的，即</li>
+</ol>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-bound.png">
+<figcaption>
+</figcaption>
+</figure>
+<ol start="3" type="1">
+<li>步长数列满足如下条件</li>
+</ol>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-alpha.png">
+<figcaption>
+</figcaption>
+</figure>
+<ol start="4" type="1">
+<li><p>环境的 reward 是有限的</p>
+<p>此时，当 <span class="math inline">\(w_k\)</span> 和 <span class="math inline">\(\theta_k\)</span>
+按如下方式迭代一定能收敛到局部最优。</p></li>
+</ol>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-wk.png">
+<figcaption>
+</figcaption>
+</figure>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-theta.png">
+<figcaption>
+</figcaption>
+</figure>
+收敛到局部最优，即
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/4-theorem3-converge.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="策略梯度定理的两种情况下的证明">5.
+策略梯度定理的两种情况下的证明</h2>
+<p>下面简单分解策略梯度的证明步骤。</p>
+<h3 id="a.-平均reward-定义下的证明">A. 平均reward 定义下的证明</h3>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-avg-1.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>根据定义，将 <span class="math inline">\(\theta\)</span>
+导数放入求和号中，并分别对乘积中的每项求导。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-avg-2.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>将<span class="math inline">\(Q_{\pi}\)</span>的定义代入第二项 <span class="math inline">\(Q^{\pi}\)</span> 对 <span class="math inline">\(\theta\)</span> 求偏导中，引入环境reward 随机变量
+<span class="math inline">\(R^a_s\)</span>，环境dynamics <span class="math inline">\(P\)</span> 和 <span class="math inline">\(\rho(\pi)\)</span></p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-avg-3.png">
+<figcaption>
+</figcaption>
+</figure>
+<p><span class="math inline">\(\theta\)</span> 偏导进一步移入，<span class="math inline">\(R^a_s\)</span>， <span class="math inline">\(P\)</span> 不依赖于<span class="math inline">\(\theta\)</span>。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-avg-4.png">
+<figcaption>
+</figcaption>
+</figure>
+<p><span class="math inline">\(\rho(\pi)\)</span> 对于 <span class="math inline">\(\theta\)</span> 偏导整理到等式左边</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-avg-5.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>两边同时乘以 <span class="math inline">\(\sum d^{\pi}\)</span></p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-avg-6.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>由于 <span class="math inline">\(d^{\pi}\)</span> 是状态在 <span class="math inline">\(\pi\)</span> 下的平稳分布，<span class="math inline">\(\sum \pi \sum P\)</span> 项表示 agent 主观 <span class="math inline">\(\pi\)</span> 和环境客观 <span class="math inline">\(P\)</span>
+对于状态分布的影响，因此可以直接去除。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-avg-7.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>整理证得。</p>
+<h3 id="b.-start-state-定义下的证明">B. Start-state 定义下的证明</h3>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-start-state-1.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>根据定义，将 <span class="math inline">\(\theta\)</span>
+导数放入求和号中，并分别对乘积中的每项求导。</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-start-state-2.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>将<span class="math inline">\(Q_{\pi}\)</span>的定义代入第二项 <span class="math inline">\(Q^{\pi}\)</span> 对 <span class="math inline">\(\theta\)</span> 求偏导中，引入环境reward 随机变量
+<span class="math inline">\(R^a_s\)</span>，环境dynamics <span class="math inline">\(P\)</span></p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-start-state-3.png">
+<figcaption>
+</figcaption>
+</figure>
+<p><span class="math inline">\(\theta\)</span> 偏导进一步移入，<span class="math inline">\(R^a_s\)</span>， <span class="math inline">\(P\)</span> 不依赖于<span class="math inline">\(\theta\)</span>。注意，此式表示从状态 <span class="math inline">\(s\)</span> 出发一步之后的能到达的所有 <span class="math inline">\(s^{\prime}\)</span> ，将次式反复unroll <span class="math inline">\(V^{\pi}\)</span> 成 <span class="math inline">\(Q^{\pi}\)</span> 之后得到</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-start-state-4.png">
+<figcaption>
+</figcaption>
+</figure>
+<p><span class="math inline">\(\operatorname{Pr}(s \rightarrow x, k,
+\pi)\)</span> 表示 k 步后 状态 s 能到达的所有状态 x</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-start-state-5.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>根据定义，<span class="math inline">\(\rho =
+V^{\pi}(s_0)\)</span></p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-start-state-6.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>将 <span class="math inline">\(V^{\pi}(s_0)\)</span> 替换成unroll 成
+<span class="math inline">\(Q^{\pi}\)</span> 的表达式</p>
+<figure>
+<img src="/zh/2020/paper-rl-pg-sutton-1999/5-start-state-7.png">
+<figcaption>
+</figcaption>
+</figure>
+<p><span class="math inline">\(\operatorname{Pr}(s \rightarrow x, k,
+\pi)\)</span> 即 <span class="math inline">\(d^{\pi}\)</span></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Paper-Dive/">#Paper Dive</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/paper-rl-trpo-2017/">解读TRPO论文，一种深度强化学习和传统优化方法结合的方法</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/rl-policy-gradient/">深度强化学习之：Policy Gradient Theorem 一些理解</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/paper-rl-pg-sutton-1999/">https://blog.myencyclopedia.top/zh/2020/paper-rl-pg-sutton-1999/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/">https://myencyclopedia.github.io/zh/2020/paper-rl-pg-sutton-1999/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/paper-rl-pg-sutton-1999/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/paper-rl-pg-sutton-1999/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

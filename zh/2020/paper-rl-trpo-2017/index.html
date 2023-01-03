@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>解读TRPO论文，一种深度强化学习和传统优化方法结合的方法 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/paper-rl-trpo-2017/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="导读：本论文由Berkeley 的几位大神于2015年发表于 JMLR（Journal of Machine Learning Research）。深度强化学习算法例如DQN或者PG（Policy Gradient）都无法避免训练不稳定的问题：在训练过程中效果容易退化并且很难恢复。针对这个通病，TRPO采用了传统优化算法中的trust region方法，以保证每一步迭代能够获得效果提升，直至">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解读TRPO论文，一种深度强化学习和传统优化方法结合的方法">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="导读：本论文由Berkeley 的几位大神于2015年发表于 JMLR（Journal of Machine Learning Research）。深度强化学习算法例如DQN或者PG（Policy Gradient）都无法避免训练不稳定的问题：在训练过程中效果容易退化并且很难恢复。针对这个通病，TRPO采用了传统优化算法中的trust region方法，以保证每一步迭代能够获得效果提升，直至">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/0-paper-title.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-1.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-2.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-3.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-kakade.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-kakade-form2.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-kakade-rho.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-local-first-deriv.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-local.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-mix-policy-update.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/2-mix-policy-bound.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/3-tv.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/3-tv-max.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/3-theorem1.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/3-Dtv-Dkl.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/3-theorem1-Dkl.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/3-alg1.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/4-true-max.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/4-trust-region-constraint.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/4-kl-exp.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/4-final-optimization.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/5-13.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/5-IS.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/5-14.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/5-single-path.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/5-vine.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/4-final-optimization.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/7-17.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/7-17-update.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/7-18.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/7-A-matrix.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/8-mujoco.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/8-atari.png">
+<meta property="article:published_time" content="2020-12-24T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:17.966Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta property="article:tag" content="Paper Dive">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/0-paper-title.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#论文框架">1&nbsp;&nbsp;<b>0. 论文框架</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#介绍">2&nbsp;&nbsp;<b>1. 介绍</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#已有理论基础">3&nbsp;&nbsp;<b>2. 已有理论基础</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#扩展到随机策略">4&nbsp;&nbsp;<b>3. 扩展到随机策略</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#trust-region-policy-optimization">5&nbsp;&nbsp;<b>4. Trust Region Policy
+Optimization</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#用采样方法来trust-region约束优化">6&nbsp;&nbsp;<b>5. 用采样方法来Trust
+Region约束优化</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#single-path采样">6.1&nbsp;&nbsp;5.1 Single path采样</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#vine-采样">6.2&nbsp;&nbsp;5.2 Vine 采样</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#转换成具体优化问题">7&nbsp;&nbsp;<b>6. 转换成具体优化问题</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#和已有理论的联系">8&nbsp;&nbsp;<b>7. 和已有理论的联系</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#简化成-natural-policy-gradient">8.1&nbsp;&nbsp;7.1 简化成 Natural Policy
+Gradient</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#简化成-policy-gradient">8.2&nbsp;&nbsp;7.2 简化成 Policy Gradient</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#近似数值解法">8.3&nbsp;&nbsp;7.3 近似数值解法</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#试验结果">9&nbsp;&nbsp;<b>8. 试验结果</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E6%A1%86%E6%9E%B6"><span class="toc-text">0. 论文框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">1. 介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%B2%E6%9C%89%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80"><span class="toc-text">2. 已有理论基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E5%88%B0%E9%9A%8F%E6%9C%BA%E7%AD%96%E7%95%A5"><span class="toc-text">3. 扩展到随机策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#trust-region-policy-optimization"><span class="toc-text">4. Trust Region Policy
+Optimization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E6%9D%A5trust-region%E7%BA%A6%E6%9D%9F%E4%BC%98%E5%8C%96"><span class="toc-text">5. 用采样方法来Trust
+Region约束优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#single-path%E9%87%87%E6%A0%B7"><span class="toc-text">5.1 Single path采样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vine-%E9%87%87%E6%A0%B7"><span class="toc-text">5.2 Vine 采样</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2%E6%88%90%E5%85%B7%E4%BD%93%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98"><span class="toc-text">6. 转换成具体优化问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C%E5%B7%B2%E6%9C%89%E7%90%86%E8%AE%BA%E7%9A%84%E8%81%94%E7%B3%BB"><span class="toc-text">7. 和已有理论的联系</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%8C%96%E6%88%90-natural-policy-gradient"><span class="toc-text">7.1 简化成 Natural Policy
+Gradient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%8C%96%E6%88%90-policy-gradient"><span class="toc-text">7.2 简化成 Policy Gradient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%91%E4%BC%BC%E6%95%B0%E5%80%BC%E8%A7%A3%E6%B3%95"><span class="toc-text">7.3 近似数值解法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%95%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="toc-text">8. 试验结果</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            解读TRPO论文，一种深度强化学习和传统优化方法结合的方法
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-12-24T18:45:01.000Z" itemprop="datePublished">12月 25 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            24 分钟 读完 (约 3616 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><figure>
+<img src="/zh/2020/paper-rl-trpo-2017/0-paper-title.png">
+</figure>
+<p>导读：本论文由Berkeley 的几位大神于2015年发表于 JMLR（Journal of
+Machine Learning Research）。深度强化学习算法例如DQN或者PG（Policy
+Gradient）都无法避免训练不稳定的问题：在训练过程中效果容易退化并且很难恢复。针对这个通病，TRPO采用了传统优化算法中的trust
+region方法，以保证每一步迭代能够获得效果提升，直至收敛到局部最优点。</p>
+<p>本篇论文涉及到的知识点比较多，不仅建立在强化学习领域经典论文的结论：Kakade
+&amp; Langford 于2002 年发表的 Approximately Optimal Approximate
+Reinforcement Learning
+关于优化目标的近似目标和重要性采样，也涉及到传统优化方法 trust region
+的建模和其具体的矩阵近似数值算法。读懂本论文，对于深度强化学习及其优化方法可以有比较深入的理解。本论文附录的证明部分由于更为深奥和冗长，在本文中不做具体讲解，但是也建议大家能够仔细研读。</p>
+<p>阅读本论文需要注意的是，这里解读的版本是arxiv的版本，这个版本带有附录，不同于
+JMLR的版本的是，arxiv版本中用reward函数而后者用cost函数，优化方向相反。</p>
+<p>arxiv 下载链接为 https://arxiv.org/pdf/1502.05477.pdf</p>
+<h2 id="论文框架">0. 论文框架</h2>
+<p>本论文解决的目标是希望每次迭代参数能保证提升效果，具体想法是利用优化领域的
+trust
+region方法（中文可以翻译成置信域方法或信赖域方法），通过参数在trust
+region范围中去找到一定能提升的下一次迭代。</p>
+<p>本论文框架如下</p>
+<ol type="1">
+<li><p>首先，引入Kakade &amp; Langford 论文 Approximately Optimal
+Approximate Reinforcement Learning
+中关于近似优化目标的结论。（论文第二部分）</p></li>
+<li><p>基于 Kakade 论文中使用mixture
+policy保证每一步效果提升的方法，扩展到一般随机策略，引入策略分布的total
+variation divergence作为约束。（论文第三部分）</p></li>
+<li><p>将total variation divergence约束替换成平均 KL divergence
+约束，便于使用蒙特卡洛方法通过采样来生成每一步的具体优化问题。（论文第四，五部分）</p></li>
+<li><p>给出解决优化问题的具体算法，将优化目标用first
+order来近似，约束项用second order 来近似，由于second
+order涉及到构造Hessian matrix，计算量巨大，论文给出了 conjugate gradient
++ Fisher information matrix的近似快速实现方案。（论文第六部分）</p></li>
+<li><p>从理论角度指出，Kakade 在2002年提出的方法natrual policy gradient
+和经典的policy gradient 都是TRPO的特别形式。（论文第七部分）</p></li>
+<li><p>评价TRPO在两种强化学习模式下的最终效果，一种是MuJoCo模拟器中能得到真实状态的模式，一种是Atari游戏环境，即观察到的屏幕像素可以信息完全地表达潜在真实状态的模式。（论文第八部分）</p></li>
+</ol>
+<p>本文下面的小结序号和论文小结序号相同，便于对照查阅。</p>
+<h2 id="介绍">1. 介绍</h2>
+<p>TRPO 第一次证明了最小化某种 surrogate
+目标函数且采用non-trivial的步长，一定可以保证策略提升。进一步将此
+surrogate 目标函数转换成trust
+region约束下的优化问题。TRPO是一种on-policy
+的算法，因为每一步迭代，需要在新的策略下通过采样数据来构建具体优化问题。</p>
+<h2 id="已有理论基础">2. 已有理论基础</h2>
+<p>第二部分主要回顾了 Kakade &amp; Langford 于2002 年的论文
+Approximately Optimal Approximate Reinforcement Learning
+中的一系列结论。</p>
+<p>先来定义几个重要概念的数学定义</p>
+<p><span class="math inline">\(\eta(\pi)\)</span> 是策略 <span class="math inline">\(\pi\)</span> 的目标，即discounted reward
+和的期望。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-1.png">
+</figure>
+<ol start="2" type="1">
+<li>然后是策略的Q值和V值</li>
+</ol>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-2.png">
+</figure>
+<ol start="3" type="1">
+<li>最后是策略的advantage函数</li>
+</ol>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-3.png">
+</figure>
+<p>接着，开始引入 Kakade &amp; Langford 论文结论，即下式（公式1）。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-kakade.png">
+</figure>
+<p>公式1表明，下一次迭代策略的目标可以分解成现有策略的目标 <span class="math inline">\(\eta(\pi)\)</span> 和现有advantage
+函数在新策略trajectory分布下的期望。</p>
+<p>公式1可以很容易从trajectory分布转换成新策略在状态的访问频率，即公式2</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-kakade-form2.png">
+</figure>
+<p>状态的访问频率或稳定状态分布定义成</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-kakade-rho.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>注意到公式2中状态的期望依然依赖于新策略 <span class="math inline">\(\rho_{\widetilde\pi}\)</span>
+的稳定状态分布，不方便实现。原因如下，期望形式有利于采样来解决问题，但是由于采样数据源于
+on-policy <span class="math inline">\(\pi\)</span> 而非 <span class="math inline">\({\widetilde\pi}\)</span>
+，因此无法直接采样未知的策略 <span class="math inline">\({\widetilde\pi}\)</span>。</p>
+<p>幸好，Kakade 论文中证明了，可以用 <span class="math inline">\(\rho_{\pi}\)</span> 的代替 <span class="math inline">\(\rho_{\widetilde\pi}\)</span>
+并且证明了这种代替下的近似目标函数 <span class="math inline">\(L_{\pi}\)</span> 是原来函数的一阶近似</p>
+<p><span class="math display">\[
+L_{\pi}(\widetilde\pi) \approx \eta(\widetilde\pi)
+\]</span></p>
+<p>即满足</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-local-first-deriv.png">
+<figcaption>
+</figcaption>
+</figure>
+<p><span class="math inline">\(L_{\pi}\)</span> 具体定义表达式为</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-local.png">
+<figcaption>
+</figcaption>
+</figure>
+<p><span class="math inline">\(L_{\pi}(\widetilde\pi)\)</span>
+是一阶近似意味着在小范围区域中一定是可以得到提升的，但是范围是多大，是否能保证
+<span class="math inline">\(\eta\)</span>
+的提升？Kakade的论文中不仅给出了通过mix新老策略的提升方式，还给出了这个方式对原目标
+<span class="math inline">\(\eta\)</span> 较 <span class="math inline">\(L_{\pi}(\widetilde\pi)\)</span> 的提升下届。</p>
+<p>策略更新规则如下</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-mix-policy-update.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>公式6为具体提升下届为</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/2-mix-policy-bound.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="扩展到随机策略">3. 扩展到随机策略</h2>
+<p>论文的这一部分将Kakade的mix policy update
+扩展到一般的随机策略，同时依然保证每次迭代能得到目标提升。</p>
+<p>首先，每次策略迭代必须不能和现有策略变化太大，因此，引入分布间常见的TV
+divergence，即 total variation divergence。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/3-tv.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>有了两个分布距离的定义，就可以定义两个策略的距离。离散状态下，一个策略是状态到动作分布的
+map 或者 dict，因此，可以定义两个策略的距离为所有状态中最大的动作分布的
+<span class="math inline">\(D_{TV}\)</span>，即</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/3-tv-max.png">
+<figcaption>
+</figcaption>
+</figure>
+至此，可以引出定理一：在一般随机策略下，Kakade
+的surrogate函数较原目标的提升下届依然成立，即公式8在新的<span class="math inline">\(\alpha\)</span>定义下可以从公示6推导而来。
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/3-theorem1.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>进一步将 TV divergence 转换成 KL divergence，转换成KL divergence
+的目的是为了后续使用传统且成熟的 trust region 蒙特卡洛方法和 conjugate
+gradient 的优化近似解法。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/3-Dtv-Dkl.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>由于上面两种距离的大小关系，可以推导出用KL divergence表示的 <span class="math inline">\(\eta\)</span> 较 <span class="math inline">\(L_{\pi}(\widetilde\pi)\)</span> 的提升下届</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/3-theorem1-Dkl.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>根据公式9，就可以形成初步的概念上的算法一，通过每一步形成无约束优化问题，同时保证每次迭代的
+<span class="math inline">\(\pi_i\)</span> 对应的 <span class="math inline">\(\eta\)</span> 是递增的。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/3-alg1.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="trust-region-policy-optimization">4. Trust Region Policy
+Optimization</h2>
+<p>看到这里已经不容易了，尽管算法一给出了一个解决方案，但是本论文的主角TRPO
+还未登场。TRPO算法的作用依然是近似！</p>
+<p>算法一对于下面的目标函数做优化，即每次找到下一个 <span class="math inline">\(\theta_i\)</span> 最大化下式，<span class="math inline">\(\eta\)</span> 每一步一定能得到提升。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/4-true-max.png">
+<figcaption>
+</figcaption>
+</figure>
+问题是在实践中，惩罚系数 <span class="math inline">\(C\)</span>
+会导致步长非常小，一种稳定的使用较大步长的方法是将惩罚项变成约束项，即：
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/4-trust-region-constraint.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>将 <span class="math inline">\(D^{max}_{KL}\)</span>
+放入约束项中符合trust region 这种传统优化解法。</p>
+<p>关于 <span class="math inline">\(D^{max}_{KL}\)</span>
+约束，再补充两点</p>
+<ol type="1">
+<li><p>其定义是两个策略中所有状态中最大的动作分布的 <span class="math inline">\(D_{TV}\)</span>
+，因此它约束了所有状态下新老策略动作分布的KL散度，也就意味着有和状态数目相同数量的约束项，海量的约束项导致算法很难应用到实际中。</p></li>
+<li><p>约束项的 trust region 不是参数 <span class="math inline">\(\theta\)</span>
+的空间，而是其KL散度的空间。</p></li>
+</ol>
+<p>基于第一点，再次使用近似法，在约束项中用KL期望来代替各个状态下的KL散度，权重为on-policy
+策略的分布 <span class="math inline">\(\rho(\theta_{old})\)</span></p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/4-kl-exp.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>最终，得到TRPO在实际中的优化目标（12式）：</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/4-final-optimization.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="用采样方法来trust-region约束优化">5. 用采样方法来Trust
+Region约束优化</h2>
+<p>论文第五部分，将TRPO优化目标12式改写成期望形式，引入两种蒙特卡洛方法
+single path 和 vine 来采样。</p>
+<p>具体来说，<span class="math inline">\(L_{\theta_{old}}\)</span>
+由两项组成 <span class="math display">\[
+L_{\theta_{old}} = \eta(\theta_{old}) + \sum_s
+\rho_{\theta_{old}}(s)\sum_a {\pi_{\theta}}(a |s) A_{\theta_{old}}(s,a)
+\]</span></p>
+<p>第一项是常量，只需优化第二项，即优化问题等价为13式</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/5-13.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>随后，为了可以适用非 on-policy <span class="math inline">\(\pi_{\theta_{old}}\)</span>
+的动作分布来任意采样，引入采样的动作分布 <span class="math inline">\(q(a|s)\)</span>，将13式中的 <span class="math inline">\(\sum_a\)</span>
+部分通过重要性采样改成以下形式：</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/5-IS.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>再将13式中的 <span class="math inline">\(\sum_s \rho(s)\)</span>
+改成期望形式 <span class="math inline">\(\mathbb{E}_{s \sim
+\rho}\)</span> ，并将 <span class="math inline">\(A\)</span> 改成 <span class="math inline">\(Q\)</span> 值，得14式。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/5-14.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>至此，我们得到trust
+region优化的期望形式：优化目标中期望的状态空间是基于 on-policy <span class="math inline">\(\pi_{\theta_{old}}\)</span>，动作空间是基于任意采样分布
+<span class="math inline">\(q(a|s)\)</span>，优化约束中的期望是基于
+on-policy <span class="math inline">\(\pi_{\theta_{old}}\)</span>。</p>
+<h3 id="single-path采样">5.1 Single path采样</h3>
+<p>根据14式，single path
+是最基本的的蒙特卡洛采样方法，和REINFORCE算法一样， 通过on-policy <span class="math inline">\(\pi_{\theta_{old}}\)</span>生成采样的
+trajectory数据： <span class="math inline">\(s_0, a_0, s_1, a_1, ...,
+a_{T-1}, s_{T}\)</span>，然后代入14式。注意，此时 <span class="math inline">\(q(a|s) =
+\pi_{\theta_{old}}(a|s)\)</span>，即用现有策略的动作分布直接代替采样分布。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/5-single-path.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="vine-采样">5.2 Vine 采样</h3>
+<p>虽然single path方法简单明了，但是有着online monte
+carlo方法固有的缺陷，即variance较大。Vine方法通过在一个状态多次采样来改善此缺陷。Vine的翻译是藤，寓意从一个状态多次出发来采样，如下图，<span class="math inline">\(s_n\)</span>
+状态下采样多个rollouts，很像植物的藤长出多分叉。当然，vine方法要求环境能restart
+到某一状态，比如游戏环境通过save load返回先前的状态。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/5-vine.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>具体来说，vine 方法首先通过生成多个on-policy
+的trajectories来确定一个状态集合 <span class="math inline">\(s_1, s_2,
+..., s_N\)</span>。对于状态集合的每一个状态 <span class="math inline">\(s_n\)</span> 采样K个动作，服从 $ a_{n, k} q(s_{n})
+$ 。接着，对于每一个 <span class="math inline">\((s_n, a_{n,k})\)</span>
+再去生成一次 rollout 来估计 <span class="math inline">\(\hat{Q}_{\theta_{i}}\left(s_{n}, a_{n,
+k}\right)\)</span> 。试验证明，在连续动作空间问题中，<span class="math inline">\(q\left(\cdot \mid s_{n}\right)\)</span> 直接使用
+on-policy
+可以取得不错效果，在离散空间问题中，使用uniform分布效果更好。</p>
+<h2 id="转换成具体优化问题">6. 转换成具体优化问题</h2>
+<p>再回顾一下现在的进度，12式定义了优化目标，约束项是KL
+divergence空间的trust region
+形式。14式改写成了等价的期望形式，通过两种蒙特卡洛方法生成 state-action
+数据集，可以代入14式得到每一步的具体数值的优化问题。论文这一部分简单叙述了如何高效但近似的解此类问题，详细的一些步骤在附录中阐述。我们把相关解读都放在下一节。</p>
+<h2 id="和已有理论的联系">7. 和已有理论的联系</h2>
+<h3 id="简化成-natural-policy-gradient">7.1 简化成 Natural Policy
+Gradient</h3>
+<p>再回到12式，即约束项是KL divergence空间的trust region 形式</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/4-final-optimization.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>对于这种形式的优化问题，一般的做法是通过对优化目标做一阶函数近似，即
+<span class="math display">\[
+L_{\theta_{old}}(\theta) \approx
+L_{\theta_{old}}\left(\theta_{old}\right)+g^{T}\left(\theta-\theta_{old}\right)
+\]</span></p>
+<p><span class="math display">\[
+\left.g \doteq \nabla_{\theta}
+L_{\theta_{old}}(\theta)\right|_{\theta_{old}}
+\]</span></p>
+<p>并对约束函数做二阶函数近似，因为约束函数在 <span class="math inline">\(\theta_{old}\)</span> 点取到极值，因此一阶导为0。
+<span class="math display">\[
+\bar{D}_{K L}\left(\theta \| \theta_{old}\right) \approx
+\frac{1}{2}\left(\theta-\theta_{old}\right)^{T}
+H\left(\theta-\theta_{old}\right)
+\]</span></p>
+<p><span class="math display">\[
+\left.H \doteq \nabla_{\theta}^{2} \bar{D}_{K L}\left(\theta \|
+\theta_{old}\right)\right|_{\theta_{old}}
+\]</span></p>
+<p>12式的优化目标可以转换成17式</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/7-17.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>对应参数迭代更新公式如下</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/7-17-update.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>这个方法便是Kakade在2002年发表的 natrual policy gradient 论文。</p>
+<h3 id="简化成-policy-gradient">7.2 简化成 Policy Gradient</h3>
+<p>注意，<span class="math inline">\(L_{\theta_{old}}\)</span>的一阶近似的梯度 <span class="math display">\[
+\left.\nabla_{\theta} L_{\theta_{\text {old
+}}}(\theta)\right|_{\theta=\theta_{\text {old }}}
+\cdot\left(\theta-\theta_{\text {old }}\right)
+\]</span></p>
+<p>即PG定理 <span class="math display">\[
+\frac{\partial \rho}{\partial \theta}=\sum_{s} d^{\pi}(s) \sum_{a}
+\frac{\partial \pi(s, a)}{\partial \theta} Q^{\pi}(s, a)
+\]</span></p>
+因此，PG定理等价于<span class="math inline">\(L_{\theta_{old}}\)</span>的一阶近似的梯度在<span class="math inline">\(\theta\)</span> 空间 <span class="math inline">\(l_2\)</span> 约束下的优化问题，即18式
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/7-18.png">
+<figcaption>
+</figcaption>
+</figure>
+<h3 id="近似数值解法">7.3 近似数值解法</h3>
+<p>这里简单描述关于17式及其参数更新规则中的大矩阵数值计算近似方式。</p>
+<p>$ {D}_{}^{} $ 二阶近似中的 <span class="math inline">\(A\)</span> 是
+Hessian 方形矩阵，维度为 <span class="math inline">\(\theta\)</span>
+个数的平方。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/7-A-matrix.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>直接构建 <span class="math inline">\(A\)</span> 矩阵或者其逆矩阵
+<span class="math inline">\(A^{-1}\)</span>都是计算量巨大的， 注<span class="math inline">\(A^{-1}\)</span>出现在natural policy update <span class="math inline">\(\theta\)</span> 更新公式中，<span class="math inline">\(A^{-1} \nabla_{\theta} L(\theta)\)</span> 。</p>
+<p>一种方法是通过构建Fisher Information Matrix，引入期望形式便于采样
+<span class="math display">\[
+\mathbf{A}=E_{\pi_{\theta}}\left[\nabla_{\theta} \log
+\pi_{\theta}(\mathbf{a} \mid \mathbf{s}) \nabla_{\theta} \log
+\pi_{\theta}(\mathbf{a} \mid \mathbf{s})^{T}\right]
+\]</span> 另一种方式是使用conjugate gradient
+方法，通过矩阵乘以向量快速计算法迭代逼近 <span class="math inline">\(A^{-1} \nabla_{\theta} L(\theta)\)</span>。</p>
+<h2 id="试验结果">8. 试验结果</h2>
+在两种强化学习模式下，比较TRPO和其他模型的效果。模式一是在MuJoCo模拟器中，这种环境下能得到真实状态的情况。
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/8-mujoco.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>另一种模式是完全信息下的Atari游戏环境，这种环境下观察到的屏幕像素可以信息完全地表达潜在真实状态。</p>
+<figure>
+<img src="/zh/2020/paper-rl-trpo-2017/8-atari.png">
+<figcaption>
+</figcaption>
+</figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Paper-Dive/">#Paper Dive</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2021/distribution-poisson/">从零构建统计随机变量生成器之泊松分布</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/paper-rl-pg-sutton-1999/">解读深度强化学习基石论文：函数近似的策略梯度方法</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/paper-rl-trpo-2017/">https://blog.myencyclopedia.top/zh/2020/paper-rl-trpo-2017/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/">https://myencyclopedia.github.io/zh/2020/paper-rl-trpo-2017/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/paper-rl-trpo-2017/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/paper-rl-trpo-2017/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Leetcode 679 24 Game 的 Python 函数式实现 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/leetcode-679-24-game/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="Leetcode 679 24 Game (Hard) 先来介绍一下24点游戏题目，大家一定都玩过，就是给定4个牌面数字，用加减乘除计算24点。 本篇会用两种偏函数式的 Python 3解法来AC 24 Game。 Leetcode 679 24 Game (Hard) &gt; You have 4 cards each containing a number from 1 to 9. You">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Leetcode 679 24 Game 的 Python 函数式实现">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/leetcode-679-24-game/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="Leetcode 679 24 Game (Hard) 先来介绍一下24点游戏题目，大家一定都玩过，就是给定4个牌面数字，用加减乘除计算24点。 本篇会用两种偏函数式的 Python 3解法来AC 24 Game。 Leetcode 679 24 Game (Hard) &gt; You have 4 cards each containing a number from 1 to 9. You">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/leetcode-679-24-game/lc-17.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/leetcode-679-24-game/iter_trees.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/leetcode-679-24-game/dfs.png">
+<meta property="article:published_time" content="2020-09-09T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:17.958Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Leetcode">
+<meta property="article:tag" content="Functional Programming">
+<meta property="article:tag" content="DFS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/leetcode-679-24-game/lc-17.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#leetcode-679-24-game-hard">1&nbsp;&nbsp;<b>Leetcode 679 24 Game (Hard)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#itertools.permutations">2&nbsp;&nbsp;<b>itertools.permutations</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#itertools.combinations">3&nbsp;&nbsp;<b>itertools.combinations</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#itertools.product">4&nbsp;&nbsp;<b>itertools.product</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#yield-示例">5&nbsp;&nbsp;<b>yield 示例</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#yield-from-示例">6&nbsp;&nbsp;<b>yield from 示例</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#点问题之函数式枚举解法">7&nbsp;&nbsp;<b>24 点问题之函数式枚举解法</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#点问题之-dfs-yield-from-解法">8&nbsp;&nbsp;<b>24 点问题之 DFS yield from
+解法</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#leetcode-679-24-game-hard"><span class="toc-text">Leetcode 679 24 Game (Hard)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#itertools.permutations"><span class="toc-text">itertools.permutations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#itertools.combinations"><span class="toc-text">itertools.combinations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#itertools.product"><span class="toc-text">itertools.product</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#yield-%E7%A4%BA%E4%BE%8B"><span class="toc-text">yield 示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#yield-from-%E7%A4%BA%E4%BE%8B"><span class="toc-text">yield from 示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%B9%E9%97%AE%E9%A2%98%E4%B9%8B%E5%87%BD%E6%95%B0%E5%BC%8F%E6%9E%9A%E4%B8%BE%E8%A7%A3%E6%B3%95"><span class="toc-text">24 点问题之函数式枚举解法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%B9%E9%97%AE%E9%A2%98%E4%B9%8B-dfs-yield-from-%E8%A7%A3%E6%B3%95"><span class="toc-text">24 点问题之 DFS yield from
+解法</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Leetcode 679 24 Game 的 Python 函数式实现
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-09-09T18:45:01.000Z" itemprop="datePublished">9月 10 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            17 分钟 读完 (约 2542 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><h2 id="leetcode-679-24-game-hard">Leetcode 679 24 Game (Hard)</h2>
+<p>先来介绍一下24点游戏题目，大家一定都玩过，就是给定4个牌面数字，用加减乘除计算24点。</p>
+<p>本篇会用两种偏函数式的 Python 3解法来AC 24 Game。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/24-game/">Leetcode 679 24 Game
+(Hard)</a> &gt; You have 4 cards each containing a number from 1 to 9.
+You need to judge whether they could operated through *, /, +, -, (, )
+to get the value of 24.</p>
+<blockquote>
+<p>Example 1:</p>
+<p>Input: [4, 1, 8, 7]</p>
+<p>Output: True</p>
+<p>Explanation: (8-4) * (7-1) = 24</p>
+</blockquote>
+<blockquote>
+<p>Example 2:</p>
+<p>Input: [1, 2, 1, 2]</p>
+<p>Output: False</p>
+</blockquote>
+<h2 id="itertools.permutations">itertools.permutations</h2>
+<p>先来介绍一下Python itertools.permutations 的用法，正好用Leetcode
+中的Permutation问题来示例。Permutations 的输入可以是List，返回是
+generator 实例，用于生成所有排列。简而言之，python 的 generator
+可以和List一样，用 for 语句来全部遍历产生的值。和List不同的是，generator
+的所有值并不必须全部初始化，一般按需产生从而大量减少内存占用。下面在介绍
+yield 时我们会看到如何合理构造 generator。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/permutations/">Leetcode 46
+Permutations (Medium)</a> &gt; Given a collection of distinct integers,
+return all possible permutations.</p>
+<blockquote>
+<p>Example:</p>
+<p>Input: [1,2,3]</p>
+<p>Output: [ [1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]</p>
+</blockquote>
+<p>用 permutations 很直白，代码只有一行。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 36 ms, faster than 91.78% of Python3 online submissions for Permutations.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.9 MB, less than 66.52% of Python3 online submissions for Permutations.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> permutations</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">permute</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> [p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> permutations(nums)]</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="itertools.combinations">itertools.combinations</h2>
+<p>有了排列就少不了组合，itertools.combinations
+可以产生给定List的k个元素组合 <span class="math inline">\(\binom{n}{k}\)</span>，用一道算法题来举例，同样也是一句语句就可以AC。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/combinations/">Leetcode 77
+Combinations (Medium)</a></p>
+<blockquote>
+<p>Given two integers n and k, return all possible combinations of k
+numbers out of 1 ... n. You may return the answer in any order.</p>
+<p>Example 1:</p>
+<p>Input: n = 4, k = 2</p>
+<p>Output: [ [2,4], [3,4], [2,3], [1,2], [1,3], [1,4],]</p>
+</blockquote>
+<blockquote>
+<p>Example 2:</p>
+<p>Input: n = 1, k = 1</p>
+<p>Output: [[1]]</p>
+</blockquote>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 84 ms, faster than 95.43% of Python3 online submissions for Combinations.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 15.2 MB, less than 68.98% of Python3 online submissions for Combinations.</span></span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> combinations</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">combine</span>(<span class="hljs-params">self, n: <span class="hljs-built_in">int</span>, k: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> [c <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> combinations(<span class="hljs-built_in">list</span>(<span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n + <span class="hljs-number">1</span>)), k)]</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="itertools.product">itertools.product</h2>
+<p>当有多维度的对象需要迭代笛卡尔积时，可以用 product(iter1, iter2,
+...)来生成generator，等价于多重 for 循环。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[lst <span class="hljs-keyword">for</span> lst <span class="hljs-keyword">in</span> product([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>])]</span><br><span class="line">[(i, s) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>] <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> [<span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>]]</span><br></pre></td></tr></tbody></table></figure>
+<p>这两种方式都生成了如下结果 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[(1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')]</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>再举一个Leetcode的例子来实战product generator。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/letter-combinations-of-a-phone-number/">Leetcode
+17. Letter Combinations of a Phone Number (Medium)</a></p>
+<blockquote>
+<p>Given a string containing digits from 2-9 inclusive, return all
+possible letter combinations that the number could represent. A mapping
+of digit to letters (just like on the telephone buttons) is given below.
+Note that 1 does not map to any letters.</p>
+<figure>
+<img src="/zh/2020/leetcode-679-24-game/lc-17.png">
+<figcaption>
+</figcaption>
+</figure>
+</blockquote>
+<blockquote>
+<p>Example:</p>
+<p>Input: "23"</p>
+<p>Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].</p>
+</blockquote>
+<p>举例来说，下面的代码当输入 digits 是 '352' 时，iter_dims 的值是
+['def', 'jkl', 'abc']，再输入给 product 后会产生 'dja', 'djb', 'djc',
+'eja', 共 3 x 3 x 3 = 27个组合的值。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 24 ms, faster than 94.50% of Python3 online submissions for Letter Combinations of a Phone Number.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.7 MB, less than 83.64% of Python3 online submissions for Letter Combinations of a Phone Number.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> product</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">letterCombinations</span>(<span class="hljs-params">self, digits: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> digits == <span class="hljs-string">""</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> []</span><br><span class="line">        mapping = {<span class="hljs-string">'2'</span>:<span class="hljs-string">'abc'</span>, <span class="hljs-string">'3'</span>:<span class="hljs-string">'def'</span>, <span class="hljs-string">'4'</span>:<span class="hljs-string">'ghi'</span>, <span class="hljs-string">'5'</span>:<span class="hljs-string">'jkl'</span>, <span class="hljs-string">'6'</span>:<span class="hljs-string">'mno'</span>, <span class="hljs-string">'7'</span>:<span class="hljs-string">'pqrs'</span>, <span class="hljs-string">'8'</span>:<span class="hljs-string">'tuv'</span>, <span class="hljs-string">'9'</span>:<span class="hljs-string">'wxyz'</span>}</span><br><span class="line">        iter_dims = [mapping[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> digits]</span><br><span class="line"></span><br><span class="line">        result = []</span><br><span class="line">        <span class="hljs-keyword">for</span> lst <span class="hljs-keyword">in</span> product(*iter_dims):</span><br><span class="line">            result.append(<span class="hljs-string">''</span>.join(lst))</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> result</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="yield-示例">yield 示例</h2>
+<p>Python具有独特的itertools
+generator，可以花式AC代码，接下来讲解如何进一步构造 generator。Python
+定义只要函数中使用了yield关键字，这个函数就是 generator。Generator
+在计算机领域的标准名称是
+coroutine，即协程，是一种特殊的函数：当返回上层调用时自身能够保存调用栈状态，并在上层函数处理完逻辑后跳入到这个
+generator，恢复之前的状态再继续运行下去。Yield语句也举一道经典的Fibonacci
+问题。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/fibonacci-number/">Leetcode
+509. Fibonacci Number (Easy)</a></p>
+<blockquote>
+<p>The Fibonacci numbers, commonly denoted F(n) form a sequence, called
+the Fibonacci sequence, such that each number is the sum of the two
+preceding ones, starting from 0 and 1. That is, F(0) = 0, F(1) = 1 F(N)
+= F(N - 1) + F(N - 2), for N &gt; 1. Given N, calculate F(N).</p>
+</blockquote>
+<blockquote>
+<p>Example 1:</p>
+<p>Input: 2</p>
+<p>Output: 1</p>
+<p>Explanation: F(2) = F(1) + F(0) = 1 + 0 = 1.</p>
+</blockquote>
+<blockquote>
+<p>Example 2:</p>
+<p>Input: 3</p>
+<p>Output: 2</p>
+<p>Explanation: F(3) = F(2) + F(1) = 1 + 1 = 2.</p>
+</blockquote>
+<blockquote>
+<p>Example 3:</p>
+<p>Input: 4</p>
+<p>Output: 3</p>
+<p>Explanation: F(4) = F(3) + F(2) = 2 + 1 = 3.</p>
+</blockquote>
+<p>Fibonacci 的一般标准解法是循环迭代方式，可以以O(n)时间复杂度和O(1)
+空间复杂度来AC。下面的 yield 版本中，我们构造了fib_next
+generator，它保存了最后两个值作为内部迭代状态，外部每调用一次可以得到下一个fib(n)，如此外部只需不断调用直到满足题目给定次数。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 28 ms, faster than 85.56% of Python3 online submissions for Fibonacci Number.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.8 MB, less than 58.41% of Python3 online submissions for Fibonacci Number.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fib</span>(<span class="hljs-params">self, N: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> N &lt;= <span class="hljs-number">1</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> N</span><br><span class="line">        i = <span class="hljs-number">2</span></span><br><span class="line">        <span class="hljs-keyword">for</span> fib <span class="hljs-keyword">in</span> self.fib_next():</span><br><span class="line">            <span class="hljs-keyword">if</span> i == N:</span><br><span class="line">                <span class="hljs-keyword">return</span> fib</span><br><span class="line">            i += <span class="hljs-number">1</span></span><br><span class="line">            </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fib_next</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        f_last2, f_last = <span class="hljs-number">0</span>, <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">            f = f_last2 + f_last</span><br><span class="line">            f_last2, f_last = f_last, f</span><br><span class="line">            <span class="hljs-keyword">yield</span> f</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="yield-from-示例">yield from 示例</h2>
+<p>上述yield用法之后，再来演示 yield from 的用法。Yield from 始于Python
+3.3，用于嵌套generator时的控制转移，一种典型的用法是有多个generator嵌套时，外层的outer_generator
+用 yield from 这种方式等价代替如下代码。 </p><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">outer_generator</span>():</span></span><br><span class="line">    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> inner_generator():</span><br><span class="line">        <span class="hljs-keyword">yield</span> i</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>用一道算法题目来具体示例。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/kth-smallest-element-in-a-bst/">Leetcode
+230. Kth Smallest Element in a BST (Medium)</a></p>
+<blockquote>
+<p>Given a binary search tree, write a function kthSmallest to find the
+kth smallest element in it.</p>
+</blockquote>
+<blockquote>
+<p>Example 1: Input: root = [3,1,4,null,2], k = 1 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  3</span><br><span class="line"> / \</span><br><span class="line">1   4</span><br><span class="line"> \</span><br><span class="line">  2</span><br></pre></td></tr></tbody></table></figure> Output:
+1<p></p>
+</blockquote>
+<blockquote>
+<p>Example 2:</p>
+<p>Input: root = [5,3,6,2,4,null,null,1], k = 3 </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">         5</span><br><span class="line">        / \</span><br><span class="line">       3   6</span><br><span class="line">     /  \</span><br><span class="line">    2    4</span><br><span class="line">  /</span><br><span class="line">1</span><br></pre></td></tr></tbody></table></figure> Output:
+3<p></p>
+</blockquote>
+<p>直觉思路上，我们只要从小到大有序遍历每个节点直至第k个。因为给定的树是Binary
+Search
+Tree，有序遍历意味着以左子树、节点本身和右子树的访问顺序递归下去就行。由于ordered_iter是generator，递归调用自己的过程就是嵌套使用generator的过程。下面是yield版本。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 48 ms, faster than 90.31% of Python3 online submissions for Kth Smallest Element in a BST.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 17.9 MB, less than 14.91% of Python3 online submissions for Kth Smallest Element in a BST.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">kthSmallest</span>(<span class="hljs-params">self, root: TreeNode, k: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ordered_iter</span>(<span class="hljs-params">node</span>):</span></span><br><span class="line">            <span class="hljs-keyword">if</span> node:</span><br><span class="line">                <span class="hljs-keyword">for</span> sub_node <span class="hljs-keyword">in</span> ordered_iter(node.left):</span><br><span class="line">                    <span class="hljs-keyword">yield</span> sub_node</span><br><span class="line">                <span class="hljs-keyword">yield</span> node</span><br><span class="line">                <span class="hljs-keyword">for</span> sub_node <span class="hljs-keyword">in</span> ordered_iter(node.right):</span><br><span class="line">                    <span class="hljs-keyword">yield</span> sub_node</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> ordered_iter(root):</span><br><span class="line">            k -= <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">if</span> k == <span class="hljs-number">0</span>:</span><br><span class="line">                <span class="hljs-keyword">return</span> node.val</span><br></pre></td></tr></tbody></table></figure>
+<p>等价于如下 yield from 版本：</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 56 ms, faster than 63.74% of Python3 online submissions for Kth Smallest Element in a BST.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 17.7 MB, less than 73.33% of Python3 online submissions for Kth Smallest Element in a BST.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">kthSmallest</span>(<span class="hljs-params">self, root: TreeNode, k: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ordered_iter</span>(<span class="hljs-params">node</span>):</span></span><br><span class="line">            <span class="hljs-keyword">if</span> node:</span><br><span class="line">                <span class="hljs-keyword">yield</span> <span class="hljs-keyword">from</span> ordered_iter(node.left)</span><br><span class="line">                <span class="hljs-keyword">yield</span> node</span><br><span class="line">                <span class="hljs-keyword">yield</span> <span class="hljs-keyword">from</span> ordered_iter(node.right)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> ordered_iter(root):</span><br><span class="line">            k -= <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">if</span> k == <span class="hljs-number">0</span>:</span><br><span class="line">                <span class="hljs-keyword">return</span> node.val</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="点问题之函数式枚举解法">24 点问题之函数式枚举解法</h2>
+<p>看明白了itertools.permuations，combinations，product，yield以及yield
+from，我们回到本篇最初的24点游戏问题。</p>
+<p>24点游戏的本质是枚举出所有可能运算，如果有一种方式得到24返回True，否则返回Flase。进一步思考所有可能的运算，包括下面三个维度：</p>
+<ol type="1">
+<li><p>4个数字的所有排列，比如给定 [1, 2, 3, 4]，可以用permutations([1,
+2, 3, 4]) 生成这个维度的所有可能</p></li>
+<li><p>三个位置的操作符号的全部可能，可以用 product([+, -, *, /],
+repeat=3) 生成，具体迭代结果为：[+, +, +]，[+, +, -]，...</p></li>
+<li><p>给定了前面两个维度后，还有一个比较不容易察觉但必要的维度：运算优先级。比如在给定数字顺序
+[1, 2, 3, 4]和符号顺序 [+, *, -]之后可能的四种操作树</p></li>
+</ol>
+<figure>
+<img src="/zh/2020/leetcode-679-24-game/iter_trees.png">
+<figcaption>
+四种运算优先级
+</figcaption>
+</figure>
+<p>能否算得24点只需要枚举这三个维度笛卡尔积的运算结果</p>
+<p>(维度1：数字组合) x (维度2：符号组合) x (维度3：优先级组合)</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 112 ms, faster than 57.59% of Python3 online submissions for 24 Game.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.7 MB, less than 85.60% of Python3 online submissions for 24 Game.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> math</span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> permutations, product</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">iter_trees</span>(<span class="hljs-params">self, op1, op2, op3, a, b, c, d</span>):</span></span><br><span class="line">        <span class="hljs-keyword">yield</span> op1(op2(a, b), op3(c, d))</span><br><span class="line">        <span class="hljs-keyword">yield</span> op1(a, op2(op3(b, c), d))</span><br><span class="line">        <span class="hljs-keyword">yield</span> op1(a, op2(b, op3(c, d)))</span><br><span class="line">        <span class="hljs-keyword">yield</span> op1(op2(a, op3(b, c)), d)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">judgePoint24</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        mul = <span class="hljs-keyword">lambda</span> x, y: x * y</span><br><span class="line">        plus = <span class="hljs-keyword">lambda</span> x, y: x + y</span><br><span class="line">        div = <span class="hljs-keyword">lambda</span> x, y: x / y <span class="hljs-keyword">if</span> y != <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> math.inf</span><br><span class="line">        minus = <span class="hljs-keyword">lambda</span> x, y: x - y</span><br><span class="line"></span><br><span class="line">        op_lst = [plus, minus, mul, div]</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> ops <span class="hljs-keyword">in</span> product(op_lst, repeat=<span class="hljs-number">3</span>):</span><br><span class="line">            <span class="hljs-keyword">for</span> val <span class="hljs-keyword">in</span> permutations(nums):</span><br><span class="line">                <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> self.iter_trees(ops[<span class="hljs-number">0</span>], ops[<span class="hljs-number">1</span>], ops[<span class="hljs-number">2</span>], val[<span class="hljs-number">0</span>], val[<span class="hljs-number">1</span>], val[<span class="hljs-number">2</span>], val[<span class="hljs-number">3</span>]):</span><br><span class="line">                    <span class="hljs-keyword">if</span> <span class="hljs-built_in">abs</span>(v - <span class="hljs-number">24</span>) &lt; <span class="hljs-number">0.0001</span>:</span><br><span class="line">                        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span></span><br></pre></td></tr></tbody></table></figure>
+<h2 id="点问题之-dfs-yield-from-解法">24 点问题之 DFS yield from
+解法</h2>
+<p>一种常规的思路是，在四个数组成的集合中先选出任意两个数，枚举所有可能的计算，再将剩余的三个数组成的集合递归调用下去，直到叶子节点只剩一个数，如下图所示。</p>
+<figure>
+<img src="/zh/2020/leetcode-679-24-game/dfs.png">
+<figcaption>
+DFS 调用示例
+</figcaption>
+</figure>
+<p>下面的代码是这种思路的 itertools + yield from
+解法，recurse方法是generator，会自我递归调用。当只剩下两个数时，用 yield
+返回两个数的所有可能运算得出的值，其他非叶子情况下则自我调用使用yield
+from，例如4个数任选2个先计算再合成3个数的情况。这种情况下，比较麻烦的是由于4个数可能有相同值，若用
+combinations(lst, 2)
+先任选两个数，后续要生成剩余两个数加上第三个计算的数的集合代码会繁琐。因此，我们改成任选4个数index中的两个，剩余的indices
+可以通过集合操作来完成。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Runtime: 116 ms, faster than 56.23% of Python3 online submissions for 24 Game.</span></span><br><span class="line"><span class="hljs-comment"># Memory Usage: 13.9 MB, less than 44.89% of Python3 online submissions for 24 Game.</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> math</span><br><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> combinations, product, permutations</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">judgePoint24</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        mul = <span class="hljs-keyword">lambda</span> x, y: x * y</span><br><span class="line">        plus = <span class="hljs-keyword">lambda</span> x, y: x + y</span><br><span class="line">        div = <span class="hljs-keyword">lambda</span> x, y: x / y <span class="hljs-keyword">if</span> y != <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> math.inf</span><br><span class="line">        minus = <span class="hljs-keyword">lambda</span> x, y: x - y</span><br><span class="line"></span><br><span class="line">        op_lst = [plus, minus, mul, div]</span><br><span class="line"></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">recurse</span>(<span class="hljs-params">lst: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>):</span></span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(lst) == <span class="hljs-number">2</span>:</span><br><span class="line">                <span class="hljs-keyword">for</span> op, values <span class="hljs-keyword">in</span> product(op_lst, permutations(lst)):</span><br><span class="line">                    <span class="hljs-keyword">yield</span> op(values[<span class="hljs-number">0</span>], values[<span class="hljs-number">1</span>])</span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                <span class="hljs-comment"># choose 2 indices from lst of length n</span></span><br><span class="line">                <span class="hljs-keyword">for</span> choosen_idx_lst <span class="hljs-keyword">in</span> combinations(<span class="hljs-built_in">list</span>(<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(lst))), <span class="hljs-number">2</span>):</span><br><span class="line">                    <span class="hljs-comment"># remaining indices not choosen (of length n-2)</span></span><br><span class="line">                    idx_remaining_set = <span class="hljs-built_in">set</span>(<span class="hljs-built_in">list</span>(<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(lst)))) - <span class="hljs-built_in">set</span>(choosen_idx_lst)</span><br><span class="line"></span><br><span class="line">                    <span class="hljs-comment"># remaining values not choosen (of length n-2)</span></span><br><span class="line">                    value_remaining_lst = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: lst[x], idx_remaining_set))</span><br><span class="line">                    <span class="hljs-keyword">for</span> op, idx_lst <span class="hljs-keyword">in</span> product(op_lst, permutations(choosen_idx_lst)):</span><br><span class="line">                        <span class="hljs-comment"># 2 choosen values are lst[idx_lst[0]], lst[idx_lst[1]</span></span><br><span class="line">                        value_remaining_lst.append(op(lst[idx_lst[<span class="hljs-number">0</span>]], lst[idx_lst[<span class="hljs-number">1</span>]]))</span><br><span class="line">                        <span class="hljs-keyword">yield</span> <span class="hljs-keyword">from</span> recurse(value_remaining_lst)</span><br><span class="line">                        value_remaining_lst = value_remaining_lst[:-<span class="hljs-number">1</span>]</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> recurse(nums):</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-built_in">abs</span>(v - <span class="hljs-number">24</span>) &lt; <span class="hljs-number">0.0001</span>:</span><br><span class="line">                <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Algorithm/">#Algorithm</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Leetcode/">#Leetcode</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Functional-Programming/">#Functional Programming</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/DFS/">#DFS</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/rl-sutton-gridworld-2/">通过代码学Sutton强化学习2：Grid World 策略迭代和值迭代</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/rl-sutton-gridworld-1/">通过代码学Sutton强化学习1：Grid World OpenAI环境和策略评价算法</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/leetcode-679-24-game/">https://blog.myencyclopedia.top/zh/2020/leetcode-679-24-game/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/leetcode-679-24-game/">https://myencyclopedia.github.io/zh/2020/leetcode-679-24-game/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/leetcode-679-24-game/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/leetcode-679-24-game/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>TSP问题从DP算法到深度学习4：概率最大状态序列算法 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/tsp-4-search/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="本篇是TSP问题从DP算法到深度学习系列第四篇，这一篇我们会详细举例并比较在 seq-to-seq 或者Markov Chain中的一些常见的搜索概率最大的状态序列的算法。这些方法在深度学习的seq-to-seq 中被用作decoding。在第五篇中，我们使用强化学习时也会使用了本篇中讲到的方法。  第一篇: 递归DP方法 AC AIZU TSP问题 第二篇: 二维空间TSP数据集及其DP解法 第">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TSP问题从DP算法到深度学习4：概率最大状态序列算法">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/tsp-4-search/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="本篇是TSP问题从DP算法到深度学习系列第四篇，这一篇我们会详细举例并比较在 seq-to-seq 或者Markov Chain中的一些常见的搜索概率最大的状态序列的算法。这些方法在深度学习的seq-to-seq 中被用作decoding。在第五篇中，我们使用强化学习时也会使用了本篇中讲到的方法。  第一篇: 递归DP方法 AC AIZU TSP问题 第二篇: 二维空间TSP数据集及其DP解法 第">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/tsp-4-search/transition-animated.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/tsp-4-search/greedy-animated.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/tsp-4-search/beam-animated.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/tsp-4-search/viterbi-animated.svg">
+<meta property="article:published_time" content="2020-11-20T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.038Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="Dynamic Programming">
+<meta property="article:tag" content="Markov Chain">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/tsp-4-search/transition-animated.svg">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#马尔科夫链问题">1&nbsp;&nbsp;<b>马尔科夫链问题</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#穷竭搜索">2&nbsp;&nbsp;<b>穷竭搜索</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#贪心搜索">3&nbsp;&nbsp;<b>贪心搜索</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#beam-搜索">4&nbsp;&nbsp;<b>Beam 搜索</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#viterbi-动态规划">5&nbsp;&nbsp;<b>Viterbi 动态规划</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#概率采用">6&nbsp;&nbsp;<b>概率采用</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE%E9%97%AE%E9%A2%98"><span class="toc-text">马尔科夫链问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A9%B7%E7%AB%AD%E6%90%9C%E7%B4%A2"><span class="toc-text">穷竭搜索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%AA%E5%BF%83%E6%90%9C%E7%B4%A2"><span class="toc-text">贪心搜索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#beam-%E6%90%9C%E7%B4%A2"><span class="toc-text">Beam 搜索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#viterbi-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="toc-text">Viterbi 动态规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E7%8E%87%E9%87%87%E7%94%A8"><span class="toc-text">概率采用</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            TSP问题从DP算法到深度学习4：概率最大状态序列算法
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-11-20T18:45:01.000Z" itemprop="datePublished">11月 21 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            17 分钟 读完 (约 2491 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>本篇是TSP问题从DP算法到深度学习系列第四篇，这一篇我们会详细举例并比较在
+seq-to-seq 或者Markov
+Chain中的一些常见的搜索概率最大的状态序列的算法。这些方法在深度学习的seq-to-seq
+中被用作decoding。在第五篇中，我们使用强化学习时也会使用了本篇中讲到的方法。</p>
+<ul>
+<li><p><a href="/zh/2020/tsp-4-search/!--swig￼6--">第一篇: 递归DP方法 AC AIZU
+TSP问题</a></p></li>
+<li><p><a href="/zh/2020/tsp-4-search/!--swig￼7--">第二篇:
+二维空间TSP数据集及其DP解法</a></p></li>
+<li><p><a href="/zh/2020/tsp-4-search/!--swig￼8--">第三篇: 深度学习 Pointer Networks 的
+Pytorch实现</a></p></li>
+<li><p>第四篇: 搜寻最有可能路径：Viterbi算法和其他</p></li>
+<li><p>第五篇: 深度强化学习无监督算法的 Pytorch实现</p></li>
+</ul>
+<h2 id="马尔科夫链问题">马尔科夫链问题</h2>
+<p>在 seq-to-seq
+问题中，我们经常会遇到需要从现有模型中找概率最大的可能状态序列。这类问题在机器学习算法和控制领域广泛存在，抽象出来可以表达成马尔可夫链模型：给定初始状态的分布和系统的状态转移方程（称为系统动力，dynamics），找寻最有可能的状态序列。</p>
+<p>举个例子，假设系统有 <span class="math inline">\(n\)</span>
+个状态，初始状态由 $s_0 = [0.35, 0.25, 0.4] $
+指定，表示初始时三种状态的分布为 0.35，0.25和0.4。</p>
+<p>状态转移矩阵由 <span class="math inline">\(T\)</span> 表达，其中 $
+T[i][j]$ 表示从状态 <span class="math inline">\(i\)</span> 到状态 <span class="math inline">\(j\)</span> 的概率。注意下面的矩阵 <span class="math inline">\(T\)</span> 每行的和为
+1.0，对应了从任意状态出发，下一时刻的所有可能转移概率和为1。 <span class="math display">\[
+T=
+\begin{matrix}
+&amp; \begin{matrix}0&amp;1&amp;2\end{matrix} \\\\
+\begin{matrix}0\\\\1\\\\2\end{matrix} &amp;
+  \begin{bmatrix}0.3&amp;0.6&amp;0.1\\\\0.4&amp;0.2&amp;0.4\\\\0.3&amp;0.3&amp;0.4\end{bmatrix}\\\\
+\end{matrix}
+\]</span></p>
+<p>至此，系统的所有参数都定下来了。接下去的各个时刻的状态分布可以通过矩阵乘法来算得。比如，记<span class="math inline">\(s_1\)</span> 为 <span class="math inline">\(t_1\)</span> 时刻状态分布，计算方法为 <span class="math inline">\(s_0\)</span> 乘以 <span class="math inline">\(T\)</span>，动画如下：</p>
+<p><img src="/zh/2020/tsp-4-search/transition-animated.svg" title="Transition Animation"></p>
+<p><span class="math inline">\(s_1\)</span> 数值计算结果如下。</p>
+<p><span class="math display">\[
+s_1 =  \begin{bmatrix}0.35&amp; 0.25&amp; 0.4\end{bmatrix}
+\begin{matrix}
+\begin{bmatrix}0.3&amp;0.6&amp;0.1\\\\0.4&amp;0.2&amp;0.4\\\\0.3&amp;0.3&amp;0.4\end{bmatrix}\\\\
+\end{matrix}
+= \begin{bmatrix}0.325&amp; 0.35&amp; 0.255\end{bmatrix}
+\]</span>
+矩阵左乘行向量可以理解为矩阵每一行的线性组合，直觉上理解为下一时刻的状态分布是上一时刻初始状态分布乘以转移关系的线性组合。
+<span class="math display">\[
+\begin{bmatrix}0.35&amp; 0.25&amp; 0.4\end{bmatrix}
+\begin{matrix}
+\begin{bmatrix}0.3&amp;0.6&amp;0.1\\\\0.4&amp;0.2&amp;0.4\\\\0.3&amp;0.3&amp;0.4\end{bmatrix}\\\\
+\end{matrix}
+= 0.35 \times \begin{bmatrix}0.35&amp; 0.6&amp; 0.1\end{bmatrix} + 0.25
+\times \begin{bmatrix}0.4&amp; 0.2&amp; 0.4\end{bmatrix} + 0.4 \times
+\begin{bmatrix}0.3&amp; 0.3&amp; 0.4\end{bmatrix}
+\]</span> 同样的，后面每一个时刻都可以由上一个状态分布向量乘以 <span class="math inline">\(T\)</span>，当然这里我们假设每个时刻的转移矩阵是不变的。当然，问题也可以是每个时刻都有不同的转移矩阵来定义，例如深度学习
+seq-to-seq
+模型。当然，这个设定的变化不会影响搜索最可能状态序列的算法。出于简单考虑，本篇中我们假定所有时刻的状态转移矩阵都是
+<span class="math inline">\(T\)</span>。</p>
+<p>下面我们通过多种算法来找出由上述参数定义的系统中前三个时刻的最有可能序列，即概率最大的
+<span class="math inline">\(s_0 \rightarrow s_1 \rightarrow
+s_2\)</span>。</p>
+<p>令 <span class="math inline">\(L\)</span> 是阶段数，<span class="math inline">\(N\)</span> 是每个阶段的状态数，则我们的例子中
+<span class="math inline">\(L=N=3\)</span> 。并且，总共有 <span class="math inline">\(N^L\)</span> 种不同的路径。</p>
+<h2 id="穷竭搜索">穷竭搜索</h2>
+<p>若给定一条路径，计算特定路径的概率是很直接的，例如，若给定路径为
+<span class="math inline">\(2(s_0) \rightarrow 1(s_1) \rightarrow
+2(s_2)\)</span>，则这条路径的概率为</p>
+<p><span class="math display">\[
+p(2 \rightarrow 1 \rightarrow 2) = s_0[2] \times T[2][1] \times T[1][2]
+= 0.4 \times 0.3 \times 0.4 = 0.048
+\]</span></p>
+<p>因此，我们可以通过枚举所有 <span class="math inline">\(N^L\)</span>
+条路径并计算每条路径的概率来找到最有可能的状态序列。</p>
+<p>下面是Python
+3的穷竭搜索代码，输出为最有可能的概率及其路径。样例问题的输出为 0.084
+和状态序列 <span class="math inline">\(0 \rightarrow 1 \rightarrow
+2\)</span>。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_brute_force</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    <span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> combinations_with_replacement</span><br><span class="line">    v = [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]</span><br><span class="line">    path_all = combinations_with_replacement(v, L)</span><br><span class="line"></span><br><span class="line">    max_prop = <span class="hljs-number">0.0</span></span><br><span class="line">    max_route = <span class="hljs-literal">None</span></span><br><span class="line">    prob = <span class="hljs-number">0.0</span></span><br><span class="line">    <span class="hljs-keyword">for</span> path <span class="hljs-keyword">in</span> <span class="hljs-built_in">list</span>(path_all):</span><br><span class="line">        <span class="hljs-keyword">for</span> idx, v <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(path):</span><br><span class="line">            <span class="hljs-keyword">if</span> idx == <span class="hljs-number">0</span>:</span><br><span class="line">                prob = initial[v]  <span class="hljs-comment"># reset to initial state</span></span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                prev_v = path[idx-<span class="hljs-number">1</span>]</span><br><span class="line">                prob *= transition[prev_v][v]</span><br><span class="line">        <span class="hljs-keyword">if</span> prob &gt; max_prop:</span><br><span class="line">            max_prop = <span class="hljs-built_in">max</span>(max_prop, prob)</span><br><span class="line">            max_route = path</span><br><span class="line">    <span class="hljs-keyword">return</span> max_prop, max_route</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="贪心搜索">贪心搜索</h2>
+<p>穷竭搜索一定会找到最有可能的状态序列，但是算法复杂度是指数级的 <span class="math inline">\(O(N^L)\)</span>。一种最简化的策略是，每一时刻都只选取下一时刻最可能的状态，显然这种策略没有考虑全局最优，只考虑下一步最优，因此称为贪心策略。当然，贪心策略虽然牺牲全局最优解但是换取了很快的时间复杂度。贪心搜索算法动画如下。</p>
+<p><img src="/zh/2020/tsp-4-search/greedy-animated.svg" title="Greedy Search Animation"></p>
+<p>Python 3 实现中我们利用了 numpy 类库，主要是 np.argmax()
+可以让代码简洁。代码本质上是两重循环，（一层循环是np.argmax中），对应时间算法复杂度是
+<span class="math inline">\(O(N\times L)\)</span>。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_greedy</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    <span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line">    max_route = []</span><br><span class="line">    max_prop = <span class="hljs-number">0.0</span></span><br><span class="line">    states = np.array(initial)</span><br><span class="line"></span><br><span class="line">    prev_max_v = <span class="hljs-literal">None</span></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, L):</span><br><span class="line">        max_v = np.argmax(states)</span><br><span class="line">        max_route.append(max_v)</span><br><span class="line">        <span class="hljs-keyword">if</span> l == <span class="hljs-number">0</span>:</span><br><span class="line">            max_prop = initial[max_v]</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            max_prop = max_prop * transition[prev_max_v][max_v]</span><br><span class="line">        states = max_prop * states</span><br><span class="line">        prev_max_v = max_v</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> max_prop, max_route</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="beam-搜索">Beam 搜索</h2>
+<p>贪心策略只考虑了下一步的最大概率状态，若我们改进一下贪心策略，将下一步的最大
+<span class="math inline">\(k\)</span> 个状态保留下来就是beam
+搜索了。具体来说， <span class="math inline">\(k\)</span> beam
+search表示每个阶段保留 <span class="math inline">\(k\)</span>
+个最大概率路径，下一阶段扩展这 <span class="math inline">\(k\)</span>
+条路径至 <span class="math inline">\(k \times N\)</span>
+条路径再选取最大的top k。以上例来说，选取<span class="math inline">\(k=2\)</span>，则初始 <span class="math inline">\(s_0\)</span>时选取最大概率的两种状态 0和
+2，下一阶段 <span class="math inline">\(s_1\)</span>，计算以0和2开始的共
+<span class="math inline">\(2 \times 3\)</span>
+条路径，并保留其中最大概率的两条，如此往复。显然，beam
+search也无法找到全局最优解，但是它能以线性时间复杂度探索更多的路径空间。</p>
+<p><img src="/zh/2020/tsp-4-search/beam-animated.svg" title="Beam Search Animation"></p>
+<p>以下是Python 3 的代码实现，利用了 PriorityQueue 选取 <span class="math inline">\(k\)</span> 路径。由于PriorityQueue
+无法自定义比较关系，我们定义了 <span class="citation" data-cites="total_ordering">@total_ordering</span>
+标注的类来实现比较关心。时间算法复杂度是 <span class="math inline">\(O(k\times N \times L)\)</span> 。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_beam</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span>, K: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    N = <span class="hljs-built_in">len</span>(initial)</span><br><span class="line">    <span class="hljs-keyword">from</span> queue <span class="hljs-keyword">import</span> PriorityQueue</span><br><span class="line">    current_q = PriorityQueue()</span><br><span class="line">    next_q = PriorityQueue()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> total_ordering</span><br><span class="line"><span class="hljs-meta">    @total_ordering</span></span><br><span class="line">    <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PQItem</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, prob, route</span>):</span></span><br><span class="line">            self.prob = prob</span><br><span class="line">            self.route = route</span><br><span class="line">            self.last_v = <span class="hljs-built_in">int</span>(route[-<span class="hljs-number">1</span>])</span><br><span class="line"></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__eq__</span>(<span class="hljs-params">self, other</span>):</span></span><br><span class="line">            <span class="hljs-keyword">return</span> self.prob == other.prob</span><br><span class="line"></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__lt__</span>(<span class="hljs-params">self, other</span>):</span></span><br><span class="line">            <span class="hljs-keyword">return</span> self.prob &gt; other.prob</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">        next_q.put(PQItem(initial[v], <span class="hljs-built_in">str</span>(v)))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, L):</span><br><span class="line">        current_q = next_q</span><br><span class="line">        next_q = PriorityQueue()</span><br><span class="line">        k = K</span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> current_q.empty() <span class="hljs-keyword">and</span> k &gt; <span class="hljs-number">0</span>:</span><br><span class="line">            item = current_q.get()</span><br><span class="line">            prob, route, prev_v = item.prob, item.route, item.last_v</span><br><span class="line">            k -= <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">                nextItem = PQItem(prob * transition[prev_v][v], route + <span class="hljs-built_in">str</span>(v))</span><br><span class="line">                next_q.put(nextItem)</span><br><span class="line"></span><br><span class="line">    max_item = next_q.get()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> max_item.prob, <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x), max_item.route))</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="viterbi-动态规划">Viterbi 动态规划</h2>
+<p>和之前TSP
+动态规划算法的思想一样，最有可能状态路径问题解法有可以将指数时间复杂度
+<span class="math inline">\(O(N^L)\)</span> 降到多项式时间复杂度 <span class="math inline">\(O(L \times N \times N)\)</span>
+的算法，就是大名鼎鼎的 Viterbi
+算法（维特比算法）。核心思想是在每个阶段，用数组保存每个状态结尾路径的阶段最大概率（及其对应路径）。在不考虑优化空间的情况下，我们开一个二维数组
+<span class="math inline">\(dp[][]\)</span>，第一维表示阶段序号，第二维表示状态序号。例如，<span class="math inline">\(dp[1][0]\)</span> 是 <span class="math inline">\(s_1\)</span>
+阶段时以状态0结尾的所有路径中的最大概率，即 <span class="math display">\[
+dp[1][0] = \max \\{s_0[0] \rightarrow s_1[0], s_0[1] \rightarrow s_1[0],
+s_0[2] \rightarrow s_1[0]\\}
+\]</span></p>
+<p><img src="/zh/2020/tsp-4-search/viterbi-animated.svg" title="Viterbi DP Animation"></p>
+<p>实现代码中没有返回路径本身而只是其概率值，目的是通过简洁的三层循环来表达算法精髓。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_dp</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">float</span>:</span></span><br><span class="line">    N = <span class="hljs-built_in">len</span>(initial)</span><br><span class="line">    dp = [[<span class="hljs-number">0.0</span> <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(L)]</span><br><span class="line">    dp[<span class="hljs-number">0</span>] = initial[:]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, L):</span><br><span class="line">        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">            <span class="hljs-keyword">for</span> prev_v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">                dp[l][v] = <span class="hljs-built_in">max</span>(dp[l][v], dp[l - <span class="hljs-number">1</span>][prev_v] * transition[prev_v][v])</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(dp[L-<span class="hljs-number">1</span>])</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="概率采用">概率采用</h2>
+<p>以上所有的算法都是确定性的。在NLP 深度学习decoding
+时候会带来一个问题：确定性容易导致生成重复的短语或者句子。比如，确定性算法很容易生成如下句子。
+</p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">This is the best of best of best of ...</span><br></pre></td></tr></tbody></table></figure>
+一种简单的方法是采用概率采用的方式回避这个问题。也就是我们不寻找确定的局部最优或者全局最优的解，而是通过局部路径或者全局路径的概率信息进行采样生成序列。例如，对于穷竭搜索的
+<span class="math inline">\(N^L\)</span> 条路径计算得到对应概率，转变成
+<span class="math inline">\(N^L\)</span> 个点的 categorical
+分布，采样生成某条路径。也可以如下改造贪心或者beam
+这类阶段性生成算法一个时刻一个时刻的输出采样的状态序列。<p></p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_prob_greedy</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    <span class="hljs-keyword">import</span> random</span><br><span class="line">    N = <span class="hljs-built_in">len</span>(initial)</span><br><span class="line">    max_route = []</span><br><span class="line">    max_prop = <span class="hljs-number">0.0</span></span><br><span class="line">    vertices = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]</span><br><span class="line">    prob = initial[:]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, L):</span><br><span class="line">        v_lst = random.choices(vertices, prob)</span><br><span class="line">        v = v_lst[<span class="hljs-number">0</span>]</span><br><span class="line">        max_route.append(v)</span><br><span class="line">        max_prop = prob[v]</span><br><span class="line">        prob = [prob[v] * transition[v][v_target] <span class="hljs-keyword">for</span> v_target <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> max_prop, max_route</span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Algorithm/">#Algorithm</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Deep-Learning/">#Deep Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Dynamic-Programming/">#Dynamic Programming</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Markov-Chain/">#Markov Chain</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/rl-dqn-mario/">深度强化学习之：DQN训练超级玛丽闯关</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/distribution-discrete-generator/">从零构建统计随机变量生成器之离散基础篇</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/tsp-4-search/">https://blog.myencyclopedia.top/zh/2020/tsp-4-search/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/tsp-4-search/">https://myencyclopedia.github.io/zh/2020/tsp-4-search/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/tsp-4-search/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/tsp-4-search/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

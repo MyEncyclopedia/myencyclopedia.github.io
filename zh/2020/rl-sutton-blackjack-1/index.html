@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>通过代码学Sutton强化学习3：21点游戏的策略蒙特卡洛值预测 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/rl-sutton-blackjack-1/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="从这期开始我们进入Sutton强化学习第二版，第五章蒙特卡洛方法。蒙特卡洛方法是一种在工程各领域都存在的基本方法，在强化领域中，其特点是无需知道环境的dynamics，只需不断模拟记录并分析数据即可逼近理论真实值。蒙特卡洛方法本篇将会用21点游戏作为示例来具体讲解其原理和代码实现。 21点游戏问题 21点游戏是一个经典的赌博游戏。大致规则是玩家和庄家各发两张牌，一张明牌，一张暗牌。玩家和庄家可以决">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过代码学Sutton强化学习3：21点游戏的策略蒙特卡洛值预测">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-blackjack-1/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="从这期开始我们进入Sutton强化学习第二版，第五章蒙特卡洛方法。蒙特卡洛方法是一种在工程各领域都存在的基本方法，在强化领域中，其特点是无需知道环境的dynamics，只需不断模拟记录并分析数据即可逼近理论真实值。蒙特卡洛方法本篇将会用21点游戏作为示例来具体讲解其原理和代码实现。 21点游戏问题 21点游戏是一个经典的赌博游戏。大致规则是玩家和庄家各发两张牌，一张明牌，一张暗牌。玩家和庄家可以决">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-blackjack-1/mc_v_first_visit_10000_no_usable.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-blackjack-1/mc_v_first_visit_10000_usable.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-blackjack-1/mc_v_every_visit_10000_no_usable.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-blackjack-1/mc_v_every_visit_10000_usable.png">
+<meta property="article:published_time" content="2020-09-25T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.010Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta property="article:tag" content="OpenAI Gym">
+<meta property="article:tag" content="Monte Carlo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-blackjack-1/mc_v_first_visit_10000_no_usable.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#点游戏问题">1&nbsp;&nbsp;<b>21点游戏问题</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#点游戏-openai-gym环境">2&nbsp;&nbsp;<b>21点游戏 OpenAI Gym环境</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#策略的蒙特卡洛值预测">3&nbsp;&nbsp;<b>策略的蒙特卡洛值预测</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#first-visit-mc-predicition">3.1&nbsp;&nbsp;First-visit MC Predicition</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#every-visit-mc-prediciton">3.2&nbsp;&nbsp;Every-visit MC Prediciton</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#策略-v值-3d-可视化">4&nbsp;&nbsp;<b>策略 V值 3D 可视化</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%B9%E6%B8%B8%E6%88%8F%E9%97%AE%E9%A2%98"><span class="toc-text">21点游戏问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%82%B9%E6%B8%B8%E6%88%8F-openai-gym%E7%8E%AF%E5%A2%83"><span class="toc-text">21点游戏 OpenAI Gym环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E7%9A%84%E8%92%99%E7%89%B9%E5%8D%A1%E6%B4%9B%E5%80%BC%E9%A2%84%E6%B5%8B"><span class="toc-text">策略的蒙特卡洛值预测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#first-visit-mc-predicition"><span class="toc-text">First-visit MC Predicition</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#every-visit-mc-prediciton"><span class="toc-text">Every-visit MC Prediciton</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%96%E7%95%A5-v%E5%80%BC-3d-%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-text">策略 V值 3D 可视化</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            通过代码学Sutton强化学习3：21点游戏的策略蒙特卡洛值预测
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-09-25T18:45:01.000Z" itemprop="datePublished">9月 26 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            19 分钟 读完 (约 2814 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>从这期开始我们进入Sutton强化学习第二版，第五章蒙特卡洛方法。蒙特卡洛方法是一种在工程各领域都存在的基本方法，在强化领域中，其特点是无需知道环境的dynamics，只需不断模拟记录并分析数据即可逼近理论真实值。蒙特卡洛方法本篇将会用21点游戏作为示例来具体讲解其原理和代码实现。</p>
+<h2 id="点游戏问题">21点游戏问题</h2>
+<p>21点游戏是一个经典的赌博游戏。大致规则是玩家和庄家各发两张牌，一张明牌，一张暗牌。玩家和庄家可以决定加牌或停止加牌，新加的牌均为暗牌，最后比较两个玩家的牌面和，更接近21点的获胜。游戏的变化因素是牌Ace，既可以作为11也可以作为1来计算，算作11的时候称作usable。</p>
+<p>Sutton教材中的21点游戏规则简化了几个方面用于控制问题状态数：</p>
+<ul>
+<li>已发的牌的无状态性：和一副牌的21点游戏不同的是，游戏环境简化为牌是可以无穷尽被补充的，一副牌的某一张被派发后，同样的牌会被补充进来，或者可以认为每次发放的牌都是从一副新牌中抽出的。统计学中的术语称为重复采样（sample
+with replacement）。这种规则下极端情况下，玩家可以拥有
+5个A或者5个2。另外，这会导致玩家无法通过开局看到的3张牌的信息推断后续发牌的概率，如此就大规模减小了游戏状态数。</li>
+<li>庄家和玩家独立游戏，无需按轮次要牌。开局给定4张牌后，玩家先行动，加牌直至超21点或者停止要牌，如果超21点，玩家输，否则，等待庄家行动，庄家加牌直至超21点或者停止要牌，如果超21点，庄家输，否则比较两者的总点数。这种方式可以认为当玩家和庄家看到初始的三张牌后独立做一系列决策，最后比较结果，避免了交互模式下因为能观察到每一轮后对方牌数变化产生额外的信息而导致的游戏状态数爆炸。</li>
+</ul>
+<p>有以上两个规则的简化，21点游戏问题的总状态数有下面三个维度</p>
+<ul>
+<li><p>自己手中的点数和（12到21）</p></li>
+<li><p>庄家明牌的点数（A到10)</p></li>
+<li><p>庄家明牌是否有 A（True, False）。</p></li>
+</ul>
+<p>状态总计总数为三个维度的乘积 10 * 10 * 2 = 200。</p>
+<p>关于游戏状态有几个比较subtle的假设或者要素。首先，玩家初始时能看到三张牌，这三张牌确定了状态的三个维度的值，当然也就确定了Agent的初始状态，随后按照独立游戏的规则进行，玩家根据初始状态依照某种策略决策要牌还是结束要牌，新拿的牌更新了游戏状态，玩家转移到新状态下继续做决策。举个例子，假设初始时玩家明牌为8，暗牌为6，庄家明牌为7，则游戏状态为Tuple
+(14, 7,
+False)。若玩家的策略为教材中的固定规则策略：没到20或者21继续要牌。下一步玩家拿到牌3，则此时新状态为
+(17, 7, False)，按照策略继续要牌。</p>
+<p>第二个方面是游戏的状态完全等价于玩家观察到的信息。比如尽管初始时有4张牌，真正的状态是这四张牌的值，但是出于简化目的，不考虑partially
+observable
+的情况，即不将暗牌纳入游戏状态中。另外，庄家做决策的时候也无法得知玩家的手中的总牌数。</p>
+<p>第三个方面是关于玩家点数。考虑玩家初始时的两张牌为2，3，总点数是5，那么为何不将5加入到游戏状态中呢？原则上是可以将初始总和为2到11都加入到游戏状态，但是意义不大，原因在于我们已经假设了已发牌的无状态性，拿到的这两张牌并不会改变后续补充的牌的出现概率。当玩家初始总和为2到11时一定会追加牌，因为无论第三张牌是什么，都不会超过21点，只会增加获胜概率。若后续第三张牌为8，总和变成13，就进入了有效的游戏状态，因为此时如果继续要牌，获得10，则游戏输掉。因此，我们关心的游戏状态并不完全等价于所有可能的游戏状态。</p>
+<h2 id="点游戏-openai-gym环境">21点游戏 OpenAI Gym环境</h2>
+<p>OpenAI Gym
+已经实现了Sutton版本的21点游戏环境，并按上述规则来进行。在安装完OpenAI
+Gym包之后 import BlackjackEnv即可使用。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> gym.envs.toy_text <span class="hljs-keyword">import</span> BlackjackEnv</span><br></pre></td></tr></tbody></table></figure>
+<p>根据这个游戏环境，我们先来定义一些类型，可以令代码更具可读性和抽象化。State
+上文说过是由三个分量组成的Tuple。Action 为bool类型
+表示是否继续要牌。Reward 为+1或者-1，玩家叫牌过程中为0。StateValue
+为书中的 <span class="math inline">\(V_{\pi}\)</span>，实现上是一个Dict。DeterministicPolicy
+为一个函数，输入是某一状态，输出是唯一的决策动作。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">State = <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">bool</span>]</span><br><span class="line">Action = <span class="hljs-built_in">bool</span></span><br><span class="line">Reward = <span class="hljs-built_in">float</span></span><br><span class="line">StateValue = <span class="hljs-type">Dict</span>[State, <span class="hljs-built_in">float</span>]</span><br><span class="line">DeterministicPolicy = <span class="hljs-type">Callable</span>[[State], Action]</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>以下代码是 BlackjackEnv 核心代码，step
+方法的输入为玩家的决策动作（叫牌还是结束），并输出State, Reward,
+is_done。简单解释一下代码逻辑，当玩家继续加牌时，需要判断是否超21点，如果没有超过的话，返回下一状态，同时reward
+为0，等待下一step方法。若玩家停止叫牌，则按照庄家策略：小于17时叫牌。游戏终局时产生+1表示玩家获胜，-1表示庄家获胜。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BlackjackEnv</span>(<span class="hljs-params">gym.Env</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span>(<span class="hljs-params">self, action</span>):</span></span><br><span class="line">        <span class="hljs-keyword">assert</span> self.action_space.contains(action)</span><br><span class="line">        <span class="hljs-keyword">if</span> action:  <span class="hljs-comment"># hit: add a card to players hand and return</span></span><br><span class="line">            self.player.append(draw_card(self.np_random))</span><br><span class="line">            <span class="hljs-keyword">if</span> is_bust(self.player):</span><br><span class="line">                done = <span class="hljs-literal">True</span></span><br><span class="line">                reward = -<span class="hljs-number">1.</span></span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                done = <span class="hljs-literal">False</span></span><br><span class="line">                reward = <span class="hljs-number">0.</span></span><br><span class="line">        <span class="hljs-keyword">else</span>:  <span class="hljs-comment"># stick: play out the dealers hand, and score</span></span><br><span class="line">            done = <span class="hljs-literal">True</span></span><br><span class="line">            <span class="hljs-keyword">while</span> sum_hand(self.dealer) &lt; <span class="hljs-number">17</span>:</span><br><span class="line">                self.dealer.append(draw_card(self.np_random))</span><br><span class="line">            reward = cmp(score(self.player), score(self.dealer))</span><br><span class="line">            <span class="hljs-keyword">if</span> self.natural <span class="hljs-keyword">and</span> is_natural(self.player) <span class="hljs-keyword">and</span> reward == <span class="hljs-number">1.</span>:</span><br><span class="line">                reward = <span class="hljs-number">1.5</span></span><br><span class="line">        <span class="hljs-keyword">return</span> self._get_obs(), reward, done, {}</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_get_obs</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">        <span class="hljs-keyword">return</span> (sum_hand(self.player), self.dealer[<span class="hljs-number">0</span>], usable_ace(self.player))</span><br></pre></td></tr></tbody></table></figure>
+<p>下面示例如何调用step方法生成一个episode的数据集。数据集的类型为
+List[Tuple[State, Action, Reward]]。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_episode_data</span>(<span class="hljs-params">policy: DeterministicPolicy, env: BlackjackEnv</span>) -&gt; <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[State, Action, Reward]]:</span></span><br><span class="line">    episode_history = []</span><br><span class="line">    state = env.reset()</span><br><span class="line">    done = <span class="hljs-literal">False</span></span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> done:</span><br><span class="line">        action = policy(state)</span><br><span class="line">        next_state, reward, done, _ = env.step(action)</span><br><span class="line">        episode_history.append((state, action, reward))</span><br><span class="line">        state = next_state</span><br><span class="line">    <span class="hljs-keyword">return</span> episode_history</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="策略的蒙特卡洛值预测">策略的蒙特卡洛值预测</h2>
+<p>Monte Carlo Prediction解决如下问题：当给定Agent 策略<span class="math inline">\(\pi\)</span>时，反复试验来预估策略的 <span class="math inline">\(V_{\pi}\)</span>
+值。具体来说，产生一系列的episode数据之后，对于出现了的所有状态分别计算其Return，再通过
+average 某一状态 s 的Return来估计 <span class="math inline">\(V_{\pi}(s)\)</span>，理论上，依据大数定理（Law of
+large numbers），在可以无限模拟的情况下，Monte Carlo prediction
+一定会收敛到真实的 <span class="math inline">\(V_{\pi}\)</span>。算法实现上有两个略微不同的版本，一个版本称为
+First-visit，另一个版本称为 Every-visit，区别在于如何计算出现的状态 s 的
+Return值。</p>
+<p>对于 First-visit 来说，当状态 s 第一次出现时计算一次
+Returns，若继续出现状态 s 不再重复计算。对于Every-visit来说，每次出现 s
+计算一次 Returns(s)。举个例子，某episode 数据如下： <span class="math display">\[
+S_1, R_1, S_2, R_2, S_1, R_3, S_3, R_4
+\]</span> First-visit 对于状态S1的Returns计算为</p>
+<p><span class="math display">\[
+Returns(S_1) = R_1 + R_2 + R_3 + R_4
+\]</span></p>
+<p>Every-visit 对于状态S1的Returns计算了两次，因为S1出现了两次。 <span class="math display">\[
+\begin{align*}
+Returns(S_1) = \frac{Return_1(S_1) + Return_2(S_1)}2 \\
+= \frac{(R_1 + R_2 + R_3 + R_4) + (R_3 + R_4)} 2
+\end{align*}
+\]</span></p>
+<p>下面用Monte
+Carlo来模拟解得书中示例玩家固定策略的V值，策略具体为：加牌直到手中点数&gt;=20，代码为</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fixed_policy</span>(<span class="hljs-params">observation</span>):</span></span><br><span class="line">    <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">    sticks if the player score is &gt;= 20 and hits otherwise.</span></span><br><span class="line"><span class="hljs-string">    """</span></span><br><span class="line">    score, dealer_score, usable_ace = observation</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> score &gt;= <span class="hljs-number">20</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<h3 id="first-visit-mc-predicition">First-visit MC Predicition</h3>
+伪代码如下，注意考虑到实现上的高效性，在遍历episode序列数据时是从后向前扫的，这样可以边扫边更新G。
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\textbf{First-visit MC prediction, for estimating } V \approx
+v_{\pi} \\
+&amp; \text{Input: a policy } \pi \text{ to be evaluated} \\
+&amp; \text{Initialize} \\
+&amp; \quad V(s) \in \mathbb R \text{, arbitrarily, for all }s \in
+\mathcal{S} \\
+&amp; \quad Returns(s) \leftarrow \text{ an empty list, arbitrarily, for
+all }s \in \mathcal{S} \\
+&amp; \\
+&amp; \text{Loop forever (for episode):}\\
+&amp; \quad \text{Generate an episode following } \pi: S_0, A_0, R_1,
+S_1, A_1, R_2, ..., S_{T-1}, A_{T-1}, R_T\\
+&amp; \quad G \leftarrow 0\\
+&amp; \quad \text{Loop for each step of episode, } t = T-1, T-2, ...,
+0:\\
+&amp; \quad \quad \quad G \leftarrow \gamma G + R_{t+1}\\
+&amp; \quad \quad \quad \text{Unless } S_t \text{ appears in } S_0, S_1,
+..., S_{t-1}\\
+&amp; \quad \quad \quad \quad \text{Append } G \text { to }Returns(S_t)
+\\
+&amp; \quad \quad \quad \quad V(S_t) \leftarrow
+\operatorname{average}(Returns(S_t))\\
+\end{align*}
+\]</span></p>
+</div>
+<p>对应的 python 实现</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">mc_prediction_first_visit</span>(<span class="hljs-params">policy: DeterministicPolicy, env: BlackjackEnv,</span></span></span><br><span class="line"><span class="hljs-params"><span class="hljs-function">                              num_episodes, discount_factor=<span class="hljs-number">1.0</span></span>) -&gt; StateValue:</span></span><br><span class="line">    returns_sum = defaultdict(<span class="hljs-built_in">float</span>)</span><br><span class="line">    returns_count = defaultdict(<span class="hljs-built_in">float</span>)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> episode_i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, num_episodes + <span class="hljs-number">1</span>):</span><br><span class="line">        episode_history = gen_episode_data(policy, env)</span><br><span class="line"></span><br><span class="line">        G = <span class="hljs-number">0</span></span><br><span class="line">        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(episode_history) - <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>):</span><br><span class="line">            s, a, r = episode_history[t]</span><br><span class="line">            G = discount_factor * G + r</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">any</span>(s_a_r[<span class="hljs-number">0</span>] == s <span class="hljs-keyword">for</span> s_a_r <span class="hljs-keyword">in</span> episode_history[<span class="hljs-number">0</span>: t]):</span><br><span class="line">                returns_sum[s] += G</span><br><span class="line">                returns_count[s] += <span class="hljs-number">1.0</span></span><br><span class="line"></span><br><span class="line">    V = defaultdict(<span class="hljs-built_in">float</span>)</span><br><span class="line">    V.update({s: returns_sum[s] / returns_count[s] <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> returns_sum.keys()})</span><br><span class="line">    <span class="hljs-keyword">return</span> V</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="every-visit-mc-prediciton">Every-visit MC Prediciton</h3>
+<p>Every-visit 代码实现相对更简单一些，t
+从后往前遍历时更新对应s的状态变量。如下所示</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">mc_prediction_every_visit</span>(<span class="hljs-params">policy: DeterministicPolicy, env: BlackjackEnv,</span></span></span><br><span class="line"><span class="hljs-params"><span class="hljs-function">                              num_episodes, discount_factor=<span class="hljs-number">1.0</span></span>) -&gt; StateValue:</span></span><br><span class="line">    returns_sum = defaultdict(<span class="hljs-built_in">float</span>)</span><br><span class="line">    returns_count = defaultdict(<span class="hljs-built_in">float</span>)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> episode_i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, num_episodes + <span class="hljs-number">1</span>):</span><br><span class="line">        episode_history = gen_episode_data(policy, env)</span><br><span class="line"></span><br><span class="line">        G = <span class="hljs-number">0</span></span><br><span class="line">        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(episode_history) - <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>):</span><br><span class="line">            s, a, r = episode_history[t]</span><br><span class="line">            G = discount_factor * G + r</span><br><span class="line">            returns_sum[s] += G</span><br><span class="line">            returns_count[s] += <span class="hljs-number">1.0</span></span><br><span class="line"></span><br><span class="line">    V = defaultdict(<span class="hljs-built_in">float</span>)</span><br><span class="line">    V.update({s: returns_sum[s] / returns_count[s] <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> returns_sum.keys()})</span><br><span class="line">    <span class="hljs-keyword">return</span> V</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="策略-v值-3d-可视化">策略 V值 3D 可视化</h2>
+<p>运行first-visit
+算法，模拟10000次episode，fixed_policy的V值的3D图为下面两张图，分别是不含usable
+Ace和包含usable
+Ace。总的说来，一旦玩家能到达20点或21点获胜概率极大，到达13-17获胜概率较小，在11-13时有一定获胜概率，比较符合经验直觉。</p>
+<figure>
+<img src="/zh/2020/rl-sutton-blackjack-1/mc_v_first_visit_10000_no_usable.png">
+<figcaption>
+first-visit MC 10000次没有usable A的V值
+</figcaption>
+</figure>
+<figure>
+<img src="/zh/2020/rl-sutton-blackjack-1/mc_v_first_visit_10000_usable.png">
+<figcaption>
+first-visit MC 10000次含有usable A的V值
+</figcaption>
+</figure>
+<p>同样运行every-visit
+算法，模拟10000次的V值图。对比两种方法结果比较接近。</p>
+<figure>
+<img src="/zh/2020/rl-sutton-blackjack-1/mc_v_every_visit_10000_no_usable.png">
+<figcaption>
+every-visit MC 10000次没有usable A的V值
+</figcaption>
+</figure>
+<figure>
+<img src="/zh/2020/rl-sutton-blackjack-1/mc_v_every_visit_10000_usable.png">
+<figcaption>
+every-visit MC 10000次含有usable A的V值
+</figcaption>
+</figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/OpenAI-Gym/">#OpenAI Gym</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Monte-Carlo/">#Monte Carlo</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/rl-sutton-blackjack-2/">通过代码学Sutton强化学习4：21点游戏的蒙特卡洛On-Policy控制</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/tsp-2-dp-tour/">TSP问题从DP算法到深度学习2：欧氏空间数据集的DP解</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/rl-sutton-blackjack-1/">https://blog.myencyclopedia.top/zh/2020/rl-sutton-blackjack-1/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/rl-sutton-blackjack-1/">https://myencyclopedia.github.io/zh/2020/rl-sutton-blackjack-1/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/rl-sutton-blackjack-1/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/rl-sutton-blackjack-1/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

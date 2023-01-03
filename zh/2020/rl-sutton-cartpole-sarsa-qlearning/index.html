@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>通过代码学Sutton强化学习：SARSA、Q-Learning和Expected SARSA时序差分算法训练CartPole - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/rl-sutton-cartpole-sarsa-qlearning/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="这一期我们进入第六章：时序差分学习（Temporal-Difference Learning）。TD Learning本质上是加了bootstrapping的蒙特卡洛（MC），也是model-free的方法，但实践中往往比蒙特卡洛收敛更快。我们选取OpenAI Gym中经典的CartPole环境来讲解TD。更多相关内容，欢迎关注 本公众号 MyEncyclopedia。 CartPole Open">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过代码学Sutton强化学习：SARSA、Q-Learning和Expected SARSA时序差分算法训练CartPole">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-cartpole-sarsa-qlearning/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="这一期我们进入第六章：时序差分学习（Temporal-Difference Learning）。TD Learning本质上是加了bootstrapping的蒙特卡洛（MC），也是model-free的方法，但实践中往往比蒙特卡洛收敛更快。我们选取OpenAI Gym中经典的CartPole环境来讲解TD。更多相关内容，欢迎关注 本公众号 MyEncyclopedia。 CartPole Open">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-cartpole-sarsa-qlearning/cartpole_intro.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-cartpole-sarsa-qlearning/cartpole_sarsa_1000.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-cartpole-sarsa-qlearning/cartpole_exp_sarsa_1000.gif">
+<meta property="article:published_time" content="2020-10-16T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.018Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta property="article:tag" content="OpenAI Gym">
+<meta property="article:tag" content="Dynamic Programming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-cartpole-sarsa-qlearning/cartpole_intro.gif">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#cartpole-openai-环境">1&nbsp;&nbsp;<b>CartPole OpenAI 环境</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#离散化连续状态">1.1&nbsp;&nbsp;离散化连续状态</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#td-learning的精髓">2&nbsp;&nbsp;<b>TD Learning的精髓</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#sarsa-on-policy-td-控制">3&nbsp;&nbsp;<b>SARSA: On-policy TD 控制</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#sarsa-训练分析">3.1&nbsp;&nbsp;SARSA 训练分析</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#q-learning-off-policy-td-控制">4&nbsp;&nbsp;<b>Q-Learning: Off-policy TD
+控制</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#q-learning-训练分析">4.1&nbsp;&nbsp;Q-Learning 训练分析</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#sarsa-改进版-expected-sarsa">5&nbsp;&nbsp;<b>SARSA 改进版 Expected SARSA</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#cartpole-openai-%E7%8E%AF%E5%A2%83"><span class="toc-text">CartPole OpenAI 环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%BB%E6%95%A3%E5%8C%96%E8%BF%9E%E7%BB%AD%E7%8A%B6%E6%80%81"><span class="toc-text">离散化连续状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#td-learning%E7%9A%84%E7%B2%BE%E9%AB%93"><span class="toc-text">TD Learning的精髓</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sarsa-on-policy-td-%E6%8E%A7%E5%88%B6"><span class="toc-text">SARSA: On-policy TD 控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#sarsa-%E8%AE%AD%E7%BB%83%E5%88%86%E6%9E%90"><span class="toc-text">SARSA 训练分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#q-learning-off-policy-td-%E6%8E%A7%E5%88%B6"><span class="toc-text">Q-Learning: Off-policy TD
+控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#q-learning-%E8%AE%AD%E7%BB%83%E5%88%86%E6%9E%90"><span class="toc-text">Q-Learning 训练分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sarsa-%E6%94%B9%E8%BF%9B%E7%89%88-expected-sarsa"><span class="toc-text">SARSA 改进版 Expected SARSA</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            通过代码学Sutton强化学习：SARSA、Q-Learning和Expected SARSA时序差分算法训练CartPole
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-10-16T18:45:01.000Z" itemprop="datePublished">10月 17 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            16 分钟 读完 (约 2450 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>这一期我们进入第六章：时序差分学习（Temporal-Difference
+Learning）。TD
+Learning本质上是加了bootstrapping的蒙特卡洛（MC），也是model-free的方法，但实践中往往比蒙特卡洛收敛更快。我们选取OpenAI
+Gym中经典的CartPole环境来讲解TD。更多相关内容，欢迎关注 <strong>本公众号
+MyEncyclopedia</strong>。</p>
+<h2 id="cartpole-openai-环境">CartPole OpenAI 环境</h2>
+<p>如图所示，小车上放了一根杆，杆会根据物理系统定理因重力而倒下，我们可以控制小车往左或者往右，目的是尽可能地让杆保持树立状态。</p>
+<figure>
+<img src="/zh/2020/rl-sutton-cartpole-sarsa-qlearning/cartpole_intro.gif">
+<figcaption>
+CartPole OpenAI Gym
+</figcaption>
+</figure>
+<p>CartPole
+观察到的状态是四维的float值，分别是车位置，车速度，杆角度和杆角速度。下表为四个维度的值范围。给到小车的动作，即action
+space，只有两种：0，表示往左推；1，表示往右推。</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Min</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cart Position</td>
+<td>-4.8</td>
+<td>4.8</td>
+</tr>
+<tr class="even">
+<td>Cart Velocity</td>
+<td>-Inf</td>
+<td>Inf</td>
+</tr>
+<tr class="odd">
+<td>Pole Angle</td>
+<td>-0.418 rad (-24 deg)</td>
+<td>0.418 rad (24 deg)</td>
+</tr>
+<tr class="even">
+<td>Pole Angular Velocity</td>
+<td>-Inf</td>
+<td>Inf</td>
+</tr>
+</tbody>
+</table>
+<h3 id="离散化连续状态">离散化连续状态</h3>
+<p>从上所知，CartPole step()
+函数返回了4维ndarray，类型为float32的连续状态空间。对于传统的tabular方法来说第一步必须离散化状态，目的是可以作为Q
+table的主键来查找。下面定义的State类型是离散化后的具体类型，另外 Action
+类型已经是0和1，不需要做离散化处理。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">State = <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>]</span><br><span class="line">Action = <span class="hljs-built_in">int</span></span><br></pre></td></tr></tbody></table></figure>
+<p>离散化处理时需要考虑的一个问题是如何设置每个维度的分桶策略。分桶策略会决定性地影响训练的效果。原则上必须将和action以及reward强相关的维度做细粒度分桶，弱相关或者无关的维度做粗粒度分桶。举个例子，小车位置本身并不能影响Agent采取的下一动作，当给定其他三维状态的前提下，因此我们对小车位置这一维度仅设置一个桶（bucket
+size=1）。而杆的角度和角速度是决定下一动作的关键因素，因此我们分别设置成6个和12个。</p>
+<p>以下是离散化相关代码，四个维度的 buckets=(1, 2, 6,
+12)。self.q是action value的查找表，具体类型是shape 为 (1, 2, 6, 12, 2)
+的ndarray。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CartPoleAbstractAgent</span>(<span class="hljs-params">metaclass=abc.ABCMeta</span>):</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, buckets=(<span class="hljs-params"><span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">6</span>, <span class="hljs-number">12</span></span>), discount=<span class="hljs-number">0.98</span>, lr_min=<span class="hljs-number">0.1</span>, epsilon_min=<span class="hljs-number">0.1</span></span>):</span></span><br><span class="line">        self.env = gym.make(<span class="hljs-string">'CartPole-v0'</span>)</span><br><span class="line"></span><br><span class="line">        env = self.env</span><br><span class="line">        <span class="hljs-comment"># [position, velocity, angle, angular velocity]</span></span><br><span class="line">        self.dims_config = [(env.observation_space.low[<span class="hljs-number">0</span>], env.observation_space.high[<span class="hljs-number">0</span>], <span class="hljs-number">1</span>),</span><br><span class="line">                            (-<span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">1</span>),</span><br><span class="line">                            (env.observation_space.low[<span class="hljs-number">2</span>], env.observation_space.high[<span class="hljs-number">2</span>], <span class="hljs-number">6</span>),</span><br><span class="line">                            (-math.radians(<span class="hljs-number">50</span>) / <span class="hljs-number">1.</span>, math.radians(<span class="hljs-number">50</span>) / <span class="hljs-number">1.</span>, <span class="hljs-number">12</span>)]</span><br><span class="line">        self.q = np.zeros(buckets + (self.env.action_space.n,))</span><br><span class="line">        self.pi = np.zeros_like(self.q)</span><br><span class="line">        self.pi[:] = <span class="hljs-number">1.0</span> / env.action_space.n</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">to_bin_idx</span>(<span class="hljs-params">self, val: <span class="hljs-built_in">float</span>, lower: <span class="hljs-built_in">float</span>, upper: <span class="hljs-built_in">float</span>, bucket_num: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        percent = (val + <span class="hljs-built_in">abs</span>(lower)) / (upper - lower)</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">min</span>(bucket_num - <span class="hljs-number">1</span>, <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">int</span>(<span class="hljs-built_in">round</span>((bucket_num - <span class="hljs-number">1</span>) * percent))))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">discretize</span>(<span class="hljs-params">self, obs: np.ndarray</span>) -&gt; State:</span></span><br><span class="line">        discrete_states = <span class="hljs-built_in">tuple</span>([self.to_bin_idx(obs[d], *self.dims_config[d]) <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(obs))])</span><br><span class="line">        <span class="hljs-keyword">return</span> discrete_states</span><br></pre></td></tr></tbody></table></figure>
+<p>train() 方法串联起来 agent 和 env 交互的流程，包括从 env
+得到连续状态转换成离散状态，更新 Agent 的 Q table 甚至
+Agent的执行policy，choose_action会根据执行 policy 选取action。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">train</span>(<span class="hljs-params">self, num_episodes=<span class="hljs-number">2000</span></span>):</span></span><br><span class="line">    <span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_episodes):</span><br><span class="line">        <span class="hljs-built_in">print</span>(e)</span><br><span class="line">        s: State = self.discretize(self.env.reset())</span><br><span class="line"></span><br><span class="line">        self.adjust_learning_rate(e)</span><br><span class="line">        self.adjust_epsilon(e)</span><br><span class="line">        done = <span class="hljs-literal">False</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> done:</span><br><span class="line">            action: Action = self.choose_action(s)</span><br><span class="line">            obs, reward, done, _ = self.env.step(action)</span><br><span class="line">            s_next: State = self.discretize(obs)</span><br><span class="line">            a_next = self.choose_action(s_next)</span><br><span class="line">            self.update_q(s, action, reward, s_next, a_next)</span><br><span class="line">            s = s_next</span><br></pre></td></tr></tbody></table></figure>
+<p>choose_action 的默认实现为基于现有 Q table 的 <span class="math inline">\(\epsilon\)</span>-greedy 策略。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">choose_action</span>(<span class="hljs-params">self, state</span>) -&gt; Action:</span></span><br><span class="line">    <span class="hljs-keyword">if</span> np.random.random() &lt; self.epsilon:</span><br><span class="line">        <span class="hljs-keyword">return</span> self.env.action_space.sample()</span><br><span class="line">    <span class="hljs-keyword">else</span>:</span><br><span class="line">        <span class="hljs-keyword">return</span> np.argmax(self.q[state])</span><br></pre></td></tr></tbody></table></figure>
+<p>抽象出公共的基类代码 CartPoleAbstractAgent
+之后，SARSA、Q-Learning和Expected SARSA只需要复写 update_q
+抽象方法即可。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CartPoleAbstractAgent</span>(<span class="hljs-params">metaclass=abc.ABCMeta</span>):</span></span><br><span class="line"><span class="hljs-meta">    @abc.abstractmethod</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_q</span>(<span class="hljs-params">self, s: State, a: Action, r, s_next: State, a_next: Action</span>):</span></span><br><span class="line">        <span class="hljs-keyword">pass</span></span><br></pre></td></tr></tbody></table></figure>
+<h2 id="td-learning的精髓">TD Learning的精髓</h2>
+<p>在上一期，本公众号 MyEncyclopedia 的<a href="/zh/2020/rl-sutton-cartpole-sarsa-qlearning/!--swig￼8--">21点游戏的蒙特卡洛On-Policy控制</a>介绍了Monte
+Carlo方法，知道MC需要在环境中模拟直至最终结局。若记<span class="math inline">\(G_t\)</span>为t步以后的最终return，则 MC online
+update 版本更新为：</p>
+<p><span class="math display">\[
+V(S_t) \leftarrow V(S_t) + \alpha[G_{t} - V(S_t)]
+\]</span></p>
+<p>可以认为 <span class="math inline">\(V(S_t)\)</span> 向着目标为 <span class="math inline">\(G_t\)</span> 更新了一小步。</p>
+<p>而TD方法可以只模拟下一步，得到 <span class="math inline">\(R_{t+1}\)</span>，而余下步骤的return，<span class="math inline">\(G_t - R_{t+1}\)</span> 用已有的 <span class="math inline">\(V(S_{t+1})\)</span>
+来估计，或者统计上称作bootstrapping。这样 TD 的更新目标值变成 <span class="math inline">\(R_{t+1} + \gamma V(S_{t+1})\)</span>，整体online
+update 公式则为： <span class="math display">\[
+V(S_t) \leftarrow V(S_t) + \alpha[R_{t+1} + \gamma V(S_{t+1})- V(S_t)]
+\]</span></p>
+<p>概念上，如果只使用下一步 <span class="math inline">\(R_{t+1}\)</span>
+值然后bootstrap称为
+TD(0)，用于区分使用多步后的reward的TD方法。另外，变化的数值 <span class="math inline">\(R_{t+1} + \gamma V(S_{t+1})- V(S_t)\)</span>
+称为TD error。</p>
+<p>另外一个和Monte Carlo的区别在于一般TD方法保存更精细的Q值，<span class="math inline">\(Q(S_t,
+A_t)\)</span>，并用Q值来boostrap，而MC一般用V值也可用Q值。</p>
+<h2 id="sarsa-on-policy-td-控制">SARSA: On-policy TD 控制</h2>
+<p>SARSA的命名源于一次迭代产生了五元组 <span class="math inline">\(S_t，A_t，R_{t+1}，S_{t+1}，A_{t+1}\)</span>。SARSA利用五个值做
+action-value的 online update：</p>
+<p><span class="math display">\[
+Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[R_{t+1}+\gamma Q(S_{t+1},
+A_{t+1}) - Q(S_t,A_t)]
+\]</span></p>
+<p>对应的Q table更新实现为： </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SarsaAgent</span>(<span class="hljs-params">CartPoleAbstractAgent</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_q</span>(<span class="hljs-params">self, s: State, a: Action, r, s_next: State, a_next: Action</span>):</span></span><br><span class="line">        self.q[s][a] += self.lr * (r + self.discount * (self.q[s_next][a_next]) - self.q[s][a])</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>SARSA 在执行policy
+后的Q值更新是对于针对于同一个policy的，完成了一次策略迭代（policy
+iteration），这个特点区分于后面的Q-learning算法，这也是SARSA 被称为
+On-policy 的原因。下面是完整算法伪代码。</p>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\textbf{Sarsa (on-policy TD Control) for estimating } Q \approx
+q_{*} \\
+&amp; \text{Algorithm parameters: step size }\alpha \in ({0,1}]\text{,
+small }\epsilon &gt; 0 \\
+&amp; \text{Initialize }Q(s,a),  \text{for all } s \in \mathcal{S}^{+},
+a \in \mathcal{A}(s) \text{, arbitrarily except that } Q(terminal,
+\cdot) = 0 \\
+&amp; \text{Loop for each episode:}\\
+&amp; \quad \text{Initialize }S\\
+&amp; \quad \text{Choose } A \text{ from } S \text{ using policy derived
+from } Q \text{ (e.g., } \epsilon\text{-greedy)} \\
+&amp; \quad \text{Loop for each step of episode:} \\
+&amp; \quad \quad \text{Take action }A,  \text { observe } R, S^{\prime}
+\\
+&amp; \quad \quad \text{Choose  }A^{\prime} \text { from  } S^{\prime}
+\text{ using policy derived from } Q \text{ (e.g., }
+\epsilon\text{-greedy)} \\
+&amp; \quad \quad Q(S,A) \leftarrow Q(S,A) + \alpha[R+\gamma
+Q(S^{\prime}, A^{\prime}) - Q(S,A)] \\
+&amp; \quad \quad S \leftarrow S^{\prime}; A \leftarrow A^{\prime} \\
+&amp; \quad \text{until }S\text{ is terminal} \\
+\end{align*}
+\]</span></p>
+</div>
+<h3 id="sarsa-训练分析">SARSA 训练分析</h3>
+<p>SARSA收敛较慢，1000次episode后还无法持久稳定，后面的Q-learning 和
+Expected Sarsa 都可以在1000次episode学习长时间保持不倒的状态。</p>
+<figure>
+<img src="/zh/2020/rl-sutton-cartpole-sarsa-qlearning/cartpole_sarsa_1000.gif">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="q-learning-off-policy-td-控制">Q-Learning: Off-policy TD
+控制</h2>
+<p>Q-Learning 是深度学习时代前强化学习领域中的著名算法，它的 online
+update 公式为： <span class="math display">\[
+Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[R_{t+1}+\gamma
+\max_{a}Q(S_{t+1}, a) - Q(S_t,A_t)]
+\]</span></p>
+<p>对应的 update_q() 方法具体实现 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">QLearningAgent</span>(<span class="hljs-params">CartPoleAbstractAgent</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_q</span>(<span class="hljs-params">self, s: State, a: Action, r, s_next: State, a_next: Action</span>):</span></span><br><span class="line">        self.q[s][a] += self.lr * (r + self.discount * np.<span class="hljs-built_in">max</span>(self.q[s_next]) - self.q[s][a])</span><br></pre></td></tr></tbody></table></figure><p></p>
+本质上用现有的Q table中最好的action来bootrap 对应的最佳Q值，推导如下：
+<div>
+<p><span class="math display">\[
+\begin{aligned}
+q_{*}(s, a) &amp;=\mathbb{E}\left[R_{t+1}+\gamma \max _{a^{\prime}}
+q_{*}\left(S_{t+1}, a^{\prime}\right) \mid S_{t}=s, A_{t}=a\right] \\
+&amp;=\mathbb{E}[R \mid S_{t}=s, A_{t}=a] + \gamma\sum_{s^{\prime}}
+p\left(s^{\prime}\mid s, a\right)\max _{a^{\prime}}
+q_{*}\left(s^{\prime}, a^{\prime}\right) \\
+&amp;\approx r + \gamma \max _{a^{\prime}} q_{*}\left(s^{\prime},
+a^{\prime}\right)
+\end{aligned}
+\]</span></p>
+</div>
+<p>Q-Learning 被称为 off-policy 的原因是它并没有完成一次policy
+iteration，而是直接用已有的 Q 来不断近似 <span class="math inline">\(Q_{*}\)</span>。</p>
+<p>对比下面的Q-Learning 伪代码和之前的 SARSA
+版本可以发现，Q-Learning少了一次模拟后的 <span class="math inline">\(A_{t+1}\)</span>，这也是Q-Learning
+中执行policy和预估Q值（即off-policy）分离的一个特征。</p>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\textbf{Q-learning (off-policy TD Control) for estimating } \pi
+\approx \pi_{*} \\
+&amp; \text{Algorithm parameters: step size }\alpha \in ({0,1}]\text{,
+small }\epsilon &gt; 0 \\
+&amp; \text{Initialize }Q(s,a),  \text{for all } s \in \mathcal{S}^{+},
+a \in \mathcal{A}(s) \text{, arbitrarily except that } Q(terminal,
+\cdot) = 0 \\
+&amp; \text{Loop for each episode:}\\
+&amp; \quad \text{Initialize }S\\
+&amp; \quad \text{Loop for each step of episode:} \\
+&amp; \quad \quad \text{Choose } A \text{ from } S \text{ using policy
+derived from } Q \text{ (e.g., } \epsilon\text{-greedy)} \\
+&amp; \quad \quad \text{Take action }A,  \text { observe } R, S^{\prime}
+\\
+&amp; \quad \quad Q(S,A) \leftarrow Q(S,A) + \alpha[R+\gamma
+\max_{a}Q(S^{\prime}, a) - Q(S,A)] \\
+&amp; \quad \quad S \leftarrow S^{\prime}\\
+&amp; \quad \text{until }S\text{ is terminal} \\
+\end{align*}
+\]</span></p>
+</div>
+<h3 id="q-learning-训练分析">Q-Learning 训练分析</h3>
+<p>Q-Learning 1000次episode就可以持久稳定住。</p>
+<figure>
+<img src="/zh/2020/rl-sutton-cartpole-sarsa-qlearning/cartpole_exp_sarsa_1000.gif">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="sarsa-改进版-expected-sarsa">SARSA 改进版 Expected SARSA</h2>
+<p>Expected SARSA 改进了 SARSA
+的地方在于考虑到了在某一状态下的现有策略动作分布，以此来减少variance，加快收敛，具体更新规则为：</p>
+<div>
+<p><span class="math display">\[
+\begin{aligned}
+Q(S_t,A_t) &amp;\leftarrow Q(S_t,A_t) + \alpha[R_{t+1}+\gamma
+\mathbb{E}_{\pi}[Q(S_{t+1}, A_{t+1} \mid S_{t+1})] - Q(S_t,A_t)] \\
+&amp;\leftarrow Q(S_t,A_t) + \alpha[R_{t+1}+\gamma \sum_{a}
+\pi\left(a\mid S_{t+1}\right) Q(S_{t+1}, a) - Q(S_t,A_t)] \\
+\end{aligned}
+\]</span></p>
+</div>
+<p>注意在实现中，update_q() 不仅更新了Q table，还显示更新了执行policy
+<span class="math inline">\(\pi\)</span>。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExpectedSarsaAgent</span>(<span class="hljs-params">CartPoleAbstractAgent</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_q</span>(<span class="hljs-params">self, s: State, a: Action, r, s_next: State, a_next: Action</span>):</span></span><br><span class="line">        self.q[s][a] = self.q[s][a] + self.lr * (r + self.discount * np.dot(self.pi[s_next], self.q[s_next]) - self.q[s][a])</span><br><span class="line">        <span class="hljs-comment"># update pi[s]</span></span><br><span class="line">        best_a = np.random.choice(np.where(self.q[s] == <span class="hljs-built_in">max</span>(self.q[s]))[<span class="hljs-number">0</span>])</span><br><span class="line">        n_actions = self.env.action_space.n</span><br><span class="line">        self.pi[s][:] = self.epsilon / n_actions</span><br><span class="line">        self.pi[s][best_a] = <span class="hljs-number">1</span> - (n_actions - <span class="hljs-number">1</span>) * (self.epsilon / n_actions)</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>同样的，Expected SARSA 1000次迭代也能比较好的学到最佳policy。</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/OpenAI-Gym/">#OpenAI Gym</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Dynamic-Programming/">#Dynamic Programming</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/tsp-3-pointer-net/">TSP问题从DP算法到深度学习3：Pointer Network</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/leetcode-matrix-power/">Leetcode矩阵快速幂运算解法</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/rl-sutton-cartpole-sarsa-qlearning/">https://blog.myencyclopedia.top/zh/2020/rl-sutton-cartpole-sarsa-qlearning/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/rl-sutton-cartpole-sarsa-qlearning/">https://myencyclopedia.github.io/zh/2020/rl-sutton-cartpole-sarsa-qlearning/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/rl-sutton-cartpole-sarsa-qlearning/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/rl-sutton-cartpole-sarsa-qlearning/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

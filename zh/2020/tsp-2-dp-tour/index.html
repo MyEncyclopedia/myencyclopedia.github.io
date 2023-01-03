@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>TSP问题从DP算法到深度学习2：欧氏空间数据集的DP解 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/tsp-2-dp-tour/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="本篇是TSP问题从DP算法到深度学习系列第二篇。  第一篇: 递归DP方法 AC AIZU TSP问题 第二篇: 二维空间TSP数据集及其DP解法 第三篇: 深度学习 Pointer Networks 的 Pytorch实现 第四篇: 搜寻最有可能路径：Viterbi算法和其他 第五篇: 深度强化学习无监督算法的 Pytorch实现  AIZU TSP 自底向上迭代DP解 上一篇中，我们用Pyth">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TSP问题从DP算法到深度学习2：欧氏空间数据集的DP解">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/tsp-2-dp-tour/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="本篇是TSP问题从DP算法到深度学习系列第二篇。  第一篇: 递归DP方法 AC AIZU TSP问题 第二篇: 二维空间TSP数据集及其DP解法 第三篇: 深度学习 Pointer Networks 的 Pytorch实现 第四篇: 搜寻最有可能路径：Viterbi算法和其他 第五篇: 深度强化学习无监督算法的 Pytorch实现  AIZU TSP 自底向上迭代DP解 上一篇中，我们用Pyth">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/tsp-2-dp-tour/ver3-top-down.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/tsp-2-dp-tour/ver3-bottom-up.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/tsp-2-dp-tour/tsp10_full.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/tsp-2-dp-tour/tsp10_tour.png">
+<meta property="article:published_time" content="2020-09-19T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.034Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="Dynamic Programming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/tsp-2-dp-tour/ver3-top-down.svg">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#aizu-tsp-自底向上迭代dp解">1&nbsp;&nbsp;<b>AIZU TSP 自底向上迭代DP解</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#迭代dp-ac代码">1.1&nbsp;&nbsp;迭代DP AC代码</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#一个欧式空间tsp数据集">2&nbsp;&nbsp;<b>一个欧式空间TSP数据集</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#ptr_net-tsp-的python代码">3&nbsp;&nbsp;<b>PTR_NET TSP 的Python代码</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#初始化init-graph-edges">3.1&nbsp;&nbsp;初始化Init Graph Edges</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#辅助变量记录父节点">3.2&nbsp;&nbsp;辅助变量记录父节点</a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#aizu-tsp-%E8%87%AA%E5%BA%95%E5%90%91%E4%B8%8A%E8%BF%AD%E4%BB%A3dp%E8%A7%A3"><span class="toc-text">AIZU TSP 自底向上迭代DP解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%AD%E4%BB%A3dp-ac%E4%BB%A3%E7%A0%81"><span class="toc-text">迭代DP AC代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%AC%A7%E5%BC%8F%E7%A9%BA%E9%97%B4tsp%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-text">一个欧式空间TSP数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ptr_net-tsp-%E7%9A%84python%E4%BB%A3%E7%A0%81"><span class="toc-text">PTR_NET TSP 的Python代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96init-graph-edges"><span class="toc-text">初始化Init Graph Edges</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%85%E5%8A%A9%E5%8F%98%E9%87%8F%E8%AE%B0%E5%BD%95%E7%88%B6%E8%8A%82%E7%82%B9"><span class="toc-text">辅助变量记录父节点</span></a></li></ol></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            TSP问题从DP算法到深度学习2：欧氏空间数据集的DP解
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-09-19T18:45:01.000Z" itemprop="datePublished">9月 20 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            12 分钟 读完 (约 1761 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>本篇是TSP问题从DP算法到深度学习系列第二篇。</p>
+<ul>
+<li><p><a href="/zh/2020/tsp-2-dp-tour/!--swig￼11--">第一篇: 递归DP方法 AC AIZU
+TSP问题</a></p></li>
+<li><p><strong><a href="/zh/2020/tsp-2-dp-tour/!--swig￼12--">第二篇:
+二维空间TSP数据集及其DP解法</a></strong></p></li>
+<li><p>第三篇: 深度学习 Pointer Networks 的 Pytorch实现</p></li>
+<li><p>第四篇: 搜寻最有可能路径：Viterbi算法和其他</p></li>
+<li><p>第五篇: 深度强化学习无监督算法的 Pytorch实现</p></li>
+</ul>
+<h2 id="aizu-tsp-自底向上迭代dp解">AIZU TSP 自底向上迭代DP解</h2>
+<p>上一篇中，我们用Python 3和Java
+8完成了自顶向下递归版本的DP解。我们继续改进代码，将它转换成标准DP方式：自底向上的迭代DP版本。下图是3个点TSP问题的递归调用图。</p>
+<p><img src="/zh/2020/tsp-2-dp-tour/ver3-top-down.svg" title="3点TSP递归调用图"></p>
+<p>将这个图反过来检查状态的依赖关系，可以很容易发现规律：首先计算状态位含有一个1的点，接着是两个1的节点，最后是状态位三个1的点。简而言之，在计算状态位为n+1个1的节点时需要用到n个1的节点的计算结果，如果能依照这样的
+topological 顺序来的话，就可以去除递归，写成迭代（循环）版本的DP。</p>
+<p><img src="/zh/2020/tsp-2-dp-tour/ver3-bottom-up.svg" title="3点TSP状态依赖"></p>
+<p>迭代算法的Java 伪代码如下</p>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> bitset_num = N; bitset_num &gt;=<span class="hljs-number">0</span>; bitset_num++) {</span><br><span class="line">	<span class="hljs-keyword">while</span>(hasNextCombination(bitset_num)) {</span><br><span class="line">		<span class="hljs-keyword">int</span> state = nextCombination(bitset_num);</span><br><span class="line">		<span class="hljs-comment">// compute dp[state][v], v-th bit is set in state</span></span><br><span class="line">		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> v = <span class="hljs-number">0</span>; v &lt; n; v++) {</span><br><span class="line">			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> u = <span class="hljs-number">0</span>; u &lt; n; u++) {</span><br><span class="line">				<span class="hljs-comment">// for each u not reached by this state</span></span><br><span class="line">				<span class="hljs-keyword">if</span> (!include(state, u)) {</span><br><span class="line">					dp[state][v] = min(dp[state][v], </span><br><span class="line">						dp[new_state_include_u][u] + dist[v][u]);</span><br><span class="line">				}</span><br><span class="line">			}</span><br><span class="line">		}</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>举例来说，dp[00010][1] 是从顶点0出发，刚经过顶点1的最小距离 <span class="math inline">\(0 \rightarrow 1 \rightarrow ? \rightarrow ?
+\rightarrow ? \rightarrow 0\)</span>。</p>
+<p>为了找到最小距离值，就必须遍历所有可能的下一个可能的顶点u
+（第一个问号位置）。 <span class="math display">\[
+(0 \rightarrow 1) +
+\begin{align*}
+  \min \left\lbrace
+  \begin{array}{r@{}l}
+    2 \rightarrow ? \rightarrow ? \rightarrow 0 + dist(1,2)
+\qquad\text{    new_state=[00110][2] } \qquad\\\\
+    3 \rightarrow ? \rightarrow ?  \rightarrow 0 + dist(1,3)
+\qquad\text{    new_state=[01010][3] } \qquad\\\\
+    4 \rightarrow ? \rightarrow ?  \rightarrow 0 + dist(1,4)
+\qquad\text{    new_state=[10010][4] } \qquad
+  \end{array}
+  \right.
+\end{align*}
+\]</span></p>
+<h3 id="迭代dp-ac代码">迭代DP AC代码</h3>
+<p>以下是AC 的Java 算法核心代码。完整代码在 github/MyEncyclopedia 的<a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/blob/master/tsp/alg_aizu/Main_loop.java">tsp/alg_aizu/Main_loop.java</a>。</p>
+<figure class="highlight java hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">solve</span><span class="hljs-params">()</span> </span>{</span><br><span class="line">	<span class="hljs-keyword">int</span> N = g.V_NUM;</span><br><span class="line">	<span class="hljs-keyword">long</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">long</span>[<span class="hljs-number">1</span> &lt;&lt; N][N];</span><br><span class="line">	<span class="hljs-comment">// init dp[][] with MAX</span></span><br><span class="line">	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; dp.length; i++) {</span><br><span class="line">		Arrays.fill(dp[i], Integer.MAX_VALUE);</span><br><span class="line">	}</span><br><span class="line">	dp[(<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> state = (<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">2</span>; state &gt;= <span class="hljs-number">0</span>; state--) {</span><br><span class="line">		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> v = <span class="hljs-number">0</span>; v &lt; N; v++) {</span><br><span class="line">			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> u = <span class="hljs-number">0</span>; u &lt; N; u++) {</span><br><span class="line">				<span class="hljs-keyword">if</span> (((state &gt;&gt; u) &amp; <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>) {</span><br><span class="line">					dp[state][v] = Math.min(dp[state][v], dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] + g.edges[v][u]);</span><br><span class="line">				}</span><br><span class="line">			}</span><br><span class="line">		}</span><br><span class="line">	}</span><br><span class="line">	<span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] == Integer.MAX_VALUE ? -<span class="hljs-number">1</span> : dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>];</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>很显然，时间算法复杂度对应了三重 for 循环，为 O(<span class="math inline">\(2^n * n * n\)</span>) = O(<span class="math inline">\(2^n*n^2\)</span> )。</p>
+<p>类似的，Python 3 AC 代码如下。完整代码在 github/MyEncyclopedia 的<a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/blob/master/tsp/alg_aizu/TSP_loop.py">tsp/alg_aizu/TSP_loop.py</a>。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TSPSolver</span>:</span></span><br><span class="line">    g: Graph</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, g: Graph</span>):</span></span><br><span class="line">        self.g = g</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">solve</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        :param v:</span></span><br><span class="line"><span class="hljs-string">        :param state:</span></span><br><span class="line"><span class="hljs-string">        :return: -1 means INF</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        N = self.g.v_num</span><br><span class="line">        dp = [[INT_INF <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span> &lt;&lt; N)]</span><br><span class="line"></span><br><span class="line">        dp[(<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> state <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>((<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">2</span>, -<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>):</span><br><span class="line">            <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">                <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">                    <span class="hljs-keyword">if</span> ((state &gt;&gt; u) &amp; <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>:</span><br><span class="line">                        <span class="hljs-keyword">if</span> dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] != INT_INF <span class="hljs-keyword">and</span> self.g.edges[v][u] != INT_INF:</span><br><span class="line">                            <span class="hljs-keyword">if</span> dp[state][v] == INT_INF:</span><br><span class="line">                                dp[state][v] = dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] + self.g.edges[v][u]</span><br><span class="line">                            <span class="hljs-keyword">else</span>:</span><br><span class="line">                                dp[state][v] = <span class="hljs-built_in">min</span>(dp[state][v], dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] + self.g.edges[v][u])</span><br><span class="line">        <span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>]</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="一个欧式空间tsp数据集">一个欧式空间TSP数据集</h2>
+<p>至此，TSP的DP解法全部讲解完毕。接下去，我们引入一个二维欧式空间的TSP数据集
+<a target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/0B2fg8yPGn2TCMzBtS0o4Q2RJaEU">PTR_NET
+on Google Drive</a> ，这个数据集是 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1506.03134">Pointer Networks</a> 的作者
+Oriol Vinyals 用于模型的训练测试而引入的。</p>
+<p>数据集的每一行格式如下：</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x1, y1, x2, y2, ... output 1 v1 v2 v3 ... 1</span><br></pre></td></tr></tbody></table></figure>
+<p>一行开始为n个点的x， y坐标，接着是
+output，再接着是1，表示从顶点1出发，经v1，v2，...，返回1，注意顶点编号从1开始。</p>
+<p>十个顶点数据集的一些数据示例如下：</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0.607122 0.664447 0.953593 0.021519 0.757626 0.921024 0.586376 0.433565 0.786837 0.052959 0.016088 0.581436 0.496714 0.633571 0.227777 0.971433 0.665490 0.074331 0.383556 0.104392 output 1 3 8 6 10 9 5 2 4 7 1 </span><br><span class="line">0.930534 0.747036 0.277412 0.938252 0.794592 0.794285 0.961946 0.261223 0.070796 0.384302 0.097035 0.796306 0.452332 0.412415 0.341413 0.566108 0.247172 0.890329 0.429978 0.232970 output 1 3 2 9 6 5 8 7 10 4 1 </span><br><span class="line">0.686712 0.087942 0.443054 0.277818 0.494769 0.985289 0.559706 0.861138 0.532884 0.351913 0.712561 0.199273 0.554681 0.657214 0.909986 0.277141 0.931064 0.639287 0.398927 0.406909 output 1 5 2 10 7 4 3 9 8 6 1 </span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>画出第一个例子的全部顶点和边。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt</span><br><span class="line">points=<span class="hljs-string">'0.607122 0.664447 0.953593 0.021519 0.757626 0.921024 0.586376 0.433565 0.786837 0.052959 0.016088 0.581436 0.496714 0.633571 0.227777 0.971433 0.665490 0.074331 0.383556 0.104392'</span></span><br><span class="line">float_list = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">float</span>(x), points.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"></span><br><span class="line">x,y = [],[]</span><br><span class="line"><span class="hljs-keyword">for</span> idx, p <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(float_list):</span><br><span class="line">  <span class="hljs-keyword">if</span> idx % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>:</span><br><span class="line">    x.append(p)</span><br><span class="line">  <span class="hljs-keyword">else</span>:</span><br><span class="line">    y.append(p)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(x)):</span><br><span class="line">  <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(x)):</span><br><span class="line">    <span class="hljs-keyword">if</span> i == j:</span><br><span class="line">      <span class="hljs-keyword">continue</span></span><br><span class="line">    plt.plot((x[i],x[j]),(y[i],y[j]))</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></tbody></table></figure>
+<figure>
+<img src="/zh/2020/tsp-2-dp-tour/tsp10_full.png">
+<figcaption>
+全连接的图
+</figcaption>
+</figure>
+<p>这个例子的最短TSP旅程为 <span class="math display">\[
+1 \rightarrow 3 \rightarrow 8 \rightarrow 6 \rightarrow 10 \rightarrow 9
+\rightarrow 5 \rightarrow 2 \rightarrow 4 \rightarrow 7 \rightarrow 1
+\]</span></p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tour_str = <span class="hljs-string">'1 3 8 6 10 9 5 2 4 7 1'</span></span><br><span class="line">tour = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x), tour_str.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(tour)-<span class="hljs-number">1</span>):</span><br><span class="line">  p1 = tour[i] - <span class="hljs-number">1</span></span><br><span class="line">  p2 = tour[i + <span class="hljs-number">1</span>] - <span class="hljs-number">1</span></span><br><span class="line">  plt.plot((x[p1],x[p2]),(y[p1],y[p2]))</span><br><span class="line">plt.show()</span><br></pre></td></tr></tbody></table></figure>
+<figure>
+<img src="/zh/2020/tsp-2-dp-tour/tsp10_tour.png">
+<figcaption>
+最短路径
+</figcaption>
+</figure>
+<h2 id="ptr_net-tsp-的python代码">PTR_NET TSP 的Python代码</h2>
+<h3 id="初始化init-graph-edges">初始化Init Graph Edges</h3>
+<p>在之前的自顶向下的递归版本中，需要做一些改动。首先，是图的初始化，我们依然延续之前的邻接矩阵来表示，由于这次的图是无向图，对于任意两个顶点，需要初始化双向的边。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">g: Graph = Graph(N)</span><br><span class="line"><span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">	<span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">		diff_x = coordinates[v][<span class="hljs-number">0</span>] - coordinates[u][<span class="hljs-number">0</span>]</span><br><span class="line">		diff_y = coordinates[v][<span class="hljs-number">1</span>] - coordinates[u][<span class="hljs-number">1</span>]</span><br><span class="line">		dist: <span class="hljs-built_in">float</span> = math.sqrt(diff_x * diff_x + diff_y * diff_y)</span><br><span class="line">		g.setDist(u, v, dist)</span><br><span class="line">		g.setDist(v, u, dist)</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="辅助变量记录父节点">辅助变量记录父节点</h3>
+<p>另一大改动是需要在遍历过程中保存的顶点关联信息，以便在最终找到最短路径值时可以回溯对应的完整路径。在下面代码中，使用parent[bitstate][v]
+来保存此状态下最小路径对应的顶点u。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ret: <span class="hljs-built_in">float</span> = FLOAT_INF</span><br><span class="line">u_min: <span class="hljs-built_in">int</span> = -<span class="hljs-number">1</span></span><br><span class="line">	<span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.g.v_num):</span><br><span class="line">		<span class="hljs-keyword">if</span> (state &amp; (<span class="hljs-number">1</span> &lt;&lt; u)) == <span class="hljs-number">0</span>:</span><br><span class="line">			s: <span class="hljs-built_in">float</span> = self._recurse(u, state | <span class="hljs-number">1</span> &lt;&lt; u)</span><br><span class="line">				<span class="hljs-keyword">if</span> s + edges[v][u] &lt; ret:</span><br><span class="line">					ret = s + edges[v][u]</span><br><span class="line">					u_min = u</span><br><span class="line">	dp[state][v] = ret</span><br><span class="line">	self.parent[state][v] = u_min</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>当最终最短行程确定后，根据parent的信息可以按图索骥找到完整的行程顶点信息。
+</p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_form_tour</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">	self.tour = [<span class="hljs-number">0</span>]</span><br><span class="line">	bit = <span class="hljs-number">0</span></span><br><span class="line">	v = <span class="hljs-number">0</span></span><br><span class="line">	<span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.g.v_num - <span class="hljs-number">1</span>):</span><br><span class="line">		v = self.parent[bit][v]</span><br><span class="line">		self.tour.append(v)</span><br><span class="line">		bit = bit | (<span class="hljs-number">1</span> &lt;&lt; v)</span><br><span class="line">	self.tour.append(<span class="hljs-number">0</span>)</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>需要注意的是，有可能存在多个最短行程，它们的距离值是一致的。这种情况下，代码输出的最短路径可能和数据集output后行程路径不一致，但是的两者的总距离是一致的。下面的代码验证了这一点。
+</p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">tsp: TSPSolver = TSPSolver(g)</span><br><span class="line">tsp.solve()</span><br><span class="line"></span><br><span class="line">output_dist: <span class="hljs-built_in">float</span> = <span class="hljs-number">0.0</span></span><br><span class="line">output_tour = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x) - <span class="hljs-number">1</span>, output.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"><span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(output_tour)):</span><br><span class="line">	pre_v = output_tour[v-<span class="hljs-number">1</span>]</span><br><span class="line">	curr_v = output_tour[v]</span><br><span class="line">	diff_x = coordinates[pre_v][<span class="hljs-number">0</span>] - coordinates[curr_v][<span class="hljs-number">0</span>]</span><br><span class="line">	diff_y = coordinates[pre_v][<span class="hljs-number">1</span>] - coordinates[curr_v][<span class="hljs-number">1</span>]</span><br><span class="line">	dist: <span class="hljs-built_in">float</span> = math.sqrt(diff_x * diff_x + diff_y * diff_y)</span><br><span class="line">	output_dist += dist</span><br><span class="line"></span><br><span class="line">	passed = <span class="hljs-built_in">abs</span>(tsp.dist - output_dist) &lt; <span class="hljs-number">10e-5</span></span><br><span class="line">	<span class="hljs-keyword">if</span> passed:</span><br><span class="line">		<span class="hljs-built_in">print</span>(<span class="hljs-string">f'passed dist=<span class="hljs-subst">{tsp.tour}</span>'</span>)</span><br><span class="line">	<span class="hljs-keyword">else</span>:</span><br><span class="line">		<span class="hljs-built_in">print</span>(<span class="hljs-string">f'Min Tour Distance = <span class="hljs-subst">{output_dist}</span>, Computed Tour Distance = <span class="hljs-subst">{tsp.dist}</span>, Expected Tour = <span class="hljs-subst">{output_tour}</span>, Result = <span class="hljs-subst">{tsp.tour}</span>'</span>)</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>本文所有代码在 github/MyEncyclopedia tsp/alg_plane 中。</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Algorithm/">#Algorithm</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Java/">#Java</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Deep-Learning/">#Deep Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Dynamic-Programming/">#Dynamic Programming</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/rl-sutton-blackjack-1/">通过代码学Sutton强化学习3：21点游戏的策略蒙特卡洛值预测</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/rl-sutton-gridworld-2/">通过代码学Sutton强化学习2：Grid World 策略迭代和值迭代</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/tsp-2-dp-tour/">https://blog.myencyclopedia.top/zh/2020/tsp-2-dp-tour/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/tsp-2-dp-tour/">https://myencyclopedia.github.io/zh/2020/tsp-2-dp-tour/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/tsp-2-dp-tour/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/tsp-2-dp-tour/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

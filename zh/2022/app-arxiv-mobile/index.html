@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>手机和微信中完美重排和阅读 Arxiv 论文 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2022/app-arxiv-mobile/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="如果你是一个重度论文阅读者，一定会在自己的笔记本上全副武装。但是也许只是偶尔，也会心血来潮地在手机端查看一篇论文，此时，你打开的这篇从 Arxiv 下载的论文，就像下图上半部分所示，时间稍长，便会觉得文字，公式和图片不忍直视。你多么希望在手机端查看PDF，也像图中下半部分一样重新排版来轻松阅读。  Arxiv 论文手机智能重排和阅读服务 现在，MyEncyclopedia 推出了智能的手机端重排和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手机和微信中完美重排和阅读 Arxiv 论文">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="如果你是一个重度论文阅读者，一定会在自己的笔记本上全副武装。但是也许只是偶尔，也会心血来潮地在手机端查看一篇论文，此时，你打开的这篇从 Arxiv 下载的论文，就像下图上半部分所示，时间稍长，便会觉得文字，公式和图片不忍直视。你多么希望在手机端查看PDF，也像图中下半部分一样重新排版来轻松阅读。  Arxiv 论文手机智能重排和阅读服务 现在，MyEncyclopedia 推出了智能的手机端重排和">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/mobile-conv-html.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/view.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/op_01_enter_service.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/op_02_get_token.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/op_03_enter.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/op_04_arxiv_id.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/op_05_trigger_html.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/op_06_view_html.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/mobile-conv-pdf.jpg">
+<meta property="article:published_time" content="2022-05-27T18:45:01.000Z">
+<meta property="article:modified_time" content="2023-01-03T02:30:31.965Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="arxiv">
+<meta property="article:tag" content="Service">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/mobile-conv-html.jpg">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#arxiv-论文手机智能重排和阅读服务">1&nbsp;&nbsp;<b>Arxiv
+论文手机智能重排和阅读服务</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#微信操作步骤">1.1&nbsp;&nbsp;微信操作步骤</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#pdf-论文双列切割成单列服务">1.2&nbsp;&nbsp;PDF 论文双列切割成单列服务</a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#arxiv-%E8%AE%BA%E6%96%87%E6%89%8B%E6%9C%BA%E6%99%BA%E8%83%BD%E9%87%8D%E6%8E%92%E5%92%8C%E9%98%85%E8%AF%BB%E6%9C%8D%E5%8A%A1"><span class="toc-text">Arxiv
+论文手机智能重排和阅读服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AE%E4%BF%A1%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="toc-text">微信操作步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pdf-%E8%AE%BA%E6%96%87%E5%8F%8C%E5%88%97%E5%88%87%E5%89%B2%E6%88%90%E5%8D%95%E5%88%97%E6%9C%8D%E5%8A%A1"><span class="toc-text">PDF 论文双列切割成单列服务</span></a></li></ol></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            手机和微信中完美重排和阅读 Arxiv 论文
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-05-27T18:45:01.000Z" itemprop="datePublished">5月 28 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            3 分钟 读完 (约 502 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>如果你是一个重度论文阅读者，一定会在自己的笔记本上全副武装。但是也许只是偶尔，也会心血来潮地在手机端查看一篇论文，此时，你打开的这篇从
+Arxiv
+下载的论文，就像下图上半部分所示，时间稍长，便会觉得文字，公式和图片不忍直视。你多么希望在手机端查看PDF，也像图中下半部分一样重新排版来轻松阅读。</p>
+<p><img src="/zh/2022/app-arxiv-mobile/mobile-conv-html.jpg"></p>
+<h2 id="arxiv-论文手机智能重排和阅读服务">Arxiv
+论文手机智能重排和阅读服务</h2>
+<p>现在，MyEncyclopedia 推出了智能的手机端重排和阅读 arxiv
+论文服务。手机端只需浏览器甚至在<strong>微信</strong>中就能将指定的
+arxiv 论文重排成适应移动端的格式，并在线浏览。</p>
+<p>具体效果如下</p>
+<p><img src="/zh/2022/app-arxiv-mobile/view.gif"></p>
+<h3 id="微信操作步骤">微信操作步骤</h3>
+<p>下面，以手机微信为例，讲解详细步骤。其他浏览器可以直接点击
+<code>https://mydoc.myencyclopedia.top/app</code>，操作步骤类似。</p>
+<ul>
+<li><p>进入 MyEncyclopedia 公众号，回复 <code>?</code> 点击
+<code>AI在线服务</code>。 <img src="/zh/2022/app-arxiv-mobile/op_01_enter_service.jpg"></p></li>
+<li><p>拷贝显示的口令</p></li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_02_get_token.jpg"></p>
+<ul>
+<li>返回到公众号后回复口令，登录使用服务</li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_03_enter.jpg"></p>
+<ul>
+<li>输入 <code>Arxiv ID</code>，点击 <code>Go to Page</code></li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_04_arxiv_id.jpg"></p>
+<ul>
+<li>在新页面点击 <code>Convert Html</code></li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_05_trigger_html.jpg"></p>
+<ul>
+<li>等待大约十几分钟，再次进入服务页面，此时，若下载转换任务成功，出现如下页面，点击<code>View
+Html</code>，即可在微信浏览器中完美查看论文了。</li>
+</ul>
+<p><img src="/zh/2022/app-arxiv-mobile/op_06_view_html.jpg"></p>
+<h3 id="pdf-论文双列切割成单列服务">PDF 论文双列切割成单列服务</h3>
+<p>此外，也提供将 arxiv PDF从双列切割成单列服务。即上图中的<code>Convert
+PDF</code>
+按钮，切割后的PDF文件可以在线浏览，或者下载到手机离线查看。也欢迎大家尝试。</p>
+<p><img src="/zh/2022/app-arxiv-mobile/mobile-conv-pdf.jpg"></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/arxiv/">#arxiv</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Service/">#Service</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2022/docker-flair-transformer-zero-shot/">玩转transformer+flair zero shot 短文本分类：无需翻墙或额外下载模型和数据集的CPU docker镜像</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2022/bili-youtube/">油管搬运大学计划纪念B站千粉千赞</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2022/app-arxiv-mobile/">https://blog.myencyclopedia.top/zh/2022/app-arxiv-mobile/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/">https://myencyclopedia.github.io/zh/2022/app-arxiv-mobile/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2022/app-arxiv-mobile/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2022/app-arxiv-mobile/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

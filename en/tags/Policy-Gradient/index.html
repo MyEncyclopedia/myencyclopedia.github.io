@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Tag: Policy Gradient - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/tags/Policy-Gradient/" rel="alternate" hreflang="zh" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta property="og:type" content="website">
+<meta property="og:title" content="MyEncyclopedia">
+<meta property="og:url" content="https://myencyclopedia.github.io/en/tags/Policy-Gradient/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="MyEncyclopedia">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/en">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/en/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/en/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section section-heading">
+    <div class="container">
+        <div class="content">
+            <h5>#Policy Gradient</h5>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/en/2020/tsp-5-rl/" itemprop="url">TSP From DP to Deep Learning. Episode 5: Reinforcement Learning</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-06-12T18:45:01.000Z" itemprop="datePublished">Jun 13 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/en/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            13 minutes read (About 1952 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>This is fifth episode of series: TSP From DP to Deep Learning. In
+this episode, we turn to Reinforcement Learning technology, in
+particular, a model-free policy gradient method that embeds pointer
+network to learn minimal tour without supervised best tour label in
+dataset. Full list of this series is listed below.</p>
+<ul>
+<li><p>Episode 1: <a href="/en/2020/tsp-5-rl/!--swig￼3--">AC TSP on AIZU with recursive
+DP</a></p></li>
+<li><p>Episode 2: <a href="/en/2020/tsp-5-rl/!--swig￼4--">TSP DP on a Euclidean
+Dataset</a></p></li>
+<li><p>Episode 3: <a href="/en/2020/tsp-5-rl/!--swig￼5--">Pointer Networks in
+PyTorch</a></p></li>
+<li><p>Episode 4: <a href="/en/2020/tsp-5-rl/!--swig￼6--">Search for Most Likely
+Sequence</a></p></li>
+<li><p><strong>Episode 5: <a href="/en/2020/tsp-5-rl/!--swig￼7--">Reinforcement Learning
+PyTorch Implementation</a></strong></p></li>
+</ul>
+<h2 id="pointer-network-refresher">Pointer Network Refresher</h2>
+<p>In previous episode <a href="/en/2020/tsp-5-rl/!--swig￼8--">Pointer Networks in
+PyTorch</a>, we implemented <em>Pointer Networks </em> in PyTorch with a
+2D Euclidean dataset.</p>
+Recall that the input is a graph as a sequence of <span class="math inline">\(n\)</span> cities in a two dimensional space
+<div>
+<p><span class="math display">\[
+s=\{\mathbf{x_i}\}_{i=1}^n,   \mathbf{x}_{i} \in \mathbb{R}^{2}
+\]</span></p>
+</div>
+<p>The output is a permutation of the points <span class="math inline">\(\pi\)</span>, that visits each city exactly once
+and returns to starting point with minimal distance.</p>
+<p>Let us define the total distance of a <span class="math inline">\(\pi\)</span> with respect to <span class="math inline">\(s\)</span> as <span class="math inline">\(L\)</span></p>
+<div>
+<p><span class="math display">\[
+L(\pi |
+s)=\left\|\mathbf{x}_{\pi(n)}-\mathbf{x}_{\pi(1)}\right\|_{2}+\sum_{i=1}^{n-1}\left\|\mathbf{x}_{\pi(i)}-\mathbf{x}_{\pi(i+1)}\right\|_{2}
+\]</span></p>
+</div>
+<p>The stochastic policy <span class="math inline">\(p(\pi | s;
+\theta)\)</span>, parameterized by <span class="math inline">\(\theta\)</span>, is aiming to assign high
+probabilities to short tours and low probabilities to long tours. The
+joint probability assumes independency to allow factorization.</p>
+<p><span class="math display">\[
+p(\pi | s; \theta) =
+\prod_{i=1}^{n} p\left({\pi(i)} | {\pi(1)}, \ldots, {\pi(i-1)} , s;
+\theta\right)
+\]</span></p>
+<p>The loss of the model is cross entropy between the network’s output
+probabilities <span class="math inline">\(\pi\)</span> and the best tour
+<span class="math inline">\(\hat{\pi}\)</span> generated by a TSP
+solver.</p>
+<p>Contribution made by Pointer networks is that it addressed the
+constraint in that it allows for dynamic index value given by the
+particular test case, instead of from a fixed-size vocabulary.</p>
+<h2 id="reinforcement-learning">Reinforcement Learning</h2>
+<p><em>Neural Combinatorial Optimization with Reinforcement Learning
+</em> combines the power of Reinforcement Learning (RL) and Deep
+Learning to further eliminate the constraint required by Pointer
+Networks that the training dataset has to have supervised labels of best
+tour. With deep RL, test cases do not need to have a solution which is
+common pattern in deep RL. In the paper, a model-free policy-based RL
+method is adopted.</p>
+<h3 id="model-free-policy-gradient-methods">Model-Free Policy Gradient
+Methods</h3>
+<p>In the authoritative RL book, <em>chapter 8 Planning and Learning
+with Tabular Methods</em>, there are two major approaches in RL. One is
+model-based RL and the other is model-free RL. Distinction between the
+two relies on concept of model, which is stated as follows:</p>
+<blockquote>
+<p>By a model of the environment we mean anything that an agent can use
+to predict how the environment will respond to its actions.</p>
+</blockquote>
+<p>So model-based methods demand a model of the environment, and hence
+dynamic programming and heuristic search fall into this category. With
+model in mind, utility of the state can be computed in various ways and
+planning stage that essentially builds policy is needed before agent can
+take any action. In contrast, model-free methods, without building a
+model, are more direct, ignoring irrelevant information and just
+focusing on the policy which is ultimately needed. Typical examples of
+model-free methods are Monte Carlo Control and Temporal-Difference
+Learning. &gt;Model-based methods rely on planning as their primary
+component, while model-free methods primarily rely on learning.</p>
+<p>In TSP problem, the model is fully determined by all points given,
+and no feedback is generated for each decision made. So it's unclear to
+how to map state value with a tour. Therefore, we turn to model-free
+methods. In <em>chapter 13 Policy Gradient Methods</em>, a particular
+approximation model-free method that learns a parameterized policy that
+can select actions without consulting a value function. This approach
+fits perfectly with aforementioned pointer networks where the
+parameterized policy <span class="math inline">\(p(\pi | s;
+\theta)\)</span> is already defined.</p>
+Training objective is obvious, the expected tour length of <span class="math inline">\(\pi_\theta\)</span> which, given an input graph
+<span class="math inline">\(s\)</span>
+<div>
+<p><span class="math display">\[
+J(\theta | s) = \mathbb{E}_{\pi \sim p_{\theta}(\cdot | s)} L(\pi | s)
+\]</span></p>
+</div>
+<h3 id="monte-carlo-policy-gradient-reinforce-with-baseline">Monte Carlo
+Policy Gradient: REINFORCE with Baseline</h3>
+<p>In order to find largest reward, a typical way is to optimize the
+parameters <span class="math inline">\(\theta\)</span> in the direction
+of derivative: <span class="math inline">\(\nabla_{\theta} J(\theta |
+s)\)</span>.</p>
+<p><span class="math display">\[
+\nabla_{\theta} J(\theta | s)=\nabla_{\theta} \mathbb{E}_{\pi \sim
+p_{\theta}(\cdot | s)} L(\pi | s)
+\]</span></p>
+<p>RHS of equation above is the derivative of expectation that we have
+no idea how to compute or approximate. Here comes the well-known
+REINFORCE trick that turns it into form of expectation of derivative,
+which can be approximated easily with Monte Carlo sampling, where the
+expectation is replaced by averaging.</p>
+<p><span class="math display">\[
+\nabla_{\theta} J(\theta | s)=\mathbb{E}_{\pi \sim p_{\theta}(. |
+s)}\left[L(\pi | s) \nabla_{\theta} \log p_{\theta}(\pi | s)\right]
+\]</span></p>
+<p>Another common trick, subtracting a baseline <span class="math inline">\(b(s)\)</span>, leads the derivative of reward to
+the following equation. Note that <span class="math inline">\(b(s)\)</span> denotes a baseline function that
+must not depend on <span class="math inline">\(\pi\)</span>. <span class="math display">\[
+\nabla_{\theta} J(\theta | s)=\mathbb{E}_{\pi \sim p_{\theta}(. |
+s)}\left[(L(\pi | s)-b(s)) \nabla_{\theta} \log p_{\theta}(\pi |
+s)\right]
+\]</span></p>
+<p>The trick is explained in as:</p>
+<blockquote>
+<p>Because the baseline could be uniformly zero, this update is a strict
+generalization of REINFORCE. In general, the baseline leaves the
+expected value of the update unchanged, but it can have a large effect
+on its variance.</p>
+</blockquote>
+<p>Finally, the equation can be approximated with Monte Carlo sampling,
+assuming drawing <span class="math inline">\(B\)</span> i.i.d: <span class="math inline">\(s_{1}, s_{2}, \ldots, s_{B} \sim
+\mathcal{S}\)</span> and sampling a single tour per graph: $ <em>{i}
+p</em>{}(. | s_{i}) $, as follows <span class="math display">\[
+\nabla_{\theta} J(\theta) \approx \frac{1}{B}
+\sum_{i=1}^{B}\left(L\left(\pi_{i} |
+s_{i}\right)-b\left(s_{i}\right)\right) \nabla_{\theta} \log
+p_{\theta}\left(\pi_{i} | s_{i}\right)
+\]</span></p>
+<h3 id="actor-critic-methods">Actor Critic Methods</h3>
+<p>REINFORCE with baseline works quite well but it also has
+disadvantage.</p>
+<blockquote>
+<p>REINFORCE with baseline is unbiased and will converge asymptotically
+to a local minimum, but like all Monte Carlo methods it tends to learn
+slowly (produce estimates of high variance) and to be inconvenient to
+implement online or for continuing problems.</p>
+</blockquote>
+<p>A typical improvement is actor–critic methods, that not only learn
+approximate policy, the actor job, but also learn approximate value
+funciton, the critic job. This is because it reduces variance and
+accelerates learning via a bootstrapping critic that introduce bias
+which is often beneficial. Detailed algorithm in the paper illustrated
+below.</p>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\textbf{Algorithm Actor-critic training} \\
+&amp;1: \quad \textbf{ procedure } \text{ TRAIN(training set }S \text{,
+training steps }T \text{, batch size } B \text{)} \\
+&amp;2: \quad \quad \text{Initialize pointer network params } \theta \\
+&amp;3: \quad \quad \text{Initialize critic network params } \theta_{v}
+\\
+&amp;4: \quad \quad \textbf{for }t=1  \text{ to } T  \textbf{ do }\\
+&amp;5: \quad \quad \quad s_{i} \sim \operatorname{SAMPLE INPUT }  (S)
+\text{ for } i \in\{1, \ldots, B\} \\
+&amp;6: \quad \quad \quad  \pi_{i} \sim \operatorname{SAMPLE SOLUTION }
+\left(p_{\theta}\left(\cdot | s_{i}\right)\right) \text{ for } i \in\{1,
+\ldots, B\} \\
+&amp;7: \quad \quad \quad b_{i} \leftarrow
+b_{\theta_{v}}\left(s_{i}\right) \text{ for } i \in\{1, \ldots, B\} \\
+&amp;8: \quad \quad \quad g_{\theta} \leftarrow \frac{1}{B}
+\sum_{i=1}^{B}\left(L\left(\pi_{i} | s_{i}\right)-b_{i}\right)
+\nabla_{\theta} \log p_{\theta}\left(\pi_{i} | s_{i}\right) \\
+&amp;9: \quad \quad \quad  \mathcal{L}_{v} \leftarrow \frac{1}{B}
+\sum_{i=1}^{B} \left\| b_{i}-L\left(\pi_{i}\right) \right\| _{2}^{2} \\
+&amp;10: \quad \quad \quad  \theta \leftarrow \operatorname{ADAM} \left(
+\theta, g_{\theta} \right) \\
+&amp;11: \quad \quad \quad  \theta_{v} \leftarrow
+\operatorname{ADAM}\left(\theta_{v}, \nabla_{\theta_{v}}
+\mathcal{L}_{v}\right) \\
+&amp;12: \quad \quad \textbf{end for} \\
+&amp;13: \quad \textbf{return } \theta  \\
+&amp;14: \textbf{end procedure}
+\end{align*}
+\]</span></p>
+</div>
+<h2 id="implementation-in-pytorch">Implementation in PyTorch</h2>
+<h3 id="beam-search-in-opennmt-py">Beam Search in OpenNMT-py</h3>
+<p>In <a href="/en/2020/tsp-5-rl/!--swig￼9--">Episode 4 Search for Most Likely
+Sequence</a>, an 3x3 rectangle trellis is given and several decoding
+methods are illustrated in plain python. In PyTorch version, there is a
+package <strong>OpenNMT-py</strong> that supports efficient batched beam
+search. But due to its complicated <strong>BeamSearch</strong> usage,
+previous problem is demonstrated using its API. For its details, please
+refer to <a target="_blank" rel="noopener" href="https://medium.com/the-artificial-impostor/implementing-beam-search-part-1-4f53482daabe">Implementing
+Beam Search — Part 1: A Source Code Analysis of OpenNMT-py</a></p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> copy <span class="hljs-keyword">import</span> deepcopy</span><br><span class="line"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> exp</span><br><span class="line"><span class="hljs-keyword">import</span> torch</span><br><span class="line"><span class="hljs-keyword">from</span> onmt.translate <span class="hljs-keyword">import</span> BeamSearch, GNMTGlobalScorer</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run_example</span>():</span></span><br><span class="line">    BEAM_SIZE = <span class="hljs-number">2</span></span><br><span class="line">    N_BEST = <span class="hljs-number">1</span></span><br><span class="line">    BATCH_SZ = <span class="hljs-number">1</span></span><br><span class="line">    SEQ_LEN = <span class="hljs-number">3</span></span><br><span class="line"></span><br><span class="line">    initial = [<span class="hljs-number">0.35</span>, <span class="hljs-number">0.25</span>, <span class="hljs-number">0.4</span>]</span><br><span class="line">    transition_matrix = [</span><br><span class="line">        [<span class="hljs-number">0.3</span>, <span class="hljs-number">0.6</span>, <span class="hljs-number">0.1</span>],</span><br><span class="line">        [<span class="hljs-number">0.4</span>, <span class="hljs-number">0.2</span>, <span class="hljs-number">0.4</span>],</span><br><span class="line">        [<span class="hljs-number">0.3</span>, <span class="hljs-number">0.4</span>, <span class="hljs-number">0.4</span>]]</span><br><span class="line"></span><br><span class="line">    beam = BeamSearch(BEAM_SIZE, BATCH_SZ, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, N_BEST, GNMTGlobalScorer(<span class="hljs-number">0.7</span>, <span class="hljs-number">0.</span>, <span class="hljs-string">"avg"</span>, <span class="hljs-string">"none"</span>), <span class="hljs-number">0</span>, <span class="hljs-number">30</span>, <span class="hljs-literal">False</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">set</span>(), <span class="hljs-literal">False</span>, <span class="hljs-number">0.</span>)</span><br><span class="line">    device_init = torch.zeros(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span><br><span class="line">    beam.initialize(device_init, torch.randint(<span class="hljs-number">0</span>, <span class="hljs-number">30</span>, (BATCH_SZ,)))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">printBestNPaths</span>(<span class="hljs-params">beam: BeamSearch, step: <span class="hljs-built_in">int</span></span>):</span></span><br><span class="line">        <span class="hljs-built_in">print</span>(<span class="hljs-string">f'\nstep <span class="hljs-subst">{step}</span> beam results:'</span>)</span><br><span class="line">        <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(BEAM_SIZE):</span><br><span class="line">            best_path = beam.alive_seq[k].squeeze().tolist()[<span class="hljs-number">1</span>:]</span><br><span class="line">            prob = exp(beam.topk_log_probs[<span class="hljs-number">0</span>][k])</span><br><span class="line">            <span class="hljs-built_in">print</span>(<span class="hljs-string">f'prob <span class="hljs-subst">{prob:<span class="hljs-number">.3</span>f}</span> with path <span class="hljs-subst">{best_path}</span>'</span>)</span><br><span class="line"></span><br><span class="line">    init_scores = torch.log(torch.tensor([initial], dtype=torch.<span class="hljs-built_in">float</span>))</span><br><span class="line">    init_scores = deepcopy(init_scores.repeat(BATCH_SZ * BEAM_SIZE, <span class="hljs-number">1</span>))</span><br><span class="line">    beam.advance(init_scores, <span class="hljs-literal">None</span>)</span><br><span class="line">    printBestNPaths(beam, <span class="hljs-number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> step <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(SEQ_LEN - <span class="hljs-number">1</span>):</span><br><span class="line">        idx_list = beam.topk_ids.squeeze().tolist()</span><br><span class="line">        beam_transition = []</span><br><span class="line">        <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> idx_list:</span><br><span class="line">            beam_transition.append(transition_matrix[idx])</span><br><span class="line">        beam_transition_tensor = torch.log(torch.tensor(beam_transition))</span><br><span class="line"></span><br><span class="line">        beam.advance(beam_transition_tensor, <span class="hljs-literal">None</span>)</span><br><span class="line">        beam.update_finished()</span><br><span class="line"></span><br><span class="line">        printBestNPaths(beam, step + <span class="hljs-number">1</span>)</span><br></pre></td></tr></tbody></table></figure>
+<p>The output is as follows. When <span class="math inline">\(k=2\)</span> and 3 steps, the most likely sequence
+is <span class="math inline">\(0 \rightarrow 1 \rightarrow 0\)</span>,
+whose probability is 0.084. </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">step 0 beam results:</span><br><span class="line">prob 0.400 with path [2]</span><br><span class="line">prob 0.350 with path [0]</span><br><span class="line"></span><br><span class="line">step 1 beam results:</span><br><span class="line">prob 0.210 with path [0, 1]</span><br><span class="line">prob 0.160 with path [2, 1]</span><br><span class="line"></span><br><span class="line">step 2 beam results:</span><br><span class="line">prob 0.084 with path [0, 1, 0]</span><br><span class="line">prob 0.000 with path [0, 1, 2]</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure><p></p>
+<h3 id="rl-with-pointernetwork">RL with PointerNetwork</h3>
+<p>The complete code is on <a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/blob/master/tsp/rl_pytorch/TSP_RL_main.py">github
+TSP RL</a>. Below are partial core classes.</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CombinatorialRL</span>(<span class="hljs-params">nn.Module</span>):</span></span><br><span class="line">    actor: PointerNet</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, rnn_type, use_embedding, embedding_size, hidden_size, seq_len, num_glimpse, tanh_exploration, use_tanh, attention</span>):</span></span><br><span class="line">        <span class="hljs-built_in">super</span>(CombinatorialRL, self).__init__()</span><br><span class="line"></span><br><span class="line">        self.actor = PointerNet(rnn_type, use_embedding, embedding_size, hidden_size, seq_len, num_glimpse, tanh_exploration, use_tanh, attention)</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">forward</span>(<span class="hljs-params">self, batch_input: Tensor</span>) -&gt; <span class="hljs-type">Tuple</span>[Tensor, <span class="hljs-type">List</span>[Tensor], <span class="hljs-type">List</span>[Tensor], <span class="hljs-type">List</span>[Tensor]]:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Args:</span></span><br><span class="line"><span class="hljs-string">            batch_input: [batch_size * 2 * seq_len]</span></span><br><span class="line"><span class="hljs-string">        Returns:</span></span><br><span class="line"><span class="hljs-string">            R: Tensor of shape [batch_size]</span></span><br><span class="line"><span class="hljs-string">            action_prob_list: List of [seq_len], tensor shape [batch_size]</span></span><br><span class="line"><span class="hljs-string">            action_list:      List of [seq_len], tensor shape [batch_size * 2]</span></span><br><span class="line"><span class="hljs-string">            action_idx_list:  List of [seq_len], tensor shape [batch_size]</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        batch_size = batch_input.size(<span class="hljs-number">0</span>)</span><br><span class="line">        seq_len = batch_input.size(<span class="hljs-number">2</span>)</span><br><span class="line">        prob_list, action_idx_list = self.actor(batch_input)</span><br><span class="line"></span><br><span class="line">        action_list = []</span><br><span class="line">        batch_input = batch_input.transpose(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)</span><br><span class="line">        <span class="hljs-keyword">for</span> action_id <span class="hljs-keyword">in</span> action_idx_list:</span><br><span class="line">            action_list.append(batch_input[[x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(batch_size)], action_id.data, :])</span><br><span class="line">        action_prob_list = []</span><br><span class="line">        <span class="hljs-keyword">for</span> prob, action_id <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(prob_list, action_idx_list):</span><br><span class="line">            action_prob_list.append(prob[[x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(batch_size)], action_id.data])</span><br><span class="line"></span><br><span class="line">        R = self.reward(action_list)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">return</span> R, action_prob_list, action_list, action_idx_list</span><br><span class="line">        </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reward</span>(<span class="hljs-params">self, sample_solution: <span class="hljs-type">List</span>[Tensor]</span>) -&gt; Tensor:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">        Computes total distance of tour</span></span><br><span class="line"><span class="hljs-string">        Args:</span></span><br><span class="line"><span class="hljs-string">            sample_solution: list of size N, each tensor of shape [batch_size * 2]</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        Returns:</span></span><br><span class="line"><span class="hljs-string">            tour_len: [batch_size]</span></span><br><span class="line"><span class="hljs-string"></span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        batch_size = sample_solution[<span class="hljs-number">0</span>].size(<span class="hljs-number">0</span>)</span><br><span class="line">        n = <span class="hljs-built_in">len</span>(sample_solution)</span><br><span class="line">        tour_len = Variable(torch.zeros([batch_size]))</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n - <span class="hljs-number">1</span>):</span><br><span class="line">            tour_len += torch.norm(sample_solution[i] - sample_solution[i + <span class="hljs-number">1</span>], dim=<span class="hljs-number">1</span>)</span><br><span class="line">        tour_len += torch.norm(sample_solution[n - <span class="hljs-number">1</span>] - sample_solution[<span class="hljs-number">0</span>], dim=<span class="hljs-number">1</span>)</span><br><span class="line">        <span class="hljs-keyword">return</span> tour_len</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="references">References</h2>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+    
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/Policy-Gradient/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/Policy-Gradient/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.en.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

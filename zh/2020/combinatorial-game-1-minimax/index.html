@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>组合游戏系列1: Leetcode中的Minimax 和 Alpha Beta剪枝 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/combinatorial-game-1-minimax/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="本系列，我们来看看在一种常见的组合游戏——回合制棋盘类游戏中，如何用算法来解决问题。首先，我们会介绍并解决搜索空间较小的问题，引入经典的博弈算法和相关理论，最终实现在大搜索空间中的Deep RL近似算法。在此基础上可以理解AlphaGo的原理和工作方式。 本系列的第一篇，我们介绍3个Leetcode中的零和回合制游戏，从最初的暴力解法，到动态规划最终演变成博弈论里的经典算法： minimax 以及">
+<meta property="og:type" content="article">
+<meta property="og:title" content="组合游戏系列1: Leetcode中的Minimax 和 Alpha Beta剪枝">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="本系列，我们来看看在一种常见的组合游戏——回合制棋盘类游戏中，如何用算法来解决问题。首先，我们会介绍并解决搜索空间较小的问题，引入经典的博弈算法和相关理论，最终实现在大搜索空间中的Deep RL近似算法。在此基础上可以理解AlphaGo的原理和工作方式。 本系列的第一篇，我们介绍3个Leetcode中的零和回合制游戏，从最初的暴力解法，到动态规划最终演变成博弈论里的经典算法： minimax 以及">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/nim_7_brute.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/nim_7_dp.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/nim_plot.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/486_predict_winner_brute.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/486_predict_winner_dp.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/Minimax.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/486_minimax.gv.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/Poda_alfa-beta.svg">
+<meta property="article:published_time" content="2020-06-26T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:17.930Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="LeetCode">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Gaming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/nim_7_brute.gv.svg">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#leetcode-292-nim-game-简单">1&nbsp;&nbsp;<b>Leetcode 292 Nim Game (简单)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#leetcode-486-predict-the-winner-中等">2&nbsp;&nbsp;<b>Leetcode 486 Predict the
+Winner (中等)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#leetcode-464-can-i-win-中等">3&nbsp;&nbsp;<b>Leetcode 464 Can I Win (中等)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#minimax-算法">4&nbsp;&nbsp;<b>Minimax 算法</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#minimax-486-predict-the-winner">4.1&nbsp;&nbsp;Minimax: 486 Predict the
+Winner</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#minimax-464-can-i-win">4.2&nbsp;&nbsp;Minimax: 464 Can I Win</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#alpha-beta-剪枝">5&nbsp;&nbsp;<b>Alpha-Beta 剪枝</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#alpha-beta-pruning-486-predict-the-winner">5.1&nbsp;&nbsp;Alpha-Beta Pruning:
+486 Predict the Winner</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#alpha-beta-pruning-464-can-i-win">5.2&nbsp;&nbsp;Alpha-Beta Pruning: 464 Can I
+Win</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#c-java-javascript-ac-486-predict-the-winner">6&nbsp;&nbsp;<b>C++, Java,
+Javascript AC 486 Predict the Winner</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#java-ac-code">6.1&nbsp;&nbsp;Java AC Code</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#c-ac-code">6.2&nbsp;&nbsp;C++ AC Code</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#javascript-ac-code">6.3&nbsp;&nbsp;Javascript AC Code</a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#leetcode-292-nim-game-%E7%AE%80%E5%8D%95"><span class="toc-text">Leetcode 292 Nim Game (简单)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#leetcode-486-predict-the-winner-%E4%B8%AD%E7%AD%89"><span class="toc-text">Leetcode 486 Predict the
+Winner (中等)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#leetcode-464-can-i-win-%E4%B8%AD%E7%AD%89"><span class="toc-text">Leetcode 464 Can I Win (中等)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#minimax-%E7%AE%97%E6%B3%95"><span class="toc-text">Minimax 算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#minimax-486-predict-the-winner"><span class="toc-text">Minimax: 486 Predict the
+Winner</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#minimax-464-can-i-win"><span class="toc-text">Minimax: 464 Can I Win</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#alpha-beta-%E5%89%AA%E6%9E%9D"><span class="toc-text">Alpha-Beta 剪枝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#alpha-beta-pruning-486-predict-the-winner"><span class="toc-text">Alpha-Beta Pruning:
+486 Predict the Winner</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#alpha-beta-pruning-464-can-i-win"><span class="toc-text">Alpha-Beta Pruning: 464 Can I
+Win</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#c-java-javascript-ac-486-predict-the-winner"><span class="toc-text">C++, Java,
+Javascript AC 486 Predict the Winner</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#java-ac-code"><span class="toc-text">Java AC Code</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#c-ac-code"><span class="toc-text">C++ AC Code</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#javascript-ac-code"><span class="toc-text">Javascript AC Code</span></a></li></ol></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            组合游戏系列1: Leetcode中的Minimax 和 Alpha Beta剪枝
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-06-26T18:45:01.000Z" itemprop="datePublished">6月 27 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            31 分钟 读完 (约 4610 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>本系列，我们来看看在一种常见的组合游戏——回合制棋盘类游戏中，如何用算法来解决问题。首先，我们会介绍并解决搜索空间较小的问题，引入经典的博弈算法和相关理论，最终实现在大搜索空间中的Deep
+RL近似算法。在此基础上可以理解AlphaGo的原理和工作方式。
+本系列的第一篇，我们介绍3个Leetcode中的零和回合制游戏，从最初的暴力解法，到动态规划最终演变成博弈论里的经典算法：
+minimax 以及 alpha beta 剪枝。</p>
+<ul>
+<li><p><strong><a href="/zh/2020/combinatorial-game-1-minimax/zh/combinatorial-game-1-minimax.md">第一篇:
+Leetcode中的Minimax 和 Alpha Beta剪枝</a></strong></p></li>
+<li><p><a href="/zh/2020/combinatorial-game-1-minimax/zh/combinatorial-game-2-tictactoe.md">第二篇:
+井字棋Leetcode系列题解和Minimax最佳策略实现</a></p></li>
+<li><p><a href="/zh/2020/combinatorial-game-1-minimax/zh/combinatorial-game-3-openai-gym-pygame.md">第三篇:
+井字棋、五子棋的OpenAI Gym GUI环境</a></p></li>
+<li><p><a href="/zh/2020/combinatorial-game-1-minimax/zh/combinatorial-game-4-alphago-zero-theory/index.md">第四篇:
+AlphaGo Zero 强化学习算法原理深度分析</a></p></li>
+<li><p><a href="/zh/2020/combinatorial-game-1-minimax/zh/combinatorial-game-5-alphago-zero-connect-n/index.md">第五篇:
+井字棋、五子棋AlphaGo Zero 算法实战</a></p></li>
+</ul>
+<h2 id="leetcode-292-nim-game-简单">Leetcode 292 Nim Game (简单)</h2>
+<p>简单题 <a target="_blank" rel="noopener" href="https://leetcode.com/problems/nim-game/">Leetcode 292
+Nim Game</a>。</p>
+<blockquote>
+<p>你和你的朋友，两个人一起玩
+Nim游戏：桌子上有一堆石头，每次你们轮流拿掉 1 - 3 块石头。
+拿掉最后一块石头的人就是获胜者。你作为先手。<br>
+你们是聪明人，每一步都是最优解。
+编写一个函数，来判断你是否可以在给定石头数量的情况下赢得游戏。</p>
+</blockquote>
+<blockquote>
+<p>示例:<br> 输入: 4<br> 输出: false <br> 解释: 如果堆中有 4
+块石头，那么你永远不会赢得比赛；因为无论你拿走 1 块、2 块 还是 3
+块石头，最后一块石头总是会被你的朋友拿走。</p>
+</blockquote>
+<p>定义 <span class="math inline">\(f(n)\)</span> 为有<span class="math inline">\(n\)</span>个石头并采取最优策略的游戏结果， <span class="math inline">\(f(n)\)</span>的值只有可能是赢或者输。考察前几个结果：<span class="math inline">\(f(1) = f(2) = f(3) = Win\)</span>，然后来计算<span class="math inline">\(f(4)\)</span>。因为玩家采取最优策略（只要有一种走法让对方必输，玩家获胜），对于4来说，玩家能走的可能是拿掉1块、2块或3块，但是无论剩余何种局面，对方都是必赢，因此，4就是必输。总的说来，递归关系如下：
+<span class="math display">\[
+f(n) = \neg (f(n-1) \land f(n-2) \land f(n-3))
+\]</span></p>
+这个递归式可以直接翻译成Python 3代码 <figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># TLE</span></span><br><span class="line"><span class="hljs-comment"># Time Complexity: O(exponential)</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution_BruteForce</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">canWinNim</span>(<span class="hljs-params">self, n: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> n &lt;= <span class="hljs-number">3</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>):</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.canWinNim(n - i):</span><br><span class="line">                <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span></span><br></pre></td></tr></tbody></table></figure>
+以上的递归公式和代码很像fibonacci数的递归定义和暴力解法，因此对应的时间复杂度也是指数级的，提交代码以后会TLE。下图画出了当n=7时的递归调用，注意
+5 被扩展向下重复执行了两次，4重复了4次。
+<figure>
+<img src="/zh/2020/combinatorial-game-1-minimax/nim_7_brute.gv.svg">
+<figcaption>
+292 Nim Game 暴力解法调用图 n=7
+</figcaption>
+</figure>
+我们采用和fibonacci一样的方式来优化算法：缓存较小n的结果以此来计算较大n的结果。
+Python 中，我们可以只加一行<strong>lru_cache</strong>
+decorator，来取得这种动态规划效果，下面的代码将复杂度降到了 <span class="math inline">\(O(N)\)</span>。 <figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># RecursionError: maximum recursion depth exceeded in comparison n=1348820612</span></span><br><span class="line"><span class="hljs-comment"># Time Complexity: O(N)</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution_DP</span>:</span></span><br><span class="line">    <span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache</span><br><span class="line"><span class="hljs-meta">    @lru_cache(<span class="hljs-params">maxsize=<span class="hljs-literal">None</span></span>)</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">canWinNim</span>(<span class="hljs-params">self, n: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> n &lt;= <span class="hljs-number">3</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>):</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.canWinNim(n - i):</span><br><span class="line">                <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span></span><br></pre></td></tr></tbody></table></figure>
+再来画出调用图：这次5和4就不再被展开重复计算，图中绿色的节点表示缓存命中。
+<figure>
+<img src="/zh/2020/combinatorial-game-1-minimax/nim_7_dp.gv.svg">
+<figcaption>
+292 Nim Game 动归解法调用图 n=7
+</figcaption>
+</figure>
+<p>但还是没有AC，因为当n=1348820612时，这种方式会导致栈溢出。再改成下面的循环版本，可惜还是TLE。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># TLE for 1348820612</span></span><br><span class="line"><span class="hljs-comment"># Time Complexity: O(N)</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">canWinNim</span>(<span class="hljs-params">self, n: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> n &lt;= <span class="hljs-number">3</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        last3, last2, last1 = <span class="hljs-literal">True</span>, <span class="hljs-literal">True</span>, <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>, n+<span class="hljs-number">1</span>):</span><br><span class="line">            this = <span class="hljs-keyword">not</span> (last3 <span class="hljs-keyword">and</span> last2 <span class="hljs-keyword">and</span> last1)</span><br><span class="line">            last3, last2, last1 = last2, last1, this</span><br><span class="line">        <span class="hljs-keyword">return</span> last1</span><br></pre></td></tr></tbody></table></figure>
+<p>由此看来，AC 版本需要低于<span class="math inline">\(O(n)\)</span>的算法复杂度。上面的写法似乎暗示输赢有周期性的规律。事实上，如果将输赢按照顺序画出来，就马上得出规律了：只要<span class="math inline">\(n \mod 4 = 0\)</span>
+就是输，否则赢。原因如下：当面临不能被4整除的数量时 <span class="math inline">\(4k+i (i=1,2,3)\)</span> ，一方总是可以拿走 <span class="math inline">\(i\)</span> 个，将<span class="math inline">\(4k\)</span>
+留给对手，而对方下轮又将返回不能被4整除的数，如此循环往复，直到这一方有1,
+2, 3 个，最终获胜。</p>
+<figure>
+<img src="/zh/2020/combinatorial-game-1-minimax/nim_plot.png">
+<figcaption>
+输赢分布
+</figcaption>
+</figure>
+<p>最终AC版本，只有一句语句。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Time Complexity: O(1)</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">canWinNim</span>(<span class="hljs-params">self, n: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">not</span> (n % <span class="hljs-number">4</span> == <span class="hljs-number">0</span>)</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="leetcode-486-predict-the-winner-中等">Leetcode 486 Predict the
+Winner (中等)</h2>
+<p>中等难度题目： <a target="_blank" rel="noopener" href="https://leetcode.com/problems/predict-the-winner/">Leetcode 486
+Predict the Winner</a>.</p>
+<blockquote>
+<p>给定一个表示分数的非负整数数组。
+玩家1从数组任意一端拿取一个分数，随后玩家2继续从剩余数组任意一端拿取分数，然后玩家1拿，……。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。<br>
+给定一个表示分数的数组，预测玩家1是否会成为赢家。你可以假设每个玩家的玩法都会使他的分数最大化。</p>
+</blockquote>
+<blockquote>
+<p>示例 1:<br> 输入: [1, 5, 2]<br> 输出: False<br> 解释:
+一开始，玩家1可以从1和2中进行选择。<br>
+如果他选择2（或者1），那么玩家2可以从1（或者2）和5中进行选择。如果玩家2选择了5，那么玩家1则只剩下1（或者2）可选。<br>
+所以，玩家1的最终分数为 1 + 2 = 3，而玩家2为 5。<br>
+因此，玩家1永远不会成为赢家，返回 False。<br></p>
+</blockquote>
+<blockquote>
+<p>示例 2:<br> 输入: [1, 5, 233, 7]<br> 输出: True<br> 解释:
+玩家1一开始选择1。然后玩家2必须从5和7中进行选择。无论玩家2选择了哪个，玩家1都可以选择233。<br>
+最终，玩家1（234分）比玩家2（12分）获得更多的分数，所以返回
+True，表示玩家1可以成为赢家。<br></p>
+</blockquote>
+<p>对于当前玩家，他有两种选择：左边或者右边的数。定义 maxDiff(l, r)
+为剩余子数组<span class="math inline">\([l,r]\)</span>时，当前玩家能取得的最大分差，那么</p>
+<p><span class="math display">\[
+\begin{equation*}
+  \operatorname{maxDiff}(l, r) = \max
+    \begin{cases}
+      nums[l] - \operatorname{maxDiff}(l + 1, r)\\\\
+      nums[r] - \operatorname{maxDiff}(l, r - 1)
+    \end{cases}       
+\end{equation*}
+\]</span></p>
+<p>对应的时间复杂度可以写出递归式，显然是指数级的： <span class="math display">\[
+f(n) = 2f(n-1) = O(2^n)
+\]</span></p>
+<p>采用暴力解法可以AC，但运算时间很长，接近TLE边缘 (6300ms)。
+</p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Time Complexity: O(2^N)</span></span><br><span class="line"><span class="hljs-comment"># Slow: 6300ms</span></span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">maxDiff</span>(<span class="hljs-params">self, l: <span class="hljs-built_in">int</span>, r:<span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> l == r:</span><br><span class="line">            <span class="hljs-keyword">return</span> self.nums[l]</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(self.nums[l] - self.maxDiff(l + <span class="hljs-number">1</span>, r), self.nums[r] - self.maxDiff(l, r - <span class="hljs-number">1</span>))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">PredictTheWinner</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        self.nums = nums</span><br><span class="line">        <span class="hljs-keyword">return</span> self.maxDiff(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(nums) - <span class="hljs-number">1</span>) &gt;= <span class="hljs-number">0</span></span><br></pre></td></tr></tbody></table></figure><p></p>
+从调用图也很容易看出是指数级的复杂度
+<figure>
+<img src="/zh/2020/combinatorial-game-1-minimax/486_predict_winner_brute.gv.svg">
+<figcaption>
+486 Predict the Winner 暴力解法调用图 n=4
+</figcaption>
+</figure>
+<p>上图中我们有重复计算的节点，例如[1-2]节点被计算了两次。使用 lru_cache
+大法，在maxDiff 上仅加了一句，就能以复杂度 <span class="math inline">\(O(n^2)\)</span>和运行时间 43ms AC。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Time Complexity: O(N^2)</span></span><br><span class="line"><span class="hljs-comment"># Fast: 43ms</span></span><br><span class="line"><span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-meta">    @lru_cache(<span class="hljs-params">maxsize=<span class="hljs-literal">None</span></span>)</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">maxDiff</span>(<span class="hljs-params">self, l: <span class="hljs-built_in">int</span>, r:<span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> l == r:</span><br><span class="line">            <span class="hljs-keyword">return</span> self.nums[l]</span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(self.nums[l] - self.maxDiff(l + <span class="hljs-number">1</span>, r), self.nums[r] - self.maxDiff(l, r - <span class="hljs-number">1</span>))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">PredictTheWinner</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        self.nums = nums</span><br><span class="line">        <span class="hljs-keyword">return</span> self.maxDiff(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(nums) - <span class="hljs-number">1</span>) &gt;= <span class="hljs-number">0</span></span><br></pre></td></tr></tbody></table></figure>
+动态规划解法调用图可以看出节点 [1-2] 这次没有被计算两次。
+<figure>
+<img src="/zh/2020/combinatorial-game-1-minimax/486_predict_winner_dp.gv.svg">
+<figcaption>
+486 Predict the Winner 动归解法调用图 n=4
+</figcaption>
+</figure>
+<h2 id="leetcode-464-can-i-win-中等">Leetcode 464 Can I Win (中等)</h2>
+<p>类似但稍有难度的题目 <a target="_blank" rel="noopener" href="https://leetcode.com/problems/can-i-win/">Leetcode 464 Can I
+Win</a>。难点在于使用了位的状态压缩。</p>
+<blockquote>
+<p>在 "100 game" 这个游戏中，两名玩家轮流选择从 1 到 10
+的任意整数，累计整数和，先使得累计整数和达到 100 的玩家，即为胜者。<br>
+如果我们将游戏规则改为 “玩家不能重复使用整数” 呢？<br>
+例如，两个玩家可以轮流从公共整数池中抽取从 1 到 15
+的整数（不放回），直到累计整数和 &gt;= 100。<br> 给定一个整数
+maxChoosableInteger （整数池中可选择的最大数）和另一个整数
+desiredTotal（累计和），判断先出手的玩家是否能稳赢（假设两位玩家游戏时都表现最佳）？<br>
+你可以假设 maxChoosableInteger 不会大于 20， desiredTotal 不会大于
+300。</p>
+</blockquote>
+<blockquote>
+<p>示例：<br> 输入：<br> maxChoosableInteger = 10<br> desiredTotal =
+11<br> 输出：<br> false<br> 解释：<br>
+无论第一个玩家选择哪个整数，他都会失败。<br> 第一个玩家可以选择从 1 到
+10 的整数。<br> 如果第一个玩家选择 1，那么第二个玩家只能选择从 2 到 10
+的整数。<br> 第二个玩家可以通过选择整数 10（那么累积和为 11 &gt;=
+desiredTotal），从而取得胜利.<br>
+同样地，第一个玩家选择任意其他整数，第二个玩家都会赢。<br></p>
+</blockquote>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-comment"># Time Complexity: O:(2^m*m), m: maxChoosableInteger</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache</span><br><span class="line"><span class="hljs-meta">    @lru_cache(<span class="hljs-params">maxsize=<span class="hljs-literal">None</span></span>)</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">recurse</span>(<span class="hljs-params">self, status: <span class="hljs-built_in">int</span>, currentTotal: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, self.maxChoosableInteger + <span class="hljs-number">1</span>):</span><br><span class="line">            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (status &gt;&gt; i &amp; <span class="hljs-number">1</span>):</span><br><span class="line">                new_status = <span class="hljs-number">1</span> &lt;&lt; i | status</span><br><span class="line">                <span class="hljs-keyword">if</span> currentTotal + i &gt;= self.desiredTotal:</span><br><span class="line">                    <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">                <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.recurse(new_status, currentTotal + i):</span><br><span class="line">                    <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span></span><br><span class="line">        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">canIWin</span>(<span class="hljs-params">self, maxChoosableInteger: <span class="hljs-built_in">int</span>, desiredTotal: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        self.maxChoosableInteger = maxChoosableInteger</span><br><span class="line">        self.desiredTotal = desiredTotal</span><br><span class="line"></span><br><span class="line">        <span class="hljs-built_in">sum</span> = maxChoosableInteger * (maxChoosableInteger + <span class="hljs-number">1</span>) / <span class="hljs-number">2</span></span><br><span class="line">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">sum</span> &lt; desiredTotal:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span></span><br><span class="line">        <span class="hljs-keyword">return</span> self.recurse(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>)</span><br></pre></td></tr></tbody></table></figure>
+<p>上面的代码算法复杂度为<span class="math inline">\(O(m
+2^m)\)</span>，m是maxChoosableInteger。由于所有状态的数量是<span class="math inline">\(2^m\)</span>，对于每个状态，最多会尝试 <span class="math inline">\(m\)</span> 走法。</p>
+<h2 id="minimax-算法">Minimax 算法</h2>
+<p>至此，我们AC了leetcode中的几道零和回合制博弈游戏。事实上，在这个领域有通用的算法：回合制博弈下的minimax。算法背景如下，两个玩家轮流玩，第一个玩家max的目的是将游戏的效用最大化，第二个玩家min则是最小化效用。比如，下面的节点表示玩家选取节点后游戏的效用，当两个玩家都能采取最优策略，Minimax
+算法从底层节点来计算，游戏的结果是最终max 玩家会得到-7。</p>
+<figure>
+<img src="/zh/2020/combinatorial-game-1-minimax/Minimax.svg">
+<figcaption>
+Wikipedia Minimax 例子
+</figcaption>
+</figure>
+<p>Minimax Python 3伪代码如下。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">minimax</span>(<span class="hljs-params">node: Node, depth: <span class="hljs-built_in">int</span>, maximizingPlayer: <span class="hljs-built_in">bool</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">if</span> depth == <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> is_terminal(node):</span><br><span class="line">        <span class="hljs-keyword">return</span> evaluate_terminal(node)</span><br><span class="line">    <span class="hljs-keyword">if</span> maximizingPlayer:</span><br><span class="line">        value:<span class="hljs-built_in">int</span> = −∞</span><br><span class="line">        <span class="hljs-keyword">for</span> child <span class="hljs-keyword">in</span> node:</span><br><span class="line">            value = <span class="hljs-built_in">max</span>(value, minimax(child, depth − <span class="hljs-number">1</span>, <span class="hljs-literal">False</span>))</span><br><span class="line">        <span class="hljs-keyword">return</span> value</span><br><span class="line">    <span class="hljs-keyword">else</span>: <span class="hljs-comment"># minimizing player</span></span><br><span class="line">        value := +∞</span><br><span class="line">        <span class="hljs-keyword">for</span> child <span class="hljs-keyword">in</span> node:</span><br><span class="line">            value = <span class="hljs-built_in">min</span>(value, minimax(child, depth − <span class="hljs-number">1</span>, <span class="hljs-literal">True</span>))</span><br><span class="line">        <span class="hljs-keyword">return</span> value</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="minimax-486-predict-the-winner">Minimax: 486 Predict the
+Winner</h3>
+<p>我们知道486 Predict the Winner
+是有minimax解法的，但如何具体实现，其难点在于如何定义合适的游戏价值或者效用。之前的解法中，我们定义maxDiff(l,
+r) 来表示当前玩家面临子区间 <span class="math inline">\([l, r]\)</span>
+时能取得的最大分差。对于minimax算法，max
+玩家要最大化游戏价值，min玩家要最小化游戏价值。先考虑最简单情况即只有一个数x时，若定义max玩家在此局面下得到这个数时游戏价值为
++x，则min玩家为-x，即max玩家得到的所有数为正（<span class="math inline">\(+a_1 + a_2 + ... =
+A\)</span>），min玩家得到的所有数为负（<span class="math inline">\(-b_1
+- b_2 - ... = -B\)</span>）。至此，max玩家的目标就是 <span class="math inline">\(max(A-B)\)</span> ，min玩家是 <span class="math inline">\(min(A-B)\)</span>。有了精确的定义和优化目标，代码只需要套一下上面的模版。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-comment"># max_player: max(A - B)</span></span><br><span class="line">    <span class="hljs-comment"># min_player: min(A - B)</span></span><br><span class="line"><span class="hljs-meta">    @lru_cache(<span class="hljs-params">maxsize=<span class="hljs-literal">None</span></span>)</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">minimax</span>(<span class="hljs-params">self, l: <span class="hljs-built_in">int</span>, r: <span class="hljs-built_in">int</span>, isMaxPlayer: <span class="hljs-built_in">bool</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> l == r:</span><br><span class="line">            <span class="hljs-keyword">return</span> self.nums[l] * (<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> isMaxPlayer <span class="hljs-keyword">else</span> -<span class="hljs-number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> isMaxPlayer:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(</span><br><span class="line">                self.nums[l] + self.minimax(l + <span class="hljs-number">1</span>, r, <span class="hljs-keyword">not</span> isMaxPlayer),</span><br><span class="line">                self.nums[r] + self.minimax(l, r - <span class="hljs-number">1</span>, <span class="hljs-keyword">not</span> isMaxPlayer))</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-built_in">min</span>(</span><br><span class="line">                -self.nums[l] + self.minimax(l + <span class="hljs-number">1</span>, r, <span class="hljs-keyword">not</span> isMaxPlayer),</span><br><span class="line">                -self.nums[r] + self.minimax(l, r - <span class="hljs-number">1</span>, <span class="hljs-keyword">not</span> isMaxPlayer))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">PredictTheWinner</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        self.nums = nums</span><br><span class="line">        v = self.minimax(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(nums) - <span class="hljs-number">1</span>, <span class="hljs-literal">True</span>)</span><br><span class="line">        <span class="hljs-keyword">return</span> v &gt;= <span class="hljs-number">0</span></span><br></pre></td></tr></tbody></table></figure>
+<figure>
+<img src="/zh/2020/combinatorial-game-1-minimax/486_minimax.gv.svg">
+<figcaption>
+Minimax 486 调用图 nums=[1, 5, 2, 4]
+</figcaption>
+</figure>
+<h3 id="minimax-464-can-i-win">Minimax: 464 Can I Win</h3>
+<p>该题目是很典型的此类游戏，即结果为赢输平，但是中间的状态没有直接对应的游戏价值。对于这样的问题，一般定义为，max玩家胜，价值
++1，min玩家胜，价值-1，平则0。下面的AC代码实现了 Minimax
+算法。算法中针对两个玩家都有剪枝（没有剪枝无法AC）。具体来说，max玩家一旦在某一节点取得胜利(value=1)，就停止继续向下搜索，因为这是他能取得的最好分数。同理，min玩家一旦取得-1也直接返回上层节点。这个剪枝可以泛化成
+alpha beta剪枝算法。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache</span><br><span class="line"><span class="hljs-meta">    @lru_cache(<span class="hljs-params">maxsize=<span class="hljs-literal">None</span></span>)</span></span><br><span class="line">    <span class="hljs-comment"># currentTotal &lt; desiredTotal</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">minimax</span>(<span class="hljs-params">self, status: <span class="hljs-built_in">int</span>, currentTotal: <span class="hljs-built_in">int</span>, isMaxPlayer: <span class="hljs-built_in">bool</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">import</span> math</span><br><span class="line">        <span class="hljs-keyword">if</span> status == self.allUsed:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>  <span class="hljs-comment"># draw: no winner</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> isMaxPlayer:</span><br><span class="line">            value = -math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, self.maxChoosableInteger + <span class="hljs-number">1</span>):</span><br><span class="line">                <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (status &gt;&gt; i &amp; <span class="hljs-number">1</span>):</span><br><span class="line">                    new_status = <span class="hljs-number">1</span> &lt;&lt; i | status</span><br><span class="line">                    <span class="hljs-keyword">if</span> currentTotal + i &gt;= self.desiredTotal:</span><br><span class="line">                        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>  <span class="hljs-comment"># shortcut</span></span><br><span class="line">                    value = <span class="hljs-built_in">max</span>(value, self.minimax(new_status, currentTotal + i, <span class="hljs-keyword">not</span> isMaxPlayer))</span><br><span class="line">                    <span class="hljs-keyword">if</span> value == <span class="hljs-number">1</span>:</span><br><span class="line">                        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">return</span> value</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            value = math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, self.maxChoosableInteger + <span class="hljs-number">1</span>):</span><br><span class="line">                <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (status &gt;&gt; i &amp; <span class="hljs-number">1</span>):</span><br><span class="line">                    new_status = <span class="hljs-number">1</span> &lt;&lt; i | status</span><br><span class="line">                    <span class="hljs-keyword">if</span> currentTotal + i &gt;= self.desiredTotal:</span><br><span class="line">                        <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>  <span class="hljs-comment"># shortcut</span></span><br><span class="line">                    value = <span class="hljs-built_in">min</span>(value, self.minimax(new_status, currentTotal + i, <span class="hljs-keyword">not</span> isMaxPlayer))</span><br><span class="line">                    <span class="hljs-keyword">if</span> value == -<span class="hljs-number">1</span>:</span><br><span class="line">                        <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">return</span> value</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="alpha-beta-剪枝">Alpha-Beta 剪枝</h2>
+<p>在464 Can I Win minimax
+算法代码实现中，我们发现有剪枝优化空间。对于每个节点，定义两个值alpha 和
+beta，表示从根节点到目前局面时，max玩家保证能取得的最小值以及min玩家能保证取得的最大值。初始时，根节点alpha
+= −∞ ， beta = +∞，表示游戏最终的价值在区间 [−∞,
++∞]中。在向下遍历的过程中，子节点先继承父节点的 alpha beta
+值进而继承区间 [alpha, beta]。当子节点在向下遍历的时候同步更新alpha 或者
+beta，一旦区间[alpha,
+beta]非法就立即向上返回。举个Wikimedia的例子来进一步说明：</p>
+<ol type="1">
+<li><p>根节点初始时： alpha = −∞, beta = +∞</p></li>
+<li><p>根节点，最左边子节点返回4后： alpha = 4, beta = +∞</p></li>
+<li><p>根节点，中间子节点返回5后： alpha = 5, beta = +∞</p></li>
+<li><p>最右Min节点（标1节点），初始时： alpha = 5, beta = +∞</p></li>
+<li><p>最右Min节点（标1节点），第一个子节点返回1后： alpha = 5, beta =
+1</p></li>
+</ol>
+<p>此时，最右Min节点的alpha, beta形成了无效区间[5,
+1]，满足了剪枝条件，因此可以不用计算它的第二个和第三个子节点。如果剩余子节点返回值
+&gt;
+1，比如2，由于这是个min节点，将会被已经到手的1替换。若其他子节点返回值
+&lt; 1，但由于min的父节点有效区间是[5,
++∞]，已经保证了&gt;=5，小于5的值也会被忽略。</p>
+<figure>
+<img src="/zh/2020/combinatorial-game-1-minimax/Poda_alfa-beta.svg">
+<figcaption>
+Wikimedia Alpha Beta 剪枝例子
+</figcaption>
+</figure>
+<p>Alpha Beta 剪枝 Python 3伪代码如下</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">alpha_beta</span>(<span class="hljs-params">node: Node, depth: <span class="hljs-built_in">int</span>, α: <span class="hljs-built_in">int</span>, β: <span class="hljs-built_in">int</span>, maximizingPlayer: <span class="hljs-built_in">bool</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">    <span class="hljs-keyword">if</span> depth == <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> is_terminal(node):</span><br><span class="line">        <span class="hljs-keyword">return</span> evaluate_terminal(node)</span><br><span class="line">    <span class="hljs-keyword">if</span> maximizingPlayer:</span><br><span class="line">        value: <span class="hljs-built_in">int</span> = −∞</span><br><span class="line">        <span class="hljs-keyword">for</span> child <span class="hljs-keyword">in</span> node:</span><br><span class="line">            value = <span class="hljs-built_in">max</span>(value, alphabeta(child, depth − <span class="hljs-number">1</span>, α, β, <span class="hljs-literal">False</span>))</span><br><span class="line">            α = <span class="hljs-built_in">max</span>(α, value)</span><br><span class="line">            <span class="hljs-keyword">if</span> α &gt;= β:</span><br><span class="line">                <span class="hljs-keyword">break</span> <span class="hljs-comment"># β cut-off</span></span><br><span class="line">        <span class="hljs-keyword">return</span> value</span><br><span class="line">    <span class="hljs-keyword">else</span>:</span><br><span class="line">        value: <span class="hljs-built_in">int</span> = +∞</span><br><span class="line">        <span class="hljs-keyword">for</span> child <span class="hljs-keyword">in</span> node:</span><br><span class="line">            value = <span class="hljs-built_in">min</span>(value, alphabeta(child, depth − <span class="hljs-number">1</span>, α, β, <span class="hljs-literal">True</span>))</span><br><span class="line">            β = <span class="hljs-built_in">min</span>(β, value)</span><br><span class="line">            <span class="hljs-keyword">if</span> β &lt;= α:</span><br><span class="line">                <span class="hljs-keyword">break</span> <span class="hljs-comment"># α cut-off</span></span><br><span class="line">        <span class="hljs-keyword">return</span> value</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="alpha-beta-pruning-486-predict-the-winner">Alpha-Beta Pruning:
+486 Predict the Winner</h3>
+<p>用 Alpha-Beta 剪枝 再次AC 486。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-keyword">import</span> math</span><br><span class="line"><span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache</span><br><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">alpha_beta</span>(<span class="hljs-params">self, l: <span class="hljs-built_in">int</span>, r: <span class="hljs-built_in">int</span>, curr: <span class="hljs-built_in">int</span>, isMaxPlayer: <span class="hljs-built_in">bool</span>, alpha: <span class="hljs-built_in">int</span>, beta: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">if</span> l == r:</span><br><span class="line">            <span class="hljs-keyword">return</span> curr + self.nums[l] * (<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> isMaxPlayer <span class="hljs-keyword">else</span> -<span class="hljs-number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> isMaxPlayer:</span><br><span class="line">            ret = self.alpha_beta(l + <span class="hljs-number">1</span>, r, curr + self.nums[l], <span class="hljs-keyword">not</span> isMaxPlayer, alpha, beta)</span><br><span class="line">            alpha = <span class="hljs-built_in">max</span>(alpha, ret)</span><br><span class="line">            <span class="hljs-keyword">if</span> alpha &gt;= beta:</span><br><span class="line">                <span class="hljs-keyword">return</span> alpha</span><br><span class="line">            ret = <span class="hljs-built_in">max</span>(ret, self.alpha_beta(l, r - <span class="hljs-number">1</span>, curr + self.nums[r], <span class="hljs-keyword">not</span> isMaxPlayer, alpha, beta))</span><br><span class="line">            <span class="hljs-keyword">return</span> ret</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            ret = self.alpha_beta(l + <span class="hljs-number">1</span>, r, curr - self.nums[l], <span class="hljs-keyword">not</span> isMaxPlayer, alpha, beta)</span><br><span class="line">            beta = <span class="hljs-built_in">min</span>(beta, ret)</span><br><span class="line">            <span class="hljs-keyword">if</span> alpha &gt;= beta:</span><br><span class="line">                <span class="hljs-keyword">return</span> beta</span><br><span class="line">            ret = <span class="hljs-built_in">min</span>(ret, self.alpha_beta(l, r - <span class="hljs-number">1</span>, curr - self.nums[r], <span class="hljs-keyword">not</span> isMaxPlayer, alpha, beta))</span><br><span class="line">            <span class="hljs-keyword">return</span> ret</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">PredictTheWinner</span>(<span class="hljs-params">self, nums: <span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]</span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">        self.nums = nums</span><br><span class="line">        v = self.alpha_beta(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(nums) - <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-literal">True</span>, -math.inf, math.inf)</span><br><span class="line">        <span class="hljs-keyword">return</span> v &gt;= <span class="hljs-number">0</span></span><br></pre></td></tr></tbody></table></figure>
+<h3 id="alpha-beta-pruning-464-can-i-win">Alpha-Beta Pruning: 464 Can I
+Win</h3>
+<p>464 Alpha-Beta 剪枝版本。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># AC</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span></span><br><span class="line">    <span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache</span><br><span class="line"><span class="hljs-meta">    @lru_cache(<span class="hljs-params">maxsize=<span class="hljs-literal">None</span></span>)</span></span><br><span class="line">    <span class="hljs-comment"># currentTotal &lt; desiredTotal</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">alpha_beta</span>(<span class="hljs-params">self, status: <span class="hljs-built_in">int</span>, currentTotal: <span class="hljs-built_in">int</span>, isMaxPlayer: <span class="hljs-built_in">bool</span>, alpha: <span class="hljs-built_in">int</span>, beta: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">import</span> math</span><br><span class="line">        <span class="hljs-keyword">if</span> status == self.allUsed:</span><br><span class="line">            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>  <span class="hljs-comment"># draw: no winner</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> isMaxPlayer:</span><br><span class="line">            value = -math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, self.maxChoosableInteger + <span class="hljs-number">1</span>):</span><br><span class="line">                <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (status &gt;&gt; i &amp; <span class="hljs-number">1</span>):</span><br><span class="line">                    new_status = <span class="hljs-number">1</span> &lt;&lt; i | status</span><br><span class="line">                    <span class="hljs-keyword">if</span> currentTotal + i &gt;= self.desiredTotal:</span><br><span class="line">                        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>  <span class="hljs-comment"># shortcut</span></span><br><span class="line">                    value = <span class="hljs-built_in">max</span>(value, self.alpha_beta(new_status, currentTotal + i, <span class="hljs-keyword">not</span> isMaxPlayer, alpha, beta))</span><br><span class="line">                    alpha = <span class="hljs-built_in">max</span>(alpha, value)</span><br><span class="line">                    <span class="hljs-keyword">if</span> alpha &gt;= beta:</span><br><span class="line">                        <span class="hljs-keyword">return</span> value</span><br><span class="line">            <span class="hljs-keyword">return</span> value</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            value = math.inf</span><br><span class="line">            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, self.maxChoosableInteger + <span class="hljs-number">1</span>):</span><br><span class="line">                <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (status &gt;&gt; i &amp; <span class="hljs-number">1</span>):</span><br><span class="line">                    new_status = <span class="hljs-number">1</span> &lt;&lt; i | status</span><br><span class="line">                    <span class="hljs-keyword">if</span> currentTotal + i &gt;= self.desiredTotal:</span><br><span class="line">                        <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>  <span class="hljs-comment"># shortcut</span></span><br><span class="line">                    value = <span class="hljs-built_in">min</span>(value, self.alpha_beta(new_status, currentTotal + i, <span class="hljs-keyword">not</span> isMaxPlayer, alpha, beta))</span><br><span class="line">                    beta = <span class="hljs-built_in">min</span>(beta, value)</span><br><span class="line">                    <span class="hljs-keyword">if</span> alpha &gt;= beta:</span><br><span class="line">                        <span class="hljs-keyword">return</span> value</span><br><span class="line">            <span class="hljs-keyword">return</span> value</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="c-java-javascript-ac-486-predict-the-winner">C++, Java,
+Javascript AC 486 Predict the Winner</h2>
+<p>最后介绍一种不同的DP实现：用C++, Java, Javascript
+实现自底向上的DP解法来AC leetcode
+486，当然其他语言没有Python的lru_cache大法。以下实现中，注意DP解的构建顺序，先解决小规模的问题，并在此基础上计算稍大的问题。值得一提的是，以下的循环写法严格保证了
+<span class="math inline">\(n^2\)</span>
+次循环，但是自顶向下的计划递归可能会少于 <span class="math inline">\(n^2\)</span>次循环。</p>
+<h3 id="java-ac-code">Java AC Code</h3>
+<figure class="highlight java hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// AC</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> </span>{</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">PredictTheWinner</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] nums)</span> </span>{</span><br><span class="line">        <span class="hljs-keyword">int</span> n = nums.length;</span><br><span class="line">        <span class="hljs-keyword">int</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[n][n];</span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {</span><br><span class="line">            dp[i][i] = nums[i];</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> l = n - <span class="hljs-number">1</span>; l &gt;= <span class="hljs-number">0</span>; l--) {</span><br><span class="line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> r = l + <span class="hljs-number">1</span>; r &lt; n; r++) {</span><br><span class="line">                dp[l][r] = Math.max(</span><br><span class="line">                        nums[l] - dp[l + <span class="hljs-number">1</span>][r],</span><br><span class="line">                        nums[r] - dp[l][r - <span class="hljs-number">1</span>]);</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">        <span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][n - <span class="hljs-number">1</span>] &gt;= <span class="hljs-number">0</span>;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="c-ac-code">C++ AC Code</h3>
+<figure class="highlight c++ hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// AC</span></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> {</span></span><br><span class="line"><span class="hljs-keyword">public</span>:</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">PredictTheWinner</span><span class="hljs-params">(vector&lt;<span class="hljs-keyword">int</span>&gt;&amp; nums)</span> </span>{</span><br><span class="line">        <span class="hljs-keyword">int</span> n = nums.<span class="hljs-built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="hljs-keyword">int</span>&gt;&gt; <span class="hljs-built_in">dp</span>(n, vector&lt;<span class="hljs-keyword">int</span>&gt;(n, <span class="hljs-number">0</span>));</span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {</span><br><span class="line">          dp[i][i] = nums[i];</span><br><span class="line">        }</span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> l = n - <span class="hljs-number">1</span>; l &gt;= <span class="hljs-number">0</span>; l--) {</span><br><span class="line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> r = l + <span class="hljs-number">1</span>; r &lt; n; r++) {</span><br><span class="line">                dp[l][r] = <span class="hljs-built_in">max</span>(nums[l] - dp[l + <span class="hljs-number">1</span>][r], nums[r] - dp[l][r - <span class="hljs-number">1</span>]);</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">        <span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][n - <span class="hljs-number">1</span>] &gt;= <span class="hljs-number">0</span>;</span><br><span class="line">    }</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="javascript-ac-code">Javascript AC Code</h3>
+<figure class="highlight javascript hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@param <span class="hljs-type">{number[]}</span> <span class="hljs-variable">nums</span></span></span></span><br><span class="line"><span class="hljs-comment"> * <span class="hljs-doctag">@return <span class="hljs-type">{boolean}</span></span></span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">var</span> PredictTheWinner = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">nums</span>) </span>{</span><br><span class="line">    <span class="hljs-keyword">const</span> n = nums.length;</span><br><span class="line">    <span class="hljs-keyword">const</span> dp = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(n).fill().map(<span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(n));</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {</span><br><span class="line">      dp[i][i] = nums[i];</span><br><span class="line">    }</span><br><span class="line">  </span><br><span class="line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> l = n - <span class="hljs-number">1</span>; l &gt;=<span class="hljs-number">0</span>; l--) {</span><br><span class="line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> r = i + <span class="hljs-number">1</span>; r &lt; n; r++) {</span><br><span class="line">            dp[l][r] = <span class="hljs-built_in">Math</span>.max(nums[l] - dp[l + <span class="hljs-number">1</span>][r],nums[r] - dp[l][r - <span class="hljs-number">1</span>]);</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">  </span><br><span class="line">    <span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][n-<span class="hljs-number">1</span>] &gt;=<span class="hljs-number">0</span>;</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Algorithm/">#Algorithm</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/LeetCode/">#LeetCode</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Java/">#Java</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Gaming/">#Gaming</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/combinatorial-game-2-tictactoe/">组合游戏系列2: 井字棋Leetcode系列题解和Minimax最佳策略实现</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop is-hidden-mobile article-nav-next">
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/combinatorial-game-1-minimax/">https://blog.myencyclopedia.top/zh/2020/combinatorial-game-1-minimax/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/">https://myencyclopedia.github.io/zh/2020/combinatorial-game-1-minimax/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/combinatorial-game-1-minimax/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/combinatorial-game-1-minimax/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

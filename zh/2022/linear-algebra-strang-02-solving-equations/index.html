@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2022/linear-algebra-strang-02-solving-equations/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="本文继续以彩色Latex 方式总结了方程组的行视角，列视角的几何意义；并回顾了解方程的两个步骤：消元和回代。内容对应于MIT 18.06 Gilbert Strang 线性代数视频课程第一，二节。 本系列链接如下 01 - 矩阵乘法的五种理解 02 - 解方程组的意义和过程 方程组两种几何解释 二元方程组 来看一个具体的二元线性方程组 \[ \begin{cases} 2x&amp;-y&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="本文继续以彩色Latex 方式总结了方程组的行视角，列视角的几何意义；并回顾了解方程的两个步骤：消元和回代。内容对应于MIT 18.06 Gilbert Strang 线性代数视频课程第一，二节。 本系列链接如下 01 - 矩阵乘法的五种理解 02 - 解方程组的意义和过程 方程组两种几何解释 二元方程组 来看一个具体的二元线性方程组 \[ \begin{cases} 2x&amp;-y&amp;">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_col.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_row.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_col.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row_e.png">
+<meta property="article:published_time" content="2022-02-03T18:45:01.000Z">
+<meta property="article:modified_time" content="2023-01-03T02:30:32.133Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Maths">
+<meta property="article:tag" content="Linear Algebra">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#方程组两种几何解释">1&nbsp;&nbsp;<b>方程组两种几何解释</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#二元方程组">1.1&nbsp;&nbsp;二元方程组</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#行视角">1.1.1&nbsp;&nbsp;行视角</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#列视角">1.1.2&nbsp;&nbsp;列视角</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#三元方程组">1.2&nbsp;&nbsp;三元方程组</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#行视角-1">1.2.1&nbsp;&nbsp;行视角</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#列视角-1">1.2.2&nbsp;&nbsp;列视角</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#解方程的步骤">2&nbsp;&nbsp;<b>解方程的步骤</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#三元方程示例">2.1&nbsp;&nbsp;三元方程示例</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#消元过程">2.2&nbsp;&nbsp;消元过程</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#回代过程">2.3&nbsp;&nbsp;回代过程</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#消元的行视角意义">2.4&nbsp;&nbsp;消元的行视角意义</a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E7%A8%8B%E7%BB%84%E4%B8%A4%E7%A7%8D%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A"><span class="toc-text">方程组两种几何解释</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E5%85%83%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="toc-text">二元方程组</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%8C%E8%A7%86%E8%A7%92"><span class="toc-text">行视角</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%97%E8%A7%86%E8%A7%92"><span class="toc-text">列视角</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%85%83%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="toc-text">三元方程组</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%8C%E8%A7%86%E8%A7%92-1"><span class="toc-text">行视角</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%97%E8%A7%86%E8%A7%92-1"><span class="toc-text">列视角</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E6%96%B9%E7%A8%8B%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="toc-text">解方程的步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%85%83%E6%96%B9%E7%A8%8B%E7%A4%BA%E4%BE%8B"><span class="toc-text">三元方程示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E5%85%83%E8%BF%87%E7%A8%8B"><span class="toc-text">消元过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9E%E4%BB%A3%E8%BF%87%E7%A8%8B"><span class="toc-text">回代过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E5%85%83%E7%9A%84%E8%A1%8C%E8%A7%86%E8%A7%92%E6%84%8F%E4%B9%89"><span class="toc-text">消元的行视角意义</span></a></li></ol></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Strang MIT 18.06 线性代数精髓 02：解方程组的意义和过程
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-02-03T18:45:01.000Z" itemprop="datePublished">2月 4 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            10 分钟 读完 (约 1495 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>本文继续以彩色<span style="color:blue">L</span><span style="color:green">a</span><span style="color:red">t</span><span style="color:magenta">e</span><span style="color:orange">x</span>
+方式总结了方程组的行视角，列视角的几何意义；并回顾了解方程的两个步骤：消元和回代。内容对应于MIT
+18.06 Gilbert Strang 线性代数视频课程第一，二节。</p>
+<p>本系列链接如下</p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-01-matrix-product">01 -
+矩阵乘法的五种理解</a></strong></p>
+<p><strong><a href="/zh/2022/linear-algebra-strang-02-solving-equations/../linear-algebra-strang-02-solving-equations">02 -
+解方程组的意义和过程</a></strong></p>
+<h2 id="方程组两种几何解释">方程组两种几何解释</h2>
+<h3 id="二元方程组">二元方程组</h3>
+<p>来看一个具体的二元线性方程组</p>
+<p><span class="math display">\[
+\begin{cases}
+2x&amp;-y&amp;=0 \\
+-x&amp;+2y&amp;=3
+\end{cases}
+\]</span></p>
+<p>写成矩阵形式</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+2&amp;-1 \\
+-1&amp;2
+\end{bmatrix}
+\begin{bmatrix}
+x \\ y
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\ 3
+\end{bmatrix}
+\]</span></p>
+<h4 id="行视角">行视角</h4>
+<p>回顾 $2x - y = 0 $ 为所有满足此条件的 (x, y)
+的集合，即集合组成二维平面的一条直线，如下图蓝线所示。</p>
+<p>$ -x + 2y = 3$ 则对应绿线。</p>
+<p>因此方程组的解 x = 1, y = 2
+为两条直线的交点，这就是方程组的行视角：将系数矩阵按行切分，则每一行表示一个约束条件，几何意义是N维空间的一个子空间。在二元方程中，一行表示一条线，三元方程中，一行表示一个平面（详见后一小节）。
+<span class="math display">\[
+\begin{bmatrix}
+\color{blue} 2 x &amp; {\color{blue} -1 y} \\
+\color{green} -1 x &amp; \color{green} 2 y
+\end{bmatrix}
+=
+\begin{bmatrix}
+\color{blue} 0 \\ \color{green} 3
+\end{bmatrix}
+\]</span></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png"></p>
+<h4 id="列视角">列视角</h4>
+<p>若将系数矩阵按列切分，则每一列表示一个向量，方程组的解 (x, y)
+表示每个列向量以 x, y 为权重的线性组合刚好形成 b
+向量。<strong>这个就是方程组 <span class="math inline">\(Ax=b\)</span>
+有解的条件：b 在 A 的列空间</strong>，此时，x 为 列向量的组合系数。
+<span class="math display">\[
+x
+\begin{bmatrix}
+\color{Green} 2 \\ \color{Green} -1
+\end{bmatrix}
++
+y
+\begin{bmatrix}
+\color{Turquoise} -1
+\\ \color{Turquoise} 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+\color{Red} 0\\ \color{Red} 3
+\end{bmatrix}
+\]</span></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_col.png"></p>
+<h3 id="三元方程组">三元方程组</h3>
+<h4 id="行视角-1">行视角</h4>
+<p>对于三元方程组行视角来说，每一行的方程组成一个三维空间中的一个平面。解是三个平面的交点，通常来说为一个点。
+<span class="math display">\[
+\begin{bmatrix}
+\color{magenta} m_{11} &amp; \color{magenta} m_{12} &amp;
+\color{magenta} m_{13} \\
+\color{cyan} m_{21} &amp; \color{cyan} m_{22} &amp; \color{cyan} m_{23}
+\\
+\color{green} m_{31} &amp; \color{green} m_{32} &amp; \color{green}
+m_{33} \\
+\end{bmatrix}
+\begin{bmatrix}
+w_{1} \\
+w_{2} \\
+w_{3}
+\end{bmatrix}=
+\begin{bmatrix}
+\color{magenta} y_{1} \\
+\color{cyan} y_{2} \\
+\color{green} y_{3}
+\end{bmatrix}
+\]</span></p>
+<p>图片来自 <a target="_blank" rel="noopener" href="https://pabloinsente.github.io/intro-linear-algebra">Introduction
+to Linear Algebra for Applied Machine Learning with
+Python</a>，解为一直线而非一个点。 <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_row.png"></p>
+<h4 id="列视角-1">列视角</h4>
+<p>三元列视角下，A 的列向量为三维平面的一个向量，x（下图为 w）
+表示每个列向量取多少倍数可以组成 b 向量。 <span class="math display">\[
+\color{cyan}
+w_1
+\color{black}
+\begin{bmatrix}
+\color{cyan}
+m_{11} \\
+\color{cyan}
+m_{21} \\
+\color{cyan}
+m_{31}
+\end{bmatrix}+
+\color{magenta}
+w_2
+\color{black}
+\begin{bmatrix}
+\color{magenta}
+m_{12} \\
+\color{magenta}
+m_{22} \\
+\color{magenta}
+m_{32}
+\end{bmatrix}+
+\color{green}
+w_3
+\color{black}
+\begin{bmatrix}
+\color{green} m_{13} \\
+\color{green} m_{23} \\
+\color{green} m_{33}
+\end{bmatrix}=
+\begin{bmatrix}
+\color{red} y_{1} \\
+\color{red} y_{2} \\
+\color{red} y_{3}
+\end{bmatrix}
+\]</span></p>
+<p><img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_3d_col.png"></p>
+<h2 id="解方程的步骤">解方程的步骤</h2>
+<p>总结了二元三元方程组的行和列视角后，我们回顾求解方程的具体步骤。用两个过程，消元和回代便可以解得方程。</p>
+<ul>
+<li><p>消元的目的是将系数矩阵表示成变量依次依赖的<strong>上矩阵形式</strong>
+(Upper Triangular Matrix)。 <span class="math display">\[
+\begin{bmatrix}
+a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n} \\
+a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+a_{n1} &amp; a_{n2} &amp; \cdots &amp; a_{nn} \\
+\end{bmatrix}
+\underrightarrow{Eliminate}
+\begin{bmatrix}
+\color{red} a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n} \\
+\color{gray} 0 &amp; \color{red} a'_{22} &amp; \cdots &amp;
+a'_{2n} \\
+\color{gray} 0  &amp; \vdots &amp; \ddots &amp; \vdots \\
+\color{gray} 0 &amp; \color{gray} 0 &amp; \color{gray} 0 &amp;
+\color{red} a'_{nn} \\
+\end{bmatrix}
+\]</span></p></li>
+<li><p>回代则在上矩阵的基础上依次解得每个分量的值。</p></li>
+</ul>
+<h3 id="三元方程示例">三元方程示例</h3>
+<p>举个三元方程组为例 <span class="math display">\[
+\begin{cases}
+x&amp;+2y&amp;+z&amp;=2 \\
+3x&amp;+8y&amp;+z&amp;=12 \\
+&amp;+4y&amp;+z&amp;=2
+\end{cases}
+\]</span></p>
+<p>写成矩阵形式为</p>
+<p><span class="math display">\[
+\begin{bmatrix}1&amp;2&amp;1\\3&amp;8&amp;1\\0&amp;4&amp;1\end{bmatrix}\begin{bmatrix}x\\y\\z\end{bmatrix}=\begin{bmatrix}2\\12\\2\end{bmatrix}
+\]</span></p>
+<h3 id="消元过程">消元过程</h3>
+<p>在消元过程中，有两类操作，一是将上一行乘以某系数后被下一行减去，依次消除这一行的元。第二类操作是交换当前行和后面某行，行交换用于当某行对应的元已经为0的情况下。</p>
+<p>以上述三元方程为例，第二行消元的具体过程为第二行减去3倍的第一行。接着，再进行第三行消元。</p>
+<p><span class="math display">\[
+\left[\begin{array}{c|c}A&amp;b\end{array}\right]
+=
+\left[\begin{array}{ccc|c}
+\color{red} 1&amp;2&amp;1&amp;2 \\
+3&amp;8&amp;1&amp;12 \\
+0&amp;4&amp;1&amp;2
+\end{array}\right]
+\xrightarrow{row_2-3row_1}
+\left[\begin{array}{ccc|c}
+\color{red} 1&amp;2&amp;1&amp;2 \\
+\color{blue} \boxed{0} &amp; \color{red} 2&amp; \color{blue} -2&amp;
+\color{blue}6 \\
+0&amp;4&amp;1&amp;2
+\end{array}\right]
+\xrightarrow{row_3-2row_2}
+\left[\begin{array}{ccc|c}
+\color{red}1&amp;2&amp;1&amp;2 \\
+0&amp; \color{red} 2&amp;-2&amp;6 \\
+\color{blue} 0 &amp; \color{blue} \boxed{0} &amp; \color{red} 5&amp;
+\color{blue}-10
+\end{array}\right]
+\]</span></p>
+<p>最终，上矩阵为 <span class="math display">\[
+U=\begin{bmatrix}
+\color{red} 1 &amp; 2&amp; 1 \\
+\color{gray} 0 &amp; \color{red} 2 &amp; -2 \\
+\color{gray} 0 &amp; \color{gray} 0&amp; \color{red} 5
+\end{bmatrix}
+\]</span></p>
+<h3 id="回代过程">回代过程</h3>
+<p>回代过程比较直白，由上矩阵 U 对应方程组 <span class="math display">\[
+\begin{cases}
+\color{red} x&amp;+2y&amp;+z&amp;=2 \\
+&amp; \color{red} +2y &amp;-2z&amp;=6 \\
+&amp;&amp; \color{red} +5z&amp;=-10
+\end{cases}
+\]</span></p>
+<p>自下向上，容易解得 <span class="math display">\[
+\begin{cases}
+\color{red}x \color{black}= 2 \\
+\color{red}y \color{black}= 1 \\
+\color{red}z \color{black}= -2
+\end{cases}
+\]</span></p>
+<h3 id="消元的行视角意义">消元的行视角意义</h3>
+<p>注意到消元时的两类操作都不改变系数矩阵的行空间，只是改变了行空间的线性组合方式。</p>
+<p>由于每一行代表一个拘束子空间，因此每一次消元改变了该行的拘束子空间。</p>
+<p>举个例子，对于二元方程组和行空间 <span class="math display">\[
+\begin{bmatrix}
+\color{blue} 2 x &amp; \color{blue} -1 y \\
+\color{green} -1 x &amp; \color{green} 2 y
+\end{bmatrix}
+=
+\begin{bmatrix}
+\color{blue} 0 \\ \color{green} 3
+\end{bmatrix}
+\]</span></p>
+<p>对应了两条直线 <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row.png"></p>
+<p>第二行的 x 消除后其几何意义为：蓝色直线不变，绿色直线从包含 x
+的成分变成不含 x 成分，并且维持交点 （1, 2）不变。 <span class="math display">\[
+\begin{bmatrix}
+\color{blue} 2 x &amp; \color{blue} -1 y \\
+&amp; \color{green} {3 \over 2} y
+\end{bmatrix}
+=
+\begin{bmatrix}
+\color{blue} 0 \\ \color{green} 3
+\end{bmatrix}
+\]</span> <img src="/zh/2022/linear-algebra-strang-02-solving-equations/eq_2d_row_e.png"></p>
+<p>最后还有一个问题可以思考一下：消元对于列视角的几何意义是什么呢？</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Maths/">#Maths</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Linear-Algebra/">#Linear Algebra</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2022/linear-algebra-strang-03-eliminating-matrix-and-inverse/">Strang MIT 18.06 线性代数精髓 03：消元的矩阵表示，矩阵的逆</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2022/linear-algebra-strang-01-matrix-product/">Strang MIT 18.06 线性代数精髓01：矩阵乘法的五种理解</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2022/linear-algebra-strang-02-solving-equations/">https://blog.myencyclopedia.top/zh/2022/linear-algebra-strang-02-solving-equations/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/">https://myencyclopedia.github.io/zh/2022/linear-algebra-strang-02-solving-equations/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2022/linear-algebra-strang-02-solving-equations/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2022/linear-algebra-strang-02-solving-equations/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

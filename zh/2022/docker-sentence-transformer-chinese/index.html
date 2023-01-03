@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Bert 中文短句相似度计算 Docker CPU镜像 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2022/docker-sentence-transformer-chinese/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="在这一期中，我们还是制作了一个集数据，模型，代码一体的 docker 环境，给大家开箱即用体验中文BERT句子embedding体验。具体地，我们基于 BERT-wwm-ext，huggingface transformer 和 sentence-transformer 把玩中文句子embedding 并寻找和查询短语相似度最接近的句子。 Docker 镜像获取方式 本期 docker 镜像获取方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bert 中文短句相似度计算 Docker CPU镜像">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/docker-sentence-transformer-chinese/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="在这一期中，我们还是制作了一个集数据，模型，代码一体的 docker 环境，给大家开箱即用体验中文BERT句子embedding体验。具体地，我们基于 BERT-wwm-ext，huggingface transformer 和 sentence-transformer 把玩中文句子embedding 并寻找和查询短语相似度最接近的句子。 Docker 镜像获取方式 本期 docker 镜像获取方">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/docker-sentence-transformer-chinese/model.png">
+<meta property="article:published_time" content="2022-06-17T18:45:01.000Z">
+<meta property="article:modified_time" content="2023-01-03T02:30:32.129Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="nlp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/docker-sentence-transformer-chinese/model.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#docker-镜像获取方式">1&nbsp;&nbsp;<b>Docker 镜像获取方式</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#哈工大讯飞中文-bert">2&nbsp;&nbsp;<b>哈工大讯飞中文 Bert</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#sentence-transformer">3&nbsp;&nbsp;<b>sentence-transformer</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#中文最相近的句子">4&nbsp;&nbsp;<b>中文最相近的句子</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#完整代码">5&nbsp;&nbsp;<b>完整代码</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-%E9%95%9C%E5%83%8F%E8%8E%B7%E5%8F%96%E6%96%B9%E5%BC%8F"><span class="toc-text">Docker 镜像获取方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%88%E5%B7%A5%E5%A4%A7%E8%AE%AF%E9%A3%9E%E4%B8%AD%E6%96%87-bert"><span class="toc-text">哈工大讯飞中文 Bert</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sentence-transformer"><span class="toc-text">sentence-transformer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E6%96%87%E6%9C%80%E7%9B%B8%E8%BF%91%E7%9A%84%E5%8F%A5%E5%AD%90"><span class="toc-text">中文最相近的句子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="toc-text">完整代码</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            Bert 中文短句相似度计算 Docker CPU镜像
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-06-17T18:45:01.000Z" itemprop="datePublished">6月 18 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            11 分钟 读完 (约 1576 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>在这一期中，我们还是制作了一个集数据，模型，代码一体的 docker
+环境，给大家开箱即用体验中文BERT句子embedding体验。具体地，我们基于
+<code>BERT-wwm-ext</code>，<code>huggingface transformer</code> 和
+<code>sentence-transformer</code> 把玩中文句子embedding
+并寻找和查询短语相似度最接近的句子。</p>
+<h2 id="docker-镜像获取方式">Docker 镜像获取方式</h2>
+<p>本期 docker 镜像获取方式为，关注 <code>MyEncyclopedia</code>
+公众号后回复 <code>docker-sentence-transformer</code>
+即可获取镜像地址和启动命令。</p>
+<h2 id="哈工大讯飞中文-bert">哈工大讯飞中文 Bert</h2>
+<p>在中文预训练领域，哈工大讯飞联合实验室（HFL）发布的基于全词Mask的中文预训练模型
+<code>BERT-wwm-ext</code> 是业界的标杆之一。<code>BERT-wwm-ext</code>
+支持 <code>Tensorflow</code>, <code>Pytorch</code> （通过
+<code>huggingface transformer</code> 接口）以及 <code>PaddleHub</code>
+的接口或者类库，使用起来十分方便。下面的代码为官网中通过
+<code>huggingface transformer</code> 接口直接下载并加载到
+<code>Pytorch</code> 平台中。Github 地址为
+https://github.com/ymcui/Chinese-BERT-wwm</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> BertTokenizer, BertModel</span><br><span class="line"></span><br><span class="line">model_name = <span class="hljs-string">'hfl/chinese-bert-wwm'</span></span><br><span class="line">tokenizer = BertTokenizer.from_pretrained(model_name)</span><br><span class="line">model = BertModel.from_pretrained(model_name)</span><br></pre></td></tr></tbody></table></figure>
+<p>通过 <code>huggingface transformer</code> 的好处在于
+<code>sentence-transformer</code> 也支持
+<code>huggingface</code>，因此，通过
+<code>huggingface</code>，我们无需手动串联 <code>BERT-wwm-ext</code> 和
+<code>sentence-transformer</code>，少写了不少代码。</p>
+<h2 id="sentence-transformer">sentence-transformer</h2>
+<p><code>sentence-transformer</code> 顾名思义是利用
+<code>transformer</code>
+词向量的预训练模型来生成句子级别的embedding。原理基于这篇论文
+Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks
+（https://arxiv.org/abs/1908.10084）。基本思想直接了当：将句子中的每个词经
+bert embedding 后，输入池化层
+(pooling)，例如选择最简单的平均池化层，再将所有token embedding
+的均值作为输出，便得到跟输入句子长度无关的一个定长的 sentence
+embedding。</p>
+<p><img src="/zh/2022/docker-sentence-transformer-chinese/model.png"></p>
+<p>下面的代码是其官网的一个基本例子，底层通过 <code>huggingface</code>
+接口自动下载并加载 bert 词向量，并计算三句英语句子的 sentence
+embedding。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> SentenceTransformer</span><br><span class="line">model = SentenceTransformer(<span class="hljs-string">'paraphrase-MiniLM-L6-v2'</span>)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Our sentences we like to encode</span></span><br><span class="line">sentences = [<span class="hljs-string">'This framework generates embeddings for each input sentence'</span>,</span><br><span class="line">    <span class="hljs-string">'Sentences are passed as a list of string.'</span>,</span><br><span class="line">    <span class="hljs-string">'The quick brown fox jumps over the lazy dog.'</span>]</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Sentences are encoded by calling model.encode()</span></span><br><span class="line">embeddings = model.encode(sentences)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Print the embeddings</span></span><br><span class="line"><span class="hljs-keyword">for</span> sentence, embedding <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(sentences, embeddings):</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">"Sentence:"</span>, sentence)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">"Embedding:"</span>, embedding)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">""</span>)</span><br></pre></td></tr></tbody></table></figure>
+<p>当然，我们也可以绕过 <code>sentence-transformer</code> API，直接使用
+<code>pytorch</code> API 和 <code>huggingface</code>
+手动实现平均池化层，生成句子的 sentence embedding。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModel</span><br><span class="line"><span class="hljs-keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Mean Pooling - Take attention mask into account for correct averaging</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">mean_pooling</span>(<span class="hljs-params">model_output, attention_mask</span>):</span></span><br><span class="line">    token_embeddings = model_output[<span class="hljs-number">0</span>] <span class="hljs-comment">#First element of model_output contains all token embeddings</span></span><br><span class="line">    input_mask_expanded = attention_mask.unsqueeze(-<span class="hljs-number">1</span>).expand(token_embeddings.size()).<span class="hljs-built_in">float</span>()</span><br><span class="line">    sum_embeddings = torch.<span class="hljs-built_in">sum</span>(token_embeddings * input_mask_expanded, <span class="hljs-number">1</span>)</span><br><span class="line">    sum_mask = torch.clamp(input_mask_expanded.<span class="hljs-built_in">sum</span>(<span class="hljs-number">1</span>), <span class="hljs-built_in">min</span>=<span class="hljs-number">1e-9</span>)</span><br><span class="line">    <span class="hljs-keyword">return</span> sum_embeddings / sum_mask</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Sentences we want sentence embeddings for</span></span><br><span class="line">sentences = [<span class="hljs-string">'This framework generates embeddings for each input sentence'</span>,</span><br><span class="line">             <span class="hljs-string">'Sentences are passed as a list of string.'</span>,</span><br><span class="line">             <span class="hljs-string">'The quick brown fox jumps over the lazy dog.'</span>]</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Load AutoModel from huggingface model repository</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">"sentence-transformers/all-MiniLM-L6-v2"</span>)</span><br><span class="line">model = AutoModel.from_pretrained(<span class="hljs-string">"sentence-transformers/all-MiniLM-L6-v2"</span>)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Tokenize sentences</span></span><br><span class="line">encoded_input = tokenizer(sentences, padding=<span class="hljs-literal">True</span>, truncation=<span class="hljs-literal">True</span>, max_length=<span class="hljs-number">128</span>, return_tensors=<span class="hljs-string">'pt'</span>)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Compute token embeddings</span></span><br><span class="line"><span class="hljs-keyword">with</span> torch.no_grad():</span><br><span class="line">    model_output = model(**encoded_input)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#Perform pooling. In this case, mean pooling</span></span><br><span class="line">sentence_embeddings = mean_pooling(model_output, encoded_input[<span class="hljs-string">'attention_mask'</span>])</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="中文最相近的句子">中文最相近的句子</h2>
+<p>有了上面每个组件的使用方法，让我们生成下面中文句子的embedding</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sentences = [</span><br><span class="line">    <span class="hljs-string">'今天晚上想吃牛排'</span>,</span><br><span class="line">    <span class="hljs-string">'MyEncyclopedia公众号全栈人工智能'</span>,</span><br><span class="line">    <span class="hljs-string">'人工智能需要懂很多数学么'</span>,</span><br><span class="line">    <span class="hljs-string">'上海疫情有完没完'</span>,</span><br><span class="line">    <span class="hljs-string">'教育部：连续7天社会面无疫情 高校可组织校园招聘'</span>,</span><br><span class="line">    <span class="hljs-string">'福建舰"下水！100秒看中国航母高光时刻'</span>,</span><br><span class="line">    <span class="hljs-string">'医保承担多少核酸检测费用？压力多大？'</span>,</span><br><span class="line">    <span class="hljs-string">'张家口过度防疫整改后又被曝光：要证明牛是阴性'</span>,</span><br><span class="line">    <span class="hljs-string">'上海多家银行天天排队爆满 有老人凌晨2点开始排队'</span>,</span><br><span class="line">    <span class="hljs-string">'A股不惧海外暴跌！走出独立行情沪指收复3300点'</span>,</span><br><span class="line">    <span class="hljs-string">'俄方称已准备好重启俄乌和谈'</span>,</span><br><span class="line">    <span class="hljs-string">'《自然》：奥密克戎感染后嗅觉丧失症状比原来少了'</span></span><br><span class="line">]</span><br></pre></td></tr></tbody></table></figure>
+<p>接着我们给出如下三个短语的查询，找到和每个查询最匹配的三个句子
+</p><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">q1 = <span class="hljs-string">'码农的春天来了么'</span></span><br><span class="line">q2 = <span class="hljs-string">'国际局势'</span></span><br><span class="line">q3 = <span class="hljs-string">'健康'</span></span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>运行结果如下</p>
+<figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Query: 码农的春天来了么</span><br><span class="line"></span><br><span class="line">Top 3 most similar sentences <span class="hljs-keyword">in</span> corpus:</span><br><span class="line">人工智能需要懂很多数学么 (Cosine Score: 0.7606)</span><br><span class="line">MyEncyclopedia公众号全栈人工智能 (Cosine Score: 0.7498)</span><br><span class="line">上海疫情有完没完 (Cosine Score: 0.7449)</span><br><span class="line"></span><br><span class="line">----------------------------------------------</span><br><span class="line">Query: 国际局势</span><br><span class="line"></span><br><span class="line">Top 3 most similar sentences <span class="hljs-keyword">in</span> corpus:</span><br><span class="line">俄方称已准备好重启俄乌和谈 (Cosine Score: 0.7041)</span><br><span class="line">MyEncyclopedia公众号全栈人工智能 (Cosine Score: 0.6897)</span><br><span class="line">上海疫情有完没完 (Cosine Score: 0.6888)</span><br><span class="line"></span><br><span class="line">----------------------------------------------</span><br><span class="line">Query: 健康</span><br><span class="line"></span><br><span class="line">Top 3 most similar sentences <span class="hljs-keyword">in</span> corpus:</span><br><span class="line">上海疫情有完没完 (Cosine Score: 0.5882)</span><br><span class="line">MyEncyclopedia公众号全栈人工智能 (Cosine Score: 0.5870)</span><br><span class="line">今天晚上想吃牛排 (Cosine Score: 0.5815)</span><br></pre></td></tr></tbody></table></figure>
+<p>结果发现 <code>上海疫情有完没完</code> 是一切问题的关键。。。</p>
+<h2 id="完整代码">完整代码</h2>
+<p>附上完整代码</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> SentenceTransformer</span><br><span class="line"></span><br><span class="line">model_name = <span class="hljs-string">'hfl/chinese-bert-wwm'</span></span><br><span class="line">model = SentenceTransformer(model_name)</span><br><span class="line"></span><br><span class="line">sentences = [</span><br><span class="line">    <span class="hljs-string">'今天晚上想吃牛排'</span>,</span><br><span class="line">    <span class="hljs-string">'MyEncyclopedia公众号全栈人工智能'</span>,</span><br><span class="line">    <span class="hljs-string">'人工智能需要懂很多数学么'</span>,</span><br><span class="line">    <span class="hljs-string">'上海疫情有完没完'</span>,</span><br><span class="line">    <span class="hljs-string">'教育部：连续7天社会面无疫情 高校可组织校园招聘'</span>,</span><br><span class="line">    <span class="hljs-string">'福建舰"下水！100秒看中国航母高光时刻'</span>,</span><br><span class="line">    <span class="hljs-string">'医保承担多少核酸检测费用？压力多大？'</span>,</span><br><span class="line">    <span class="hljs-string">'张家口过度防疫整改后又被曝光：要证明牛是阴性'</span>,</span><br><span class="line">    <span class="hljs-string">'上海多家银行天天排队爆满 有老人凌晨2点开始排队'</span>,</span><br><span class="line">    <span class="hljs-string">'A股不惧海外暴跌！走出独立行情沪指收复3300点'</span>,</span><br><span class="line">    <span class="hljs-string">'俄方称已准备好重启俄乌和谈'</span>,</span><br><span class="line">    <span class="hljs-string">'《自然》：奥密克戎感染后嗅觉丧失症状比原来少了'</span></span><br><span class="line">]</span><br><span class="line">sentence_embeddings = model.encode(sentences)</span><br><span class="line"></span><br><span class="line">q1 = <span class="hljs-string">'码农的春天来了么'</span></span><br><span class="line">q2 = <span class="hljs-string">'国际局势'</span></span><br><span class="line">q3 = <span class="hljs-string">'健康'</span></span><br><span class="line">queries = [q1, q2, q3]</span><br><span class="line">query_embeddings = model.encode(queries)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> scipy</span><br><span class="line"></span><br><span class="line">number_top_matches = <span class="hljs-number">3</span></span><br><span class="line"><span class="hljs-keyword">for</span> query, query_embedding <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(queries, query_embeddings):</span><br><span class="line">    distances = scipy.spatial.distance.cdist([query_embedding], sentence_embeddings, <span class="hljs-string">"cosine"</span>)[<span class="hljs-number">0</span>]</span><br><span class="line">    results = <span class="hljs-built_in">zip</span>(<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(distances)), distances)</span><br><span class="line">    results = <span class="hljs-built_in">sorted</span>(results, key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>])</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">"\nQuery:"</span>, query)</span><br><span class="line">    <span class="hljs-built_in">print</span>(<span class="hljs-string">"\nTop {} most similar sentences in corpus:"</span>.<span class="hljs-built_in">format</span>(number_top_matches))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> idx, distance <span class="hljs-keyword">in</span> results[<span class="hljs-number">0</span>:number_top_matches]:</span><br><span class="line">        <span class="hljs-built_in">print</span>(sentences[idx].strip(), <span class="hljs-string">"(Cosine Score: %.4f)"</span> % (<span class="hljs-number">1</span>-distance))</span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/docker/">#docker</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/nlp/">#nlp</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2022/docker-faiss-transformer/">实战入门 faiss 搜索bert 最邻近句子：docker CPU镜像开箱即用，无需额外安装下载</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2022/docker-flair-transformer-zero-shot/">玩转transformer+flair zero shot 短文本分类：无需翻墙或额外下载模型和数据集的CPU docker镜像</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2022/docker-sentence-transformer-chinese/">https://blog.myencyclopedia.top/zh/2022/docker-sentence-transformer-chinese/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/docker-sentence-transformer-chinese/">https://myencyclopedia.github.io/zh/2022/docker-sentence-transformer-chinese/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2022/docker-sentence-transformer-chinese/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2022/docker-sentence-transformer-chinese/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

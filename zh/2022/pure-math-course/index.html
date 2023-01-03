@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>程序员的纯代数视频和教材指南 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2022/pure-math-course/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="在入门机器人视觉和机器人运动后，开始逐步接触到了3D计算机视觉中的高阶数学概念，包括三维物体到二维图片的变换（术语称之为射影几何）；三维欧氏空间的物体运动坐标系变换，分为主动变换（active transformations）和被动变换（passive transformation）；另外在更高阶的计算机渲染中常会用到Mesh和黎曼曲面；此外，几何深度学习（Geometric Deep Learn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员的纯代数视频和教材指南">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="在入门机器人视觉和机器人运动后，开始逐步接触到了3D计算机视觉中的高阶数学概念，包括三维物体到二维图片的变换（术语称之为射影几何）；三维欧氏空间的物体运动坐标系变换，分为主动变换（active transformations）和被动变换（passive transformation）；另外在更高阶的计算机渲染中常会用到Mesh和黎曼曲面；此外，几何深度学习（Geometric Deep Learn">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/roadmap.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/roadmap-2.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/linear-alg-done-right.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/adv-linear-alg.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/linear-alg-lax.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/visual-group-theory.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/algebra-artin.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/tensor-student.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/tensor-calc.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/lie-gilmore.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/representation.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/stanford-fourier.jpg">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/category-bartosz.jpg">
+<meta property="article:published_time" content="2022-10-28T18:45:01.000Z">
+<meta property="article:modified_time" content="2023-01-03T02:30:32.145Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2022/pure-math-course/roadmap.jpg">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#学习顺序">1&nbsp;&nbsp;<b>学习顺序</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#线性映射下的高等线性代数">2&nbsp;&nbsp;<b>线性映射下的高等线性代数</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#sheldon-axler线性代数应该这样学">2.1&nbsp;&nbsp;【Sheldon
+Axler】线性代数应该这样学</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接">2.1.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#评价">2.1.2&nbsp;&nbsp;评价</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材">2.1.3&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#nathaniel-johnston-advanced-linear-algebra">2.2&nbsp;&nbsp;【Nathaniel
+Johnston】 Advanced Linear Algebra</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-1">2.2.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#评价-1">2.2.2&nbsp;&nbsp;评价</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材-1">2.2.3&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#matthew-macauleyadvanced-linear-algebra-math">2.3&nbsp;&nbsp;【Matthew
+Macauley】Advanced Linear Algebra Math</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-2">2.3.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#评价-2">2.3.2&nbsp;&nbsp;评价</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材-2">2.3.3&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#群论抽象代数">3&nbsp;&nbsp;<b>群论，抽象代数</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#matthew-macauley可视化群论">3.1&nbsp;&nbsp;【Matthew Macauley】可视化群论</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-3">3.1.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材-3">3.1.2&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#评价-3">3.1.3&nbsp;&nbsp;评价</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#哈佛benedict-gross抽象代数">3.2&nbsp;&nbsp;【哈佛Benedict Gross】抽象代数</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-4">3.2.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#评价-4">3.2.2&nbsp;&nbsp;评价</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材-4">3.2.3&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#张量">4&nbsp;&nbsp;<b>张量</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#eigenchris-系列">4.1&nbsp;&nbsp;eigenchris 系列</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-5">4.1.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#评价-5">4.1.2&nbsp;&nbsp;评价</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#xylyxylyx">4.2&nbsp;&nbsp;XylyXylyX</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-6">4.2.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#相关教材">4.2.2&nbsp;&nbsp;相关教材</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#李群">5&nbsp;&nbsp;<b>李群</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#xylyxylyx-1">5.1&nbsp;&nbsp;XylyXylyX</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-7">5.1.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#评价-6">5.1.2&nbsp;&nbsp;评价</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材-5">5.1.3&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#jonathan-evans">5.2&nbsp;&nbsp;Jonathan Evans</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-8">5.2.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材-6">5.2.2&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#傅里叶变换">6&nbsp;&nbsp;<b>傅里叶变换</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#斯坦福-brad-osgood傅里叶变换和应用">6.1&nbsp;&nbsp;【斯坦福 Brad
+Osgood】傅里叶变换和应用</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-9">6.1.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材-7">6.1.2&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#微分流形">7&nbsp;&nbsp;<b>微分流形</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#xylyxylyx-2">7.1&nbsp;&nbsp;XylyXylyX</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-10">7.1.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#程序员的范畴论">8&nbsp;&nbsp;<b>程序员的范畴论</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-11">8.1.1&nbsp;&nbsp;B站链接</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#配套教材-8">8.1.2&nbsp;&nbsp;配套教材</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#其他">9&nbsp;&nbsp;<b>其他</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#b站链接-12">9.1.1&nbsp;&nbsp;B站链接</a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E9%A1%BA%E5%BA%8F"><span class="toc-text">学习顺序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E4%B8%8B%E7%9A%84%E9%AB%98%E7%AD%89%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0"><span class="toc-text">线性映射下的高等线性代数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#sheldon-axler%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E5%BA%94%E8%AF%A5%E8%BF%99%E6%A0%B7%E5%AD%A6"><span class="toc-text">【Sheldon
+Axler】线性代数应该这样学</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7"><span class="toc-text">评价</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90"><span class="toc-text">配套教材</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nathaniel-johnston-advanced-linear-algebra"><span class="toc-text">【Nathaniel
+Johnston】 Advanced Linear Algebra</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-1"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7-1"><span class="toc-text">评价</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90-1"><span class="toc-text">配套教材</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#matthew-macauleyadvanced-linear-algebra-math"><span class="toc-text">【Matthew
+Macauley】Advanced Linear Algebra Math</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-2"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7-2"><span class="toc-text">评价</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90-2"><span class="toc-text">配套教材</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BE%A4%E8%AE%BA%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0"><span class="toc-text">群论，抽象代数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#matthew-macauley%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BE%A4%E8%AE%BA"><span class="toc-text">【Matthew Macauley】可视化群论</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-3"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90-3"><span class="toc-text">配套教材</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7-3"><span class="toc-text">评价</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%93%88%E4%BD%9Bbenedict-gross%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0"><span class="toc-text">【哈佛Benedict Gross】抽象代数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-4"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7-4"><span class="toc-text">评价</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90-4"><span class="toc-text">配套教材</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%A0%E9%87%8F"><span class="toc-text">张量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#eigenchris-%E7%B3%BB%E5%88%97"><span class="toc-text">eigenchris 系列</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-5"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7-5"><span class="toc-text">评价</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#xylyxylyx"><span class="toc-text">XylyXylyX</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-6"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%95%99%E6%9D%90"><span class="toc-text">相关教材</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%8E%E7%BE%A4"><span class="toc-text">李群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#xylyxylyx-1"><span class="toc-text">XylyXylyX</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-7"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7-6"><span class="toc-text">评价</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90-5"><span class="toc-text">配套教材</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jonathan-evans"><span class="toc-text">Jonathan Evans</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-8"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90-6"><span class="toc-text">配套教材</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="toc-text">傅里叶变换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%AF%E5%9D%A6%E7%A6%8F-brad-osgood%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2%E5%92%8C%E5%BA%94%E7%94%A8"><span class="toc-text">【斯坦福 Brad
+Osgood】傅里叶变换和应用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-9"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90-7"><span class="toc-text">配套教材</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AE%E5%88%86%E6%B5%81%E5%BD%A2"><span class="toc-text">微分流形</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#xylyxylyx-2"><span class="toc-text">XylyXylyX</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-10"><span class="toc-text">B站链接</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%8C%83%E7%95%B4%E8%AE%BA"><span class="toc-text">程序员的范畴论</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-11"><span class="toc-text">B站链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%A5%97%E6%95%99%E6%9D%90-8"><span class="toc-text">配套教材</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">其他</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#b%E7%AB%99%E9%93%BE%E6%8E%A5-12"><span class="toc-text">B站链接</span></a></li></ol></li></ol></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            程序员的纯代数视频和教材指南
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2022-10-28T18:45:01.000Z" itemprop="datePublished">10月 29 2022</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            20 分钟 读完 (约 3063 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>在入门机器人视觉和机器人运动后，开始逐步接触到了3D计算机视觉中的高阶数学概念，包括三维物体到二维图片的变换（术语称之为射影几何）；三维欧氏空间的物体运动坐标系变换，分为主动变换（active
+transformations）和被动变换（passive
+transformation）；另外在更高阶的计算机渲染中常会用到Mesh和黎曼曲面；此外，几何深度学习（Geometric
+Deep
+Learning）中也涉及到群论，李群等。这些迷之概念使得我对于本科高等数学课程（多元微积分，线性代数，概率论）后面的纯数学感到兴趣。本来一直觉得纯数学会非常难学，但是当我写了很多年代码和阅读了多个AI领域的众多论文之后，总有一些本质问题萦绕在心，得不到解释：</p>
+<ul>
+<li>代码抽象的极限在哪里？高阶纯函数编程？</li>
+<li>深度学习多个领域（CV，NLP，RL，GNN）是否有统一视角？目前深度学习的论文汗牛充栋，既有很多相似的pattern，也有每个领域的特性，是否有通用设计原则</li>
+</ul>
+<p>第一个问题在范畴论（category
+theory）中广泛探讨，不过范畴论过于深奥，是抽象代数后的一门纯函数编程的理论基础。第二个问题在几何深度学习中被探讨。不过，这两个问题肯定不会被完全回答，但是，即使无法得到最好的解释和回答，就如同统计学中频率派和贝叶斯派各有所长，没有公认的一家通吃，但是对于这些根本问题的探究的阶段性成功也是非常有意义的。正如理查德·费曼的名言：</p>
+<blockquote>
+<p>I would rather have questions that can't be answered than answers
+that can't be questioned</p>
+</blockquote>
+<p>鉴于AI从业人员乃至程序员进阶掌握高阶数学的武器，我斗胆总结一份从我这个非数学系的理工毕业生角度出发的自学纯数学指南。以下所有课程视频都已经搬运到了我的B站频道（MyEncyclopedia公号）中，此外，视频课程有对应教材的也一并列出。</p>
+<p>在学习这些知识时候，发现至今的联系是非常广泛的，这个倒是非常出乎我意料，也让学习非常有成就感。以下总结了若干贯穿所有领域的重要概念。</p>
+<ul>
+<li>群的最一般概念和离散数学群</li>
+<li>群论体系下构建的抽象代数结构</li>
+<li>有限维向量空间的线性映射和基变换，并且此视角下的矩阵（线性代数）理解</li>
+<li>从基变换的角度理解傅里叶变换，即傅里叶变换是函数表示的特殊的基。</li>
+<li>有限维向量空间上定义了距离（内积空间）后，向量空间有了几何结构。</li>
+<li>从线性映射推广到多变量线性映射（multilinear
+map），这是张量（Tensor）的数学意义</li>
+<li>从离散数学群论到连续函数映射，形成了微分流形（Differential
+Manifold）的概念。在此基础上进而发展出了李群，本质是为了解决例如旋转矩阵群虽然在乘法上封闭（因此组成群）但是在加法上不封闭的问题。</li>
+<li>一般群论扩展出范畴论，这是函数式编程的数学原理。</li>
+</ul>
+<h2 id="学习顺序">学习顺序</h2>
+<p>下图为我推荐的课程学习顺序。</p>
+<p><img src="/zh/2022/pure-math-course/roadmap.jpg"></p>
+<p>当对张量和李群掌握充分后，原则上可以更上一层楼，学习广义相对论和量子力学。不过我并没有计划涉足这两个艰深的领域，也就不多言了。</p>
+<p><img src="/zh/2022/pure-math-course/roadmap-2.jpg"></p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">graph TD;</span><br><span class="line">    map[高等线性代数] --&gt;abs;</span><br><span class="line">    map[高等线性代数] --&gt;T[Tensor];</span><br><span class="line">    group[群论]--&gt;abs[抽象代数];</span><br><span class="line">    abs--&gt;C[范畴论];</span><br><span class="line">    map--&gt;F;</span><br><span class="line">    F--&gt;W[小波变换];</span><br><span class="line">    F--&gt;FA[泛函分析];</span><br><span class="line">    abs--&gt;F[傅里叶变换];</span><br><span class="line">    T--&gt;m[Manifold];</span><br><span class="line">    m--&gt;L[李群];</span><br><span class="line">    T--&gt;L;</span><br><span class="line">    L--&gt;G[广义相对论];</span><br><span class="line">    L--&gt;Q[量子力学];</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">graph TD;</span><br><span class="line">    map[高等线性代数] --&gt;T[Tensor];</span><br><span class="line">    T--&gt;m[Manifold];</span><br><span class="line">    m--&gt;L[李群];</span><br><span class="line">    T--&gt;L;</span><br><span class="line">    T--&gt;G;</span><br><span class="line">    T--&gt;Q;</span><br><span class="line">    L--&gt;G[广义相对论];</span><br><span class="line">    L--&gt;Q[量子力学];</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="线性映射下的高等线性代数">线性映射下的高等线性代数</h2>
+<h3 id="sheldon-axler线性代数应该这样学">【Sheldon
+Axler】线性代数应该这样学</h3>
+<h4 id="b站链接">B站链接</h4>
+<p>https://www.bilibili.com/video/BV1Dm4y1c7Cn</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Dm4y1c7Cn/?spm_id_from=333.999.0.0">Sheldon
+Axler Linear Algebra Done Right (线性代数这样学) 原作者亲自讲解</a></li>
+</ul>
+<h4 id="评价">评价</h4>
+<p>本课程的教师是配套同名教材<code>线性代数应该这样学</code>（<code>Linear
+Algebra Done Right</code>）这本书的作者。课程和教材都是从线性映射(linear
+map)角度来看待矩阵。由最基本的向量空间和内积空间定义出发导出对偶空间（Dual
+Space），特征值，特征根，对角矩阵，正交基，直到最核心的谱论（Spectral
+theorem）。
+此课程说实话不适宜第一次学线性代数的同学。同时，不适合数学系的，因为跟高代相比太浅；不适合工程类的，因为太深而且没有跟应用联系起来。但是，本书却广受赞誉，中文也有翻译本。其最大的特点是通过空间变换和矩阵联系起来，从最基本的定义导出矩阵中的最核心概念：特征值，特征根，对角矩阵，正交基等。</p>
+<h4 id="配套教材">配套教材</h4>
+<p><img src="/zh/2022/pure-math-course/linear-alg-done-right.jpg"></p>
+<h3 id="nathaniel-johnston-advanced-linear-algebra">【Nathaniel
+Johnston】 Advanced Linear Algebra</h3>
+<h4 id="b站链接-1">B站链接</h4>
+<p>https://www.bilibili.com/video/BV1uV4y157XE</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1uV4y157XE/?spm_id_from=333.999.0.0">Nathaniel
+Johnston Advanced Linear Algebra</a></p>
+<h4 id="评价-1">评价</h4>
+<p>课程关于线性映射背后的基变换等讲述的非常清楚。不过对比<code>Nathaniel
+Johnston</code>的教材<code>Advanced Linear Algebra and Matrix
+Algebra</code>来说，视频课程只涉及到教材的一二章的内容，但并没有涉及到第三章Tensor的部分，有点可惜。视频包含很多向量空间和线性映射的例子和证明，可以作为<code>线性代数应该这样学</code>的很好补充。同时推荐教材第三章Tensor，适合作为Tensor概念的入门理论学习。</p>
+<h4 id="配套教材-1">配套教材</h4>
+<p><img src="/zh/2022/pure-math-course/adv-linear-alg.jpg"></p>
+<h3 id="matthew-macauleyadvanced-linear-algebra-math">【Matthew
+Macauley】Advanced Linear Algebra Math</h3>
+<h4 id="b站链接-2">B站链接</h4>
+<p>https://www.bilibili.com/video/BV1Me4y1a7Uk</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Me4y1a7Uk/?spm_id_from=333.999.0.0">Advanced
+Linear Algebra Math 4120 Modern Algebra, Matthew Macauley @
+Clemson</a></p>
+<h4 id="评价-2">评价</h4>
+<p><code>Matthew
+Macauley</code>教授讲课节奏条理都很赞，示例也比较充足，他的多个数学课程都很棒，尤其是下面群论部分的<code>Visual
+Group
+Theory</code>最为经典。本课程可以作为上述两门自成体系的课程很好的补充，尤其是Tensor作为multilinear
+map的部分。课程对应教材为<code>Peter
+Lax</code>的经典老教材<code>线性代数及其应用</code>。</p>
+<h4 id="配套教材-2">配套教材</h4>
+<p><img src="/zh/2022/pure-math-course/linear-alg-lax.jpg"></p>
+<h2 id="群论抽象代数">群论，抽象代数</h2>
+<h3 id="matthew-macauley可视化群论">【Matthew Macauley】可视化群论</h3>
+<h4 id="b站链接-3">B站链接</h4>
+<p>https://www.bilibili.com/video/BV1ka411378X</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ka411378X/?spm_id_from=333.999.0.0">Visual
+Group Theory Math 4120 Modern Algebra, Matthew Macauley @
+Clemson</a></p>
+<h4 id="配套教材-3">配套教材</h4>
+<p><img src="/zh/2022/pure-math-course/visual-group-theory.jpg"></p>
+<h4 id="评价-3">评价</h4>
+<p>课程基于<code>Nathan Carter</code>负有盛名的<code>Visual Group
+Theory</code>
+这本<strong>非常非常棒</strong>的群论入门书。视频课程本身在教材的基础上补充了不少例子和定理证明，使抽象难以理解的群里严重降低了入门难度。我作为同时仔细看过视频和教材的读者，觉得视频课程有以下几个优势：首先是建立概念时一步一步带你walk
+through，比如最核心的群同态概念，使得概念的建立更加深刻形象；其次课程补充了不少代数方法的严格证明，有的时候，代数方法比视觉方法更显示了问题的本质和联系。强烈推荐视频和教材，因为群论是现代数学的基石。</p>
+<h3 id="哈佛benedict-gross抽象代数">【哈佛Benedict Gross】抽象代数</h3>
+<h4 id="b站链接-4">B站链接</h4>
+<p>https://www.bilibili.com/video/BV1Yt4y1F72S</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Yt4y1F72S/?spm_id_from=333.999.0.0">【Harvard
+MATH E-222】 Abstract Algebra (Benedict Gross)</a></p>
+<h4 id="评价-4">评价</h4>
+<p>很老的课程了，对应的教材为经典的 <code>Michael Artin</code>
+的<code>代数</code>。学完本视频和配套教材会对抽象代数有扎实深入的理解。</p>
+<h4 id="配套教材-4">配套教材</h4>
+<p><img src="/zh/2022/pure-math-course/algebra-artin.jpg"></p>
+<h2 id="张量">张量</h2>
+<h3 id="eigenchris-系列">eigenchris 系列</h3>
+<h4 id="b站链接-5">B站链接</h4>
+<ul>
+<li><p>【eigenchris】 Tensors for Beginners
+https://www.bilibili.com/video/BV1zW4y1n7Cy</p></li>
+<li><p>【eigenchris】 Tensor Calculus
+https://www.bilibili.com/video/BV1Ae4y167ty</p></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1zW4y1n7Cy/?spm_id_from=333.999.0.0">【eigenchris】
+Tensors for Beginners</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Ae4y167ty/?spm_id_from=333.999.0.0">【eigenchris】
+Tensor Calculus</a></p>
+<h4 id="评价-5">评价</h4>
+<p><code>eigenchris</code> 的 tensor
+入门系列讲的应该是最好理解的，举了很多具体的例子，例如关于重要的概念行向量作为covector。可惜</p>
+<h3 id="xylyxylyx">XylyXylyX</h3>
+<h4 id="b站链接-6">B站链接</h4>
+<p>【XylyXylyX】 What is a Tensor
+https://www.bilibili.com/video/BV1NK411Q7p4</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1NK411Q7p4/?spm_id_from=333.999.0.0">【XylyXylyX】
+What is a Tensor</a></p>
+<h4 id="相关教材">相关教材</h4>
+<p>并非上述两个视频课程的配套教材，我找到一些市面上不错的纯 Tensor
+类入门书籍 <img src="/zh/2022/pure-math-course/tensor-student.jpg"></p>
+<p><img src="/zh/2022/pure-math-course/tensor-calc.jpg"></p>
+<h2 id="李群">李群</h2>
+<p>如之前所说，李群的本质是为了解决例如旋转矩阵群虽然在乘法上封闭（因此组成群）但是在加法上不封闭的问题。因为在做优化或者其他运算时，旋转代表的矩阵必然用到矩阵加法。李群的解决方式是将小量上的映射到李空间上做完运算后映射回李群。不过一般李群过于复杂，学习内容过于庞大，因此简单的入门李群本身也比较困难。</p>
+<h3 id="xylyxylyx-1">XylyXylyX</h3>
+<h4 id="b站链接-7">B站链接</h4>
+<p>【XylyXylyX】 Lie Groups and Lie Algebras]
+https://www.bilibili.com/video/BV1Z14y1j78c</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Z14y1j78c/?spm_id_from=333.999.0.0">【XylyXylyX】
+Lie Groups and Lie Algebras</a></p>
+<h4 id="评价-6">评价</h4>
+<p><code>XylyXylyX</code>的李群视频是众多李群入门中比较不错的，有不少重复，适合初学。配套
+<code>Robert Gilmore</code>的如下教材（教材后面部分过于复杂）。</p>
+<h4 id="配套教材-5">配套教材</h4>
+<p><img src="/zh/2022/pure-math-course/lie-gilmore.jpg"></p>
+<h3 id="jonathan-evans">Jonathan Evans</h3>
+<h4 id="b站链接-8">B站链接</h4>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1FK411D7dv/?spm_id_from=333.999.0.0">【Jonathan
+Evans】 Lie Groups and Lie Algebras</a></p>
+<h4 id="配套教材-6">配套教材</h4>
+<p>视频有专门一节推荐了众多不错的教材，不过李群这个领域过于深奥，我也只是刚入门。因此在此仅列其一：Springer
+的GTM（研究生数学系列）<code>表示理论</code> <img src="/zh/2022/pure-math-course/representation.jpg"></p>
+<h2 id="傅里叶变换">傅里叶变换</h2>
+<p>傅里叶变换的本质是将函数分解成一组相对卷积算子的对角化基，是进阶泛函分析的重要概念。</p>
+<h3 id="斯坦福-brad-osgood傅里叶变换和应用">【斯坦福 Brad
+Osgood】傅里叶变换和应用</h3>
+<h4 id="b站链接-9">B站链接</h4>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Gm4y1A7bw/?spm_id_from=333.999.0.0">【Stanford】
+The Fourier Transforms and its Applications</a></p>
+<h4 id="配套教材-7">配套教材</h4>
+<p><img src="/zh/2022/pure-math-course/stanford-fourier.jpg"> 可由下方地址下载
+https://see.stanford.edu/materials/lsoftaee261/book-fall-07.pdf</p>
+<h2 id="微分流形">微分流形</h2>
+<h3 id="xylyxylyx-2">XylyXylyX</h3>
+<h4 id="b站链接-10">B站链接</h4>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1fG411E7Tc/?spm_id_from=333.999.0.0">【XylyXylyX】What
+is a Manifold</a></p>
+<h2 id="程序员的范畴论">程序员的范畴论</h2>
+<h4 id="b站链接-11">B站链接</h4>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1v14y1e7et/?spm_id_from=333.999.0.0">【Bartosz
+Milewski】 Category Theory for Programmers</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV14P4y1Z7Ci/?spm_id_from=333.999.0.0">【Bartosz
+Milewski】 Category Theory for Programmers II</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1gB4y1n72g/?spm_id_from=333.999.0.0">【Bartosz
+Milewski】 Category Theory for Programmers III</a></p>
+<h4 id="配套教材-8">配套教材</h4>
+<p><img src="/zh/2022/pure-math-course/category-bartosz.jpg"></p>
+<h2 id="其他">其他</h2>
+<h4 id="b站链接-12">B站链接</h4>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1De4y1m7uS/?spm_id_from=333.999.0.0" title="[NJ Wildberger] Famous Math Problems">【NJ Wildberger】 Famous
+Math Problems</a></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2023/docker-neuralprophet/">初识时间序列预测神器 NeuralProphet 实战预测股票指数</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2022/app-arxiv-search/"></a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2022/pure-math-course/">https://blog.myencyclopedia.top/zh/2022/pure-math-course/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2022/pure-math-course/">https://myencyclopedia.github.io/zh/2022/pure-math-course/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2022/pure-math-course/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2022/pure-math-course/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

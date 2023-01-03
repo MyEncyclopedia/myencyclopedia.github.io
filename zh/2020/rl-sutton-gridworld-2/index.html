@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>通过代码学Sutton强化学习2：Grid World 策略迭代和值迭代 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/rl-sutton-gridworld-2/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="上一期 通过代码学Sutton强化学习1：Grid World OpenAI环境和策略评价算法，我们引入了 Grid World 问题，实现了对应的OpenAI Gym 环境，也分析了其最佳策略和对应的V值。这一期中，继续通过这个例子详细讲解策略提升（Policy Improvment）、策略迭代（Policy Iteration）、值迭代（Value Iteration）和异步迭代方法。 回顾">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过代码学Sutton强化学习2：Grid World 策略迭代和值迭代">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="上一期 通过代码学Sutton强化学习1：Grid World OpenAI环境和策略评价算法，我们引入了 Grid World 问题，实现了对应的OpenAI Gym 环境，也分析了其最佳策略和对应的V值。这一期中，继续通过这个例子详细讲解策略提升（Policy Improvment）、策略迭代（Policy Iteration）、值迭代（Value Iteration）和异步迭代方法。 回顾">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/grid_world.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/optimal_policy.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/value_3d.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/policy_iter_0.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/policy_iter_1.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/async_propa.png">
+<meta property="article:published_time" content="2020-09-11T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.026Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta property="article:tag" content="OpenAI Gym">
+<meta property="article:tag" content="Dynamic Programming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/grid_world.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#回顾-grid-world-问题">1&nbsp;&nbsp;<b>回顾 Grid World 问题</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#策略迭代">2&nbsp;&nbsp;<b>策略迭代</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#策略提升定理">2.1&nbsp;&nbsp;策略提升定理</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#策略迭代算法">2.2&nbsp;&nbsp;策略迭代算法</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#值迭代">3&nbsp;&nbsp;<b>值迭代</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#异步迭代">4&nbsp;&nbsp;<b>异步迭代</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E9%A1%BE-grid-world-%E9%97%AE%E9%A2%98"><span class="toc-text">回顾 Grid World 问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E8%BF%AD%E4%BB%A3"><span class="toc-text">策略迭代</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E6%8F%90%E5%8D%87%E5%AE%9A%E7%90%86"><span class="toc-text">策略提升定理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E8%BF%AD%E4%BB%A3%E7%AE%97%E6%B3%95"><span class="toc-text">策略迭代算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%80%BC%E8%BF%AD%E4%BB%A3"><span class="toc-text">值迭代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E8%BF%AD%E4%BB%A3"><span class="toc-text">异步迭代</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            通过代码学Sutton强化学习2：Grid World 策略迭代和值迭代
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-09-11T18:45:01.000Z" itemprop="datePublished">9月 12 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            15 分钟 读完 (约 2285 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>上一期 <a href="/zh/2020/rl-sutton-gridworld-2/!--swig￼6--">通过代码学Sutton强化学习1：Grid World
+OpenAI环境和策略评价算法</a>，我们引入了 Grid World
+问题，实现了对应的OpenAI Gym
+环境，也分析了其最佳策略和对应的V值。这一期中，继续通过这个例子详细讲解策略提升（Policy
+Improvment）、策略迭代（Policy Iteration）、值迭代（Value
+Iteration）和异步迭代方法。</p>
+<h2 id="回顾-grid-world-问题">回顾 Grid World 问题</h2>
+<figure>
+<img src="/zh/2020/rl-sutton-gridworld-2/grid_world.png">
+<figcaption>
+Grid World 问题
+</figcaption>
+</figure>
+在Grid World 中，Agent初始可以出现在编号1-14的网格中，Agent
+每往四周走一步得到 -1
+reward，因此需要尽快走到两个出口。当然最佳策略是以最小步数往出口逃离，如下所示。
+<figure>
+<img src="/zh/2020/rl-sutton-gridworld-2/optimal_policy.png">
+<figcaption>
+Grid World 最佳策略
+</figcaption>
+</figure>
+<p>最佳策略对应的状态V值和3D heatmap如下 </p><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[[ <span class="hljs-number">0.</span> -<span class="hljs-number">1.</span> -<span class="hljs-number">2.</span> -<span class="hljs-number">3.</span>]</span><br><span class="line"> [-<span class="hljs-number">1.</span> -<span class="hljs-number">2.</span> -<span class="hljs-number">3.</span> -<span class="hljs-number">2.</span>]</span><br><span class="line"> [-<span class="hljs-number">2.</span> -<span class="hljs-number">3.</span> -<span class="hljs-number">2.</span> -<span class="hljs-number">1.</span>]</span><br><span class="line"> [-<span class="hljs-number">3.</span> -<span class="hljs-number">2.</span> -<span class="hljs-number">1.</span>  <span class="hljs-number">0.</span>]]</span><br></pre></td></tr></tbody></table></figure><p></p>
+<figure>
+<img src="/zh/2020/rl-sutton-gridworld-2/value_3d.png">
+<figcaption>
+Grid World V值 3D heatmap
+</figcaption>
+</figure>
+<h2 id="策略迭代">策略迭代</h2>
+<p>上一篇中，我们知道如何evaluate 给定policy <span class="math inline">\(\pi\)</span> 的 <span class="math inline">\(v_{\pi}\)</span>值，那么是否可能在此基础上改进生成更好的策略
+<span class="math inline">\(\pi^{\prime}\)</span>。如果可以，能否最终找到最佳策略<span class="math inline">\({\pi}_{*}\)</span>？答案是肯定的，因为存在策略提升定理（Policy
+Improvement Theorem）。</p>
+<h3 id="策略提升定理">策略提升定理</h3>
+<p>在 4.2 节 Policy Improvement Theorem 可以证明，利用 <span class="math inline">\(v_{\pi}\)</span> 信息对于每个状态采取最 greedy 的
+action （又称exploitation）能够保证生成的新 <span class="math inline">\({\pi}^{\prime}\)</span> 是不差于旧的policy <span class="math inline">\({\pi}\)</span>，即</p>
+<div>
+<p><span class="math display">\[
+q_{\pi}(s, {\pi}^{\prime}(s)) \gt v_{\pi}(s)
+\]</span></p>
+</div>
+<div>
+<p><span class="math display">\[
+v_{\pi^{\prime}}(s) \gt v_{\pi}(s)
+\]</span></p>
+</div>
+因此，可以通过在当前policy求得v值，再选取最greedy
+action的方式形成如下迭代，就能够不断逼近最佳策略。
+<div>
+<p><span class="math display">\[
+\pi_{0} \stackrel{\mathrm{E}}{\longrightarrow} v_{\pi_{0}}
+\stackrel{\mathrm{I}}{\longrightarrow} \pi_{1}
+\stackrel{\mathrm{E}}{\longrightarrow} v_{\pi_{1}}
+\stackrel{\mathrm{I}}{\longrightarrow} \pi_{2}
+\stackrel{\mathrm{E}}{\longrightarrow} \cdots
+\stackrel{\mathrm{I}}{\longrightarrow} \pi_{*}
+\stackrel{\mathrm{E}}{\longrightarrow} v_{*}
+\]</span></p>
+</div>
+<h3 id="策略迭代算法">策略迭代算法</h3>
+以下为书中4.3的policy iteration伪代码。其中policy
+evaluation的算法在上一篇中已经实现。Policy improvement
+的精髓在于一次遍历所有状态后，通过policy
+的最大Q值找到该状态的最佳action，并更新成最新policy，循环直至没有 action
+变更。
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\textbf{Policy Iteration (using iterative policy evaluation) for
+estimating } \pi\approx {\pi}_{*} \\
+&amp;1. \quad \text{Initialization} \\
+&amp; \quad \quad V(s) \in \mathbb R\text{ and } \pi(s) \in \mathcal
+A(s) \text{ arbitrarily for all }s \in \mathcal{S} \\
+&amp; \\
+&amp;2. \quad \text{Policy Evaluation} \\
+&amp; \quad \quad \text{Loop:}\\
+&amp; \quad \quad \Delta \leftarrow 0\\
+&amp; \quad \quad \text{Loop for each } s \in \mathcal{S}:\\
+&amp; \quad \quad \quad \quad v \leftarrow V(s) \\
+&amp; \quad \quad \quad \quad V(s) \leftarrow \sum_{s^{\prime}, r}
+p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma
+V\left(s^{\prime}\right)\right] \\
+&amp; \quad \quad \quad \quad \Delta \leftarrow \max(\Delta, |v-V(s)|)
+\\
+&amp; \quad \quad \text{until } \Delta &lt; \theta \text{ (a small
+positive number determining the accuracy of estimation)}\\
+&amp; \\
+&amp;3. \quad \text{Policy Improvement} \\
+&amp; \quad \quad policy\text{-}stable\leftarrow true \\
+&amp; \quad \quad \text{Loop for each } s \in \mathcal{S}:\\
+&amp; \quad \quad \quad \quad old\text{-}action\leftarrow \pi(s) \\
+&amp; \quad \quad \quad \quad \pi(s) \leftarrow
+\operatorname{argmax}_{a} \sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid
+s, a\right)\left[r+\gamma V\left(s^{\prime}\right)\right] \\
+&amp; \quad \quad \quad \quad \text{If } old\text{-}action \neq
+\pi\text{,then }policy\text{-}stable\leftarrow false \\
+&amp; \quad \quad \text{If } policy\text{-}stable \text{, then stop and
+return }V \approx v_{*} \text{ and } \pi\approx {\pi}_{*}\text{; else go
+to 2}
+\end{align*}
+\]</span></p>
+</div>
+<p>注意到状态Q值 <span class="math inline">\(q_{\pi}(s, a)\)</span>
+会被多处调用，将其封装为单独的函数。</p>
+<div>
+<p><span class="math display">\[
+\begin{aligned}
+q_{\pi}(s, a) &amp;=\sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s,
+a\right)\left[r+\gamma v_{\pi}\left(s^{\prime}\right)\right]
+\end{aligned}
+\]</span></p>
+</div>
+<p>Q值函数实现如下： </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">action_value</span>(<span class="hljs-params">env: GridWorldEnv, state: State, V: StateValue, gamma=<span class="hljs-number">1.0</span></span>) -&gt; ActionValue:</span></span><br><span class="line">    q = np.zeros(env.nA)</span><br><span class="line">    <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(env.nA):</span><br><span class="line">        <span class="hljs-keyword">for</span> prob, next_state, reward, done <span class="hljs-keyword">in</span> env.P[state][a]:</span><br><span class="line">            q[a] += prob * (reward + gamma * V[next_state])</span><br><span class="line">    <span class="hljs-keyword">return</span> q</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>有了 action_value 和上期的 policy_evaluate，policy iteration
+实现完全对应上面的伪代码。 </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">policy_improvement</span>(<span class="hljs-params">env: GridWorldEnv, policy: Policy, V: StateValue, gamma=<span class="hljs-number">1.0</span></span>) -&gt; <span class="hljs-built_in">bool</span>:</span></span><br><span class="line">    policy_stable = <span class="hljs-literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(env.nS):</span><br><span class="line">        old_action = np.argmax(policy[s])</span><br><span class="line">        Q_s = action_value(env, s, V)</span><br><span class="line">        best_action = np.argmax(Q_s)</span><br><span class="line">        policy[s] = np.eye(env.nA)[best_action]</span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> old_action != best_action:</span><br><span class="line">            policy_stable = <span class="hljs-literal">False</span></span><br><span class="line">    <span class="hljs-keyword">return</span> policy_stable</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">policy_iteration</span>(<span class="hljs-params">env: GridWorldEnv, policy: Policy, gamma=<span class="hljs-number">1.0</span></span>) -&gt; <span class="hljs-type">Tuple</span>[Policy, StateValue]:</span></span><br><span class="line">    <span class="hljs-built_in">iter</span> = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">        V = policy_evaluate(policy, env, gamma)</span><br><span class="line">        policy_stable = policy_improvement(env, policy, V)</span><br><span class="line">        <span class="hljs-built_in">iter</span> += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="hljs-keyword">if</span> policy_stable:</span><br><span class="line">            <span class="hljs-keyword">return</span> policy, V</span><br></pre></td></tr></tbody></table></figure><p></p>
+Grid World
+例子通过两轮迭代就可以收敛，以下是初始时随机策略的V值和第一次迭代后的V值。
+<figure>
+<img src="/zh/2020/rl-sutton-gridworld-2/policy_iter_0.png">
+<figcaption>
+初始随机策略 V 值
+</figcaption>
+</figure>
+<figure>
+<img src="/zh/2020/rl-sutton-gridworld-2/policy_iter_1.png">
+<figcaption>
+第一次迭代后的 V 值
+</figcaption>
+</figure>
+<h2 id="值迭代">值迭代</h2>
+<p>值迭代（ Value Iteration）的本质是，将policy iteration中的policy
+evaluation过程从不断循环到收敛直至小于theta，改成只执行一遍，并直接用最佳Q值更新到状态V值，如此可以不用显示地算出<span class="math inline">\({\pi}\)</span>
+而直接在V值上迭代。具体迭代公式如下：</p>
+<div>
+<p><span class="math display">\[
+\begin{aligned}
+v_{k+1}(s) &amp; \doteq \max _{a} \mathbb{E}\left[R_{t+1}+\gamma
+v_{k}\left(S_{t+1}\right) \mid S_{t}=s, A_{t}=a\right] \\
+&amp;=\max_{a}  q_{\pi_k}(s, a) \\
+&amp;=\max _{a} \sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s,
+a\right)\left[r+\gamma v_{k}\left(s^{\prime}\right)\right]
+\end{aligned}
+\]</span></p>
+</div>
+<p>完整的伪代码为：</p>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\textbf{Value Iteration, for estimating } \pi\approx \pi_{*} \\
+&amp; \text{Algorithm parameter: a small threshold } \theta &gt; 0
+\text{ determining accuracy of estimation} \\
+&amp; \text{Initialize } V(s), \text{for all } s \in \mathcal{S}^{+}
+\text{, arbitrarily except that } V (terminal) = 0\\
+&amp; \\
+&amp;1: \text{Loop:}\\
+&amp;2: \quad \quad \Delta \leftarrow 0\\
+&amp;3: \quad \quad \text{Loop for each } s \in \mathcal{S}:\\
+&amp;4: \quad \quad \quad \quad v \leftarrow V(s) \\
+&amp;5: \quad \quad \quad \quad V(s) \leftarrow \operatorname{max}_{a}
+\sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma
+V\left(s^{\prime}\right)\right] \\
+&amp;6: \quad \quad \quad \quad \Delta \leftarrow \max(\Delta, |v-V(s)|)
+\\
+&amp;7: \text{until } \Delta &lt; \theta \\
+&amp; \\
+&amp; \text{Output a deterministic policy, }\pi\approx \pi_{*} \text{,
+such that} \\
+&amp; \quad \quad \pi(s) \leftarrow \operatorname{argmax}_{a}
+\sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma
+V\left(s^{\prime}\right)\right]
+\end{align*}
+\]</span></p>
+</div>
+<p>代码实现也比较直接，可以复用上面已经实现的 action_value 函数。
+</p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">value_iteration</span>(<span class="hljs-params">env:GridWorldEnv, gamma=<span class="hljs-number">1.0</span>, theta=<span class="hljs-number">0.0001</span></span>) -&gt; <span class="hljs-type">Tuple</span>[Policy, StateValue]:</span></span><br><span class="line">    V = np.zeros(env.nS)</span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">        delta = <span class="hljs-number">0</span></span><br><span class="line">        <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(env.nS):</span><br><span class="line">            action_values = action_value(env, s, V, gamma=gamma)</span><br><span class="line">            best_action_value = np.<span class="hljs-built_in">max</span>(action_values)</span><br><span class="line">            delta = <span class="hljs-built_in">max</span>(delta, np.<span class="hljs-built_in">abs</span>(best_action_value - V[s]))</span><br><span class="line">            V[s] = best_action_value</span><br><span class="line">        <span class="hljs-keyword">if</span> delta &lt; theta:</span><br><span class="line">            <span class="hljs-keyword">break</span></span><br><span class="line"></span><br><span class="line">    policy = np.zeros([env.nS, env.nA])</span><br><span class="line">    <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(env.nS):</span><br><span class="line">        action_values = action_value(env, s, V, gamma=gamma)</span><br><span class="line">        best_action = np.argmax(action_values)</span><br><span class="line">        policy[s, best_action] = <span class="hljs-number">1.0</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> policy, V</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="异步迭代">异步迭代</h2>
+<p>在第4.5节中提到了DP迭代方式的改进版：异步方式迭代（Asychronous
+Iteration）。这里的异步是指每一轮无需全部扫一遍所有状态，而是根据上一轮变化的状态决定下一轮需要最多计算的状态数，类似于Dijkstra最短路径算法中用
+heap
+来维护更新节点集合，减少运算量。下面我们通过异步值迭代来演示异步迭代的工作方式。</p>
+<p>下图表示状态的变化方向，若上一轮 <span class="math inline">\(V(s)\)</span> 发生更新，那么下一轮就要考虑状态 s
+可能会影响到上游状态的集合（
+p1，p2），避免下一轮必须遍历所有状态的V值计算。</p>
+<figure>
+<img src="/zh/2020/rl-sutton-gridworld-2/async_propa.png">
+<figcaption>
+Async 反向传播
+</figcaption>
+</figure>
+<p>要做到部分更新就必须知道每个状态可能影响到的上游状态集合，上图对应的映射关系可以表示为</p>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+s'_1 &amp;\rightarrow \{s\} \\
+s'_2 &amp;\rightarrow \{s\} \\
+s &amp;\rightarrow \{p_1, p_2\}
+\end{align*}
+\]</span></p>
+</div>
+<p>建立映射关系的代码如下，build_reverse_mapping 返回类型为 Dict[State,
+Set[State]]。</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">build_reverse_mapping</span>(<span class="hljs-params">env:GridWorldEnv</span>) -&gt; <span class="hljs-type">Dict</span>[State, <span class="hljs-type">Set</span>[State]]:</span></span><br><span class="line">    MAX_R, MAX_C = env.shape[<span class="hljs-number">0</span>], env.shape[<span class="hljs-number">1</span>]</span><br><span class="line">    mapping = {s: <span class="hljs-built_in">set</span>() <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, MAX_R * MAX_C)}</span><br><span class="line">    action_delta = {Action.UP: (-<span class="hljs-number">1</span>, <span class="hljs-number">0</span>), Action.DOWN: (<span class="hljs-number">1</span>, <span class="hljs-number">0</span>), Action.LEFT: (<span class="hljs-number">0</span>, -<span class="hljs-number">1</span>), Action.RIGHT: (<span class="hljs-number">0</span>, <span class="hljs-number">1</span>)}</span><br><span class="line">    <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, MAX_R * MAX_C):</span><br><span class="line">        r = s // MAX_R</span><br><span class="line">        c = s % MAX_R</span><br><span class="line">        <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-built_in">list</span>(Action):</span><br><span class="line">            neighbor_r = <span class="hljs-built_in">min</span>(MAX_R - <span class="hljs-number">1</span>, <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, r + action_delta[a][<span class="hljs-number">0</span>]))</span><br><span class="line">            neighbor_c = <span class="hljs-built_in">min</span>(MAX_C - <span class="hljs-number">1</span>, <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, c + action_delta[a][<span class="hljs-number">1</span>]))</span><br><span class="line">            s_ = neighbor_r * MAX_R + neighbor_c</span><br><span class="line">            mapping[s_].add(s)</span><br><span class="line">    <span class="hljs-keyword">return</span> mapping</span><br></pre></td></tr></tbody></table></figure>
+<p>有了描述状态依赖的映射 dict 后，代码也比较简洁，changed_state_set
+变量保存了这轮必须计算的状态集合。新的一轮迭代时，将下一轮需要计算的状态保存到
+changed_state_set_ 中，本轮结束后，changed_state_set
+更新成changed_state_set_，开始下一轮循环直至没有状态需要更新。
+</p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">value_iteration_async</span>(<span class="hljs-params">env:GridWorldEnv, gamma=<span class="hljs-number">1.0</span>, theta=<span class="hljs-number">0.0001</span></span>) -&gt; <span class="hljs-type">Tuple</span>[Policy, StateValue]:</span></span><br><span class="line">    mapping = build_reverse_mapping(env)</span><br><span class="line"></span><br><span class="line">    V = np.zeros(env.nS)</span><br><span class="line">    changed_state_set = <span class="hljs-built_in">set</span>(s <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(env.nS))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-built_in">iter</span> = <span class="hljs-number">0</span></span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-built_in">len</span>(changed_state_set) &gt; <span class="hljs-number">0</span>:</span><br><span class="line">        changed_state_set_ = <span class="hljs-built_in">set</span>()</span><br><span class="line">        <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> changed_state_set:</span><br><span class="line">            action_values = action_value(env, s, V, gamma=gamma)</span><br><span class="line">            best_action_value = np.<span class="hljs-built_in">max</span>(action_values)</span><br><span class="line">            v_diff = np.<span class="hljs-built_in">abs</span>(best_action_value - V[s])</span><br><span class="line">            <span class="hljs-keyword">if</span> v_diff &gt; theta:</span><br><span class="line">                changed_state_set_.update(mapping[s])</span><br><span class="line">                V[s] = best_action_value</span><br><span class="line">        changed_state_set = changed_state_set_</span><br><span class="line">        <span class="hljs-built_in">iter</span> += <span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line">    policy = np.zeros([env.nS, env.nA])</span><br><span class="line">    <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(env.nS):</span><br><span class="line">        action_values = action_value(env, s, V, gamma=gamma)</span><br><span class="line">        best_action = np.argmax(action_values)</span><br><span class="line">        policy[s, best_action] = <span class="hljs-number">1.0</span></span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> policy, V</span><br></pre></td></tr></tbody></table></figure>
+比较值迭代和异步值迭代方法后发现，值迭代用了4次循环，每次涉及所有状态，总计算状态数为
+4 x 16 = 64。异步值迭代也用了4次循环，但是总计更新了54个状态。由于Grid
+World
+的状态数很少，异步值迭代优势并不明显，但是对于状态数众多并且迭代最终集中在少部分状态的环境下，节省的计算量还是很可观的。<p></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/OpenAI-Gym/">#OpenAI Gym</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Dynamic-Programming/">#Dynamic Programming</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/tsp-2-dp-tour/">TSP问题从DP算法到深度学习2：欧氏空间数据集的DP解</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/leetcode-679-24-game/">Leetcode 679 24 Game 的 Python 函数式实现</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/rl-sutton-gridworld-2/">https://blog.myencyclopedia.top/zh/2020/rl-sutton-gridworld-2/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/">https://myencyclopedia.github.io/zh/2020/rl-sutton-gridworld-2/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/rl-sutton-gridworld-2/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/rl-sutton-gridworld-2/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

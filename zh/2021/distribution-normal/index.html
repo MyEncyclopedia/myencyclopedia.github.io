@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>从零构建统计随机变量生成器之正态分布 Box-Muller方法 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2021/distribution-normal/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="在学习了一些基本的统计变量生成法之后，这次我们来看看如何生成正态分布。它就是大名鼎鼎的 Box-Muller 方法，Box-Muller 的理解过程可以体会到统计模拟的一些精妙思想。  从零构建统计随机变量生成器之 离散基础篇 从零构建统计随机变量生成器之 用逆变换采样方法构建随机变量生成器 深入 LeetCode 470 拒绝采样，状态转移图求期望和一道经典统计求期望题目 从零构建统计随机变量生">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零构建统计随机变量生成器之正态分布 Box-Muller方法">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="在学习了一些基本的统计变量生成法之后，这次我们来看看如何生成正态分布。它就是大名鼎鼎的 Box-Muller 方法，Box-Muller 的理解过程可以体会到统计模拟的一些精妙思想。  从零构建统计随机变量生成器之 离散基础篇 从零构建统计随机变量生成器之 用逆变换采样方法构建随机变量生成器 深入 LeetCode 470 拒绝采样，状态转移图求期望和一道经典统计求期望题目 从零构建统计随机变量生">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/normal-pdf.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/phi.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/gaussian2d_slice.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/2d_to_1d.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/normal_x_y.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/s_exp.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/normal_decompose.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/gaussian2d_anim.gif">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/pdf_polar_s.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/BoxMullerTransformPolar.png">
+<meta property="article:published_time" content="2021-07-09T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.050Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Statistics">
+<meta property="article:tag" content="Simulation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2021/distribution-normal/normal-pdf.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#尝试逆变换方法">1&nbsp;&nbsp;<b>尝试逆变换方法</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#二维映射到一维">2&nbsp;&nbsp;<b>二维映射到一维</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#box-muller-原理">3&nbsp;&nbsp;<b>Box-Muller 原理</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#拒绝采样极坐标方法">4&nbsp;&nbsp;<b>拒绝采样极坐标方法</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#生成独立的-u-v-和-s">4.1&nbsp;&nbsp;1. 生成独立的 u, v 和 s</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#将-u-v-s-转换成-x-y">4.2&nbsp;&nbsp;2. 将 u, v, s 转换成 x, y</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#拒绝采样的效率">4.3&nbsp;&nbsp;拒绝采样的效率</a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%9D%E8%AF%95%E9%80%86%E5%8F%98%E6%8D%A2%E6%96%B9%E6%B3%95"><span class="toc-text">尝试逆变换方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E7%BB%B4%E6%98%A0%E5%B0%84%E5%88%B0%E4%B8%80%E7%BB%B4"><span class="toc-text">二维映射到一维</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#box-muller-%E5%8E%9F%E7%90%86"><span class="toc-text">Box-Muller 原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%92%E7%BB%9D%E9%87%87%E6%A0%B7%E6%9E%81%E5%9D%90%E6%A0%87%E6%96%B9%E6%B3%95"><span class="toc-text">拒绝采样极坐标方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E7%8B%AC%E7%AB%8B%E7%9A%84-u-v-%E5%92%8C-s"><span class="toc-text">1. 生成独立的 u, v 和 s</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86-u-v-s-%E8%BD%AC%E6%8D%A2%E6%88%90-x-y"><span class="toc-text">2. 将 u, v, s 转换成 x, y</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%92%E7%BB%9D%E9%87%87%E6%A0%B7%E7%9A%84%E6%95%88%E7%8E%87"><span class="toc-text">拒绝采样的效率</span></a></li></ol></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            从零构建统计随机变量生成器之正态分布 Box-Muller方法
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2021-07-09T18:45:01.000Z" itemprop="datePublished">7月 10 2021</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            14 分钟 读完 (约 2106 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>在学习了一些基本的统计变量生成法之后，这次我们来看看如何生成正态分布。它就是大名鼎鼎的
+Box-Muller 方法，Box-Muller
+的理解过程可以体会到统计模拟的一些精妙思想。</p>
+<ul>
+<li><a href="/zh/2021/distribution-normal/zh/distribution-discrete-generator.md">从零构建统计随机变量生成器之
+离散基础篇</a></li>
+<li><a href="/zh/2021/distribution-normal/zh/distribution-inverse-transformation-method.md">从零构建统计随机变量生成器之
+用逆变换采样方法构建随机变量生成器</a></li>
+<li><a href="/zh/2021/distribution-normal/zh/leetcode-470-rand10.md">深入 LeetCode 470
+拒绝采样，状态转移图求期望和一道经典统计求期望题目</a></li>
+<li><strong><a href="/zh/2021/distribution-normal/zh/distribution-normal.md">从零构建统计随机变量生成器之 正态分布
+Box-Muller方法</a></strong></li>
+</ul>
+<h2 id="尝试逆变换方法">尝试逆变换方法</h2>
+<p>我们先尝试通过标准的逆变换方法来生成正态分布。</p>
+<p>正态分布的 PDF 表达式为</p>
+<div>
+<p><span class="math display">\[
+f_Z(z) = \frac{1}{\sqrt{2 \pi}} \exp\left\{-\frac{z^2}{2}\right\}
+\]</span></p>
+</div>
+<p>对应的函数图形是钟形曲线</p>
+<p><img src="/zh/2021/distribution-normal/normal-pdf.png"></p>
+<p>根据 PDF，其 CDF 的积分形式为 <span class="math display">\[
+\Phi(x)=\frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{x} e^{-t^{2} / 2} d t
+\]</span></p>
+<p>和所有 PDF CDF 关系一样，<span class="math inline">\(\Phi(x)\)</span>
+表示 <span class="math inline">\(f_Z\)</span> 累积到 <span class="math inline">\(x\)</span> 点的面积。</p>
+<p><img src="/zh/2021/distribution-normal/phi.png"></p>
+<p>很不幸的是，<span class="math inline">\(\Phi(x)\)</span>
+无法写出一般数学表达式，因而也无法直接用逆变换方法。</p>
+<h2 id="二维映射到一维">二维映射到一维</h2>
+<p>我们知道，高维正态分布有特殊的性质：它的每一维的分量都是正态分布；单个维度对于其他维度的条件概率分布也是正态分布。</p>
+<p>用图来理解这两条性质就是，对于下图的二维正态分布 $ x = [x_1, x_2]^T
+$，单独的 <span class="math inline">\(x_1\)</span> 和 <span class="math inline">\(x_2\)</span> 都服从一维正态分布。</p>
+<p>条件概率 <span class="math inline">\(p(x_2|x_1 \approx1)\)</span>
+的PDF 对应图中的红线，显然也是一维正态分布。</p>
+<p><img src="/zh/2021/distribution-normal/gaussian2d_slice.png"></p>
+<p>写一段简单的代码验证二维正态分布的单个分量服从正态分布。</p>
+<p>代码中，我们用<code>np.random.normal</code>生成了 10000
+个服从二维正态分布的 x, y 点，然后我们丢弃 y，只保留 x，并画出 10000 个
+x 的分布。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">plot_normal_1d</span>():</span></span><br><span class="line">    x, _ = np.random.normal(loc=<span class="hljs-number">0</span>, scale=<span class="hljs-number">1</span>, size=(<span class="hljs-number">2</span>, <span class="hljs-number">10000</span>))</span><br><span class="line">    <span class="hljs-keyword">import</span> seaborn <span class="hljs-keyword">as</span> sns</span><br><span class="line">    sns.distplot(x, hist=<span class="hljs-literal">True</span>, kde=<span class="hljs-literal">True</span>, bins=<span class="hljs-number">100</span>, color=<span class="hljs-string">'darkblue'</span>,</span><br><span class="line">                 hist_kws={<span class="hljs-string">'edgecolor'</span>: <span class="hljs-string">'black'</span>},</span><br><span class="line">                 kde_kws={<span class="hljs-string">'linewidth'</span>: <span class="hljs-number">4</span>})</span><br><span class="line">    plt.title(<span class="hljs-string">'PDF Normal 1D from 2D'</span>)</span><br><span class="line">    plt.show()</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/zh/2021/distribution-normal/2d_to_1d.png"></p>
+<h2 id="box-muller-原理">Box-Muller 原理</h2>
+<p>虽然无法直接用逆变换方法生成一维正态分布，但我们却能通过先生成二维的正态分布，利用上面一节的性质，生成一维正态分布。</p>
+<p><strong>而 Box-Muller
+就是巧妙生成二维正态分布样本点的方法。</strong></p>
+<p>首先，我们来看看二维正态分布可以认为是两个维度是独立的，每个维度都是正态分布。此时，其
+PDF 可以写成两个一维正态分布 PDF 的乘积。</p>
+<p><img src="/zh/2021/distribution-normal/normal_x_y.png"></p>
+<p>这种写法表明，二维正态分布仅用一个 <strong>r
+向量</strong>就可以充分表达。注意，r
+是向量，不仅有大小还有角度，有两个分量。这两个分量本质上是独立的，这就是
+Box-Muller 方法的巧妙之处。也就是，<strong>Box-Muller
+通过角度和半径大小两个分量的独立性分别单独生成并转换成 (x, y)
+对。</strong></p>
+<p>角度分量是在 <span class="math inline">\(2\pi\)</span>
+范围均匀采样，这一点比较直觉好理解。</p>
+<p>再来看看半径分量 r。我们令 <span class="math display">\[
+s = {r^2 \over 2} \Longrightarrow r = \sqrt{2s}
+\]</span></p>
+<p>则 s 服从指数分布 <span class="math inline">\(\lambda=1\)</span>
+。</p>
+<p>不信么？我们不妨来做个模拟实验，下图是模拟 10000次二维正态分布 (x, y)
+点后转换成 s 的分布。</p>
+<p><img src="/zh/2021/distribution-normal/s_exp.png"></p>
+<p>模拟和plot 代码如下</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">plot_r_squared</span>():</span></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_normal_samples</span>(<span class="hljs-params">n</span>):</span></span><br><span class="line">        x, y = np.random.normal(loc=<span class="hljs-number">0</span>, scale=<span class="hljs-number">1</span>, size=(<span class="hljs-number">2</span>, n))</span><br><span class="line">        <span class="hljs-keyword">return</span> x, y</span><br><span class="line"></span><br><span class="line">    x, y = gen_normal_samples(<span class="hljs-number">10000</span>)</span><br><span class="line">    s = (x * x + y * y)/<span class="hljs-number">2</span></span><br><span class="line">    plot_dist_1d(s, title=<span class="hljs-string">'PDF $s = {{x^2 + y^2}\over{2}} \sim exp(1)$'</span>)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">plot_dist_1d</span>(<span class="hljs-params">X, title=<span class="hljs-string">'PDF '</span></span>):</span></span><br><span class="line">    <span class="hljs-keyword">import</span> seaborn <span class="hljs-keyword">as</span> sns</span><br><span class="line">    plt.rcParams.update({</span><br><span class="line">        <span class="hljs-string">"text.usetex"</span>: <span class="hljs-literal">True</span>,</span><br><span class="line">        <span class="hljs-string">"font.family"</span>: <span class="hljs-string">"sans-serif"</span>,</span><br><span class="line">        <span class="hljs-string">"font.sans-serif"</span>: [<span class="hljs-string">"Helvetica"</span>]})</span><br><span class="line">    sns.distplot(X, hist=<span class="hljs-literal">True</span>, kde=<span class="hljs-literal">True</span>, bins=<span class="hljs-number">100</span>, color=<span class="hljs-string">'darkblue'</span>,</span><br><span class="line">                 hist_kws={<span class="hljs-string">'edgecolor'</span>: <span class="hljs-string">'black'</span>},</span><br><span class="line">                 kde_kws={<span class="hljs-string">'linewidth'</span>: <span class="hljs-number">4</span>})</span><br><span class="line">    plt.title(title)</span><br><span class="line">    plt.show()    </span><br></pre></td></tr></tbody></table></figure>
+<p>确信了 s 符合指数分布，根据指数分布的 PDF，可以推出二维正态 PDF中的 $
+e<sup>{-r</sup>2/2}$ 也符合指数分布，即 <span class="math display">\[
+s \sim \exp(1) \Longrightarrow e^{-r^2/2} \sim \exp(1)
+\]</span></p>
+<p>至此，总结一下Box-Muller方法。我们视二维正态分布PDF为独立两部分的乘积，第一部分是在
+<span class="math inline">\(2\pi\)</span>
+范围中的均匀分布，代表了二维平面中的角度 <span class="math inline">\(\theta\)</span>，第二部分为 <span class="math inline">\(\lambda=1\)</span> 的指数分布，代表半径大小。</p>
+<p><img src="/zh/2021/distribution-normal/normal_decompose.png"></p>
+<p>Box-Muller 方法通过两个服从 [0, 1] 均匀分布的样本
+u1和u2，转换成独立的角度和半径样本，具体过程如下</p>
+<ol type="1">
+<li><p>生成 [0, 1] 的均匀分布 u1，利用逆变换采样方法转换成 exp(1)
+样本，此为二维平面点半径 r</p></li>
+<li><p>生成 [0, 1] 的均匀分布 u2，乘以 <span class="math inline">\(2\pi\)</span>，即为样本点的角度 <span class="math inline">\(\theta\)</span></p></li>
+<li><p>将 r 和 <span class="math inline">\(\theta\)</span> 转换成 x, y
+坐标下的点。</p></li>
+</ol>
+<p>理解了整个过程的意义，下面的代码就很直白。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">normal_box_muller</span>():</span></span><br><span class="line">    <span class="hljs-keyword">import</span> random</span><br><span class="line">    <span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> sqrt, log, pi, cos, sin</span><br><span class="line">    u1 = random.random()</span><br><span class="line">    u2 = random.random()</span><br><span class="line">    r = sqrt(-<span class="hljs-number">2</span> * log(u1))</span><br><span class="line">    theta = <span class="hljs-number">2</span> * pi * u2</span><br><span class="line">    z0 = r * cos(theta)</span><br><span class="line">    z1 = r * sin(theta)</span><br><span class="line">    <span class="hljs-keyword">return</span> z0, z1</span><br></pre></td></tr></tbody></table></figure>
+<p>接下来，我们来看看 Box-Muller 法生成的二维标准正态分布动画吧</p>
+<p><img src="/zh/2021/distribution-normal/gaussian2d_anim.gif"></p>
+<h2 id="拒绝采样极坐标方法">拒绝采样极坐标方法</h2>
+<p>Box-Muller 方法还有一种形式，称为极坐标形式，属于拒绝采样方法。</p>
+<h3 id="生成独立的-u-v-和-s">1. 生成独立的 u, v 和 s</h3>
+<p>分别生成 [0, 1] 均匀分布 u 和 v。令 <span class="math inline">\(s =
+r^2 = u^2 + v^2\)</span>。如果 s = 0或 s ≥ 1，则丢弃 u 和 v
+，并尝试另一对 (u , v)。因为 u 和 v
+是均匀分布的，并且因为只允许单位圆内的点，所以 s
+的值也将均匀分布在开区间 (0, 1) 中。<strong>注意，这里的 s
+的意义虽然也为半径，但不同于基本方法中的 s。</strong>这里 s 取值范围为
+(0, 1) ，目的是通过 s 生成指数分布，而基本方法中的 s 取值范围为 [0,
++∞]，表示二维正态分布 PDF 采样点的半径。复用符号 s
+的原因是为了对应维基百科中关于基本方法和极坐标方法的数学描述。</p>
+<p>我们用代码来验证 s 服从 (0, 1) 范围上的均匀分布。 </p><figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_polar_s</span>():</span></span><br><span class="line">    <span class="hljs-keyword">import</span> random</span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">        u = random.uniform(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span><br><span class="line">        v = random.uniform(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span><br><span class="line">        s = u * u + v * v</span><br><span class="line">        <span class="hljs-keyword">if</span> s &gt;= <span class="hljs-number">1.0</span> <span class="hljs-keyword">or</span> s == <span class="hljs-number">0.0</span>:</span><br><span class="line">            <span class="hljs-keyword">continue</span></span><br><span class="line">        <span class="hljs-keyword">return</span> s</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">plot_polar_s</span>():</span></span><br><span class="line">    s = [gen_polar_s() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10000</span>) ]</span><br><span class="line">    plot_dist_1d(s, title=<span class="hljs-string">'PDF Polar $s = u^2 + v^2$'</span>)</span><br></pre></td></tr></tbody></table></figure> <img src="/zh/2021/distribution-normal/pdf_polar_s.png"><p></p>
+<h3 id="将-u-v-s-转换成-x-y">2. 将 u, v, s 转换成 x, y</h3>
+<p>若将 $s = R^2 uniform(0, 1) $ 看成是基本方法中的
+u1，就可以用同样的方式转换成指数分布，用以代表二维PDF的半径。</p>
+<p>同时，根据下图，<span class="math inline">\(\cos \theta\)</span> 和
+<span class="math inline">\(\sin \theta\)</span> 可以直接用 u, v, R
+表示出来，并不需要通过三角函数显示计算出 <span class="math inline">\(\theta\)</span>。有了半径， <span class="math inline">\(\cos \theta\)</span> 和 <span class="math inline">\(\sin \theta\)</span> ，则可以直接计算出 x, y
+坐标，（下面用 <span class="math inline">\(z_0, z_1\)</span> 代替 <span class="math inline">\(x, y\)</span>）。</p>
+<p><img src="/zh/2021/distribution-normal/BoxMullerTransformPolar.png"></p>
+<p><span class="math display">\[
+z_{0}=\sqrt{-2 \ln U_{1}} \cos \left(2 \pi U_{2}\right)=\sqrt{-2 \ln
+s}\left(\frac{u}{\sqrt{s}}\right)=u \cdot \sqrt{\frac{-2 \ln s}{s}}
+\]</span></p>
+<p><span class="math display">\[
+z_{1}=\sqrt{-2 \ln U_{1}} \sin \left(2 \pi U_{2}\right)=\sqrt{-2 \ln
+s}\left(\frac{v}{\sqrt{s}}\right)=v \cdot \sqrt{\frac{-2 \ln s}{s}}
+\]</span></p>
+<p>同样，Box-Muller 极坐标方法的代码和公式一致。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">normal_box_muller_polar</span>():</span></span><br><span class="line">    <span class="hljs-keyword">import</span> random</span><br><span class="line">    <span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> sqrt, log</span><br><span class="line">    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:</span><br><span class="line">        u = random.uniform(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span><br><span class="line">        v = random.uniform(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span><br><span class="line">        s = u * u + v * v</span><br><span class="line">        <span class="hljs-keyword">if</span> s &gt;= <span class="hljs-number">1.0</span> <span class="hljs-keyword">or</span> s == <span class="hljs-number">0.0</span>:</span><br><span class="line">            <span class="hljs-keyword">continue</span></span><br><span class="line">        z0 = u * sqrt(-<span class="hljs-number">2</span> * log(s) / s)</span><br><span class="line">        z1 = v * sqrt(-<span class="hljs-number">2</span> * log(s) / s)</span><br><span class="line">        <span class="hljs-keyword">return</span> z0, z1</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="拒绝采样的效率">拒绝采样的效率</h3>
+<p>极坐标方法与基本方法的不同之处在于它是一种拒绝采样。因此，它会丢弃一些生成的随机数，但可能比基本方法更快，因为它计算更简单：<strong>避免使用昂贵的三角函数</strong>，并且在数值上更稳健。极坐标方法丢弃了生成总输入对的
+1 − <em>π</em> /4 ≈ 21.46%，即需要 4/ <em>π</em> ≈ 1.2732
+个输入随机数，输出一个随机采样。</p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Statistics/">#Statistics</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Simulation/">#Simulation</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2021/share-wechat-resources/">公众号共享资源</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/">[Harvard 2021] ECON 2355 - Unleashing Novel Data at Scale</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2021/distribution-normal/">https://blog.myencyclopedia.top/zh/2021/distribution-normal/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2021/distribution-normal/">https://myencyclopedia.github.io/zh/2021/distribution-normal/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2021/distribution-normal/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2021/distribution-normal/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

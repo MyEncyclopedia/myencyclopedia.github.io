@@ -1,0 +1,15 @@
+classDiagram
+	PyGameBoard
+	ConnectNGame
+
+	PyGameBoard..>ConnectNGame:Encapsulates
+
+	class ConnectNGame{
+		move()
+		undo()
+	}
+	class PyGameBoard{
+		ConnectNGame connectNGame
+		next_user_input()
+		move()
+	}

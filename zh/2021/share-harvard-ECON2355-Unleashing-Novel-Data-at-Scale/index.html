@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>[Harvard 2021] ECON 2355 - Unleashing Novel Data at Scale - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="BiliBili                                                                                                                     20:19:08                                           [Harvard 2021] ECON 2355">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Harvard 2021] ECON 2355 - Unleashing Novel Data at Scale">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="BiliBili                                                                                                                     20:19:08                                           [Harvard 2021] ECON 2355">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-06-22T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.330Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="Course">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#bilibili">1&nbsp;&nbsp;<b>BiliBili</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-1---introduction-to-unleashing-novel-data-at-scale">2&nbsp;&nbsp;<b>Lecture
+1 - Introduction to Unleashing Novel Data at Scale</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-2---why-deep-learning">3&nbsp;&nbsp;<b>Lecture 2 - Why Deep
+Learning?</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-4---convolutional-neural-networks">4&nbsp;&nbsp;<b>Lecture 4 -
+Convolutional Neural Networks</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-5---image-classification-training-neural-nets">5&nbsp;&nbsp;<b>Lecture 5
+- Image Classification; Training Neural Nets</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#image-classification">5.1&nbsp;&nbsp;Image Classification</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#training-neural-nets">5.2&nbsp;&nbsp;Training Neural Nets</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-6---other-computer-vision-problems-including-object-detection">6&nbsp;&nbsp;<b>Lecture
+6 - Other Computer Vision Problems (Including Object Detection)</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-7---object-detection-in-practice">7&nbsp;&nbsp;<b>Lecture 7 - Object
+Detection in Practice</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-8---labeling-and-deep-visualization">8&nbsp;&nbsp;<b>Lecture 8 -
+Labeling and Deep Visualization</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#labeling">8.1&nbsp;&nbsp;Labeling</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#deep-visualization">8.2&nbsp;&nbsp;Deep visualization</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-9---generative-adversarial-networks">9&nbsp;&nbsp;<b>Lecture 9 -
+Generative Adversarial Networks</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-10---ocr-architecture">10&nbsp;&nbsp;<b>Lecture 10 - OCR
+Architecture</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-11---ocr-and-post-processing-in-practice">11&nbsp;&nbsp;<b>Lecture 11 -
+OCR and Post-Processing in Practice</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-12---models-of-words">12&nbsp;&nbsp;<b>Lecture 12 - Models of Words</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-13---language-modeling-and-other-topics-in-nlp">13&nbsp;&nbsp;<b>Lecture
+13 - Language Modeling and Other Topics in NLP</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-14---seq2seq-and-machine-translation">14&nbsp;&nbsp;<b>Lecture 14 -
+Seq2Seq and Machine Translation</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-15---attention-is-all-you-need">15&nbsp;&nbsp;<b>Lecture 15 - Attention
+is All You Need</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-16---transformer-based-language-models">16&nbsp;&nbsp;<b>Lecture 16 -
+Transformer-Based Language Models</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-17---understanding-transformers-visualization-and-sentiment-analysis">17&nbsp;&nbsp;<b>Lecture
+17 - Understanding Transformers, Visualization, and Sentiment
+Analysis</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-18---nlp-with-noisy-text">18&nbsp;&nbsp;<b>Lecture 18 - NLP with Noisy
+Text</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-19---retrieval-and-question-answering">19&nbsp;&nbsp;<b>Lecture 19 -
+Retrieval and Question Answering</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-20---zero-shot-and-few-shot-learning-in-nlp">20&nbsp;&nbsp;<b>Lecture 20
+- Zero-Shot and Few-Shot Learning in NLP</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#lecture-21---transformers-for-computer-vision">21&nbsp;&nbsp;<b>Lecture 21 -
+Transformers for Computer Vision</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#bilibili"><span class="toc-text">BiliBili</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-1---introduction-to-unleashing-novel-data-at-scale"><span class="toc-text">Lecture
+1 - Introduction to Unleashing Novel Data at Scale</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-2---why-deep-learning"><span class="toc-text">Lecture 2 - Why Deep
+Learning?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-4---convolutional-neural-networks"><span class="toc-text">Lecture 4 -
+Convolutional Neural Networks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-5---image-classification-training-neural-nets"><span class="toc-text">Lecture 5
+- Image Classification; Training Neural Nets</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#image-classification"><span class="toc-text">Image Classification</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#training-neural-nets"><span class="toc-text">Training Neural Nets</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-6---other-computer-vision-problems-including-object-detection"><span class="toc-text">Lecture
+6 - Other Computer Vision Problems (Including Object Detection)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-7---object-detection-in-practice"><span class="toc-text">Lecture 7 - Object
+Detection in Practice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-8---labeling-and-deep-visualization"><span class="toc-text">Lecture 8 -
+Labeling and Deep Visualization</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#labeling"><span class="toc-text">Labeling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#deep-visualization"><span class="toc-text">Deep visualization</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-9---generative-adversarial-networks"><span class="toc-text">Lecture 9 -
+Generative Adversarial Networks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-10---ocr-architecture"><span class="toc-text">Lecture 10 - OCR
+Architecture</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-11---ocr-and-post-processing-in-practice"><span class="toc-text">Lecture 11 -
+OCR and Post-Processing in Practice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-12---models-of-words"><span class="toc-text">Lecture 12 - Models of Words</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-13---language-modeling-and-other-topics-in-nlp"><span class="toc-text">Lecture
+13 - Language Modeling and Other Topics in NLP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-14---seq2seq-and-machine-translation"><span class="toc-text">Lecture 14 -
+Seq2Seq and Machine Translation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-15---attention-is-all-you-need"><span class="toc-text">Lecture 15 - Attention
+is All You Need</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-16---transformer-based-language-models"><span class="toc-text">Lecture 16 -
+Transformer-Based Language Models</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-17---understanding-transformers-visualization-and-sentiment-analysis"><span class="toc-text">Lecture
+17 - Understanding Transformers, Visualization, and Sentiment
+Analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-18---nlp-with-noisy-text"><span class="toc-text">Lecture 18 - NLP with Noisy
+Text</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-19---retrieval-and-question-answering"><span class="toc-text">Lecture 19 -
+Retrieval and Question Answering</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-20---zero-shot-and-few-shot-learning-in-nlp"><span class="toc-text">Lecture 20
+- Zero-Shot and Few-Shot Learning in NLP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lecture-21---transformers-for-computer-vision"><span class="toc-text">Lecture 21 -
+Transformers for Computer Vision</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            [Harvard 2021] ECON 2355 - Unleashing Novel Data at Scale
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2021-06-22T18:45:01.000Z" itemprop="datePublished">6月 23 2021</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            7 分钟 读完 (约 1121 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><h2 id="bilibili">BiliBili</h2>
+<div class="bvideo">
+    <a href="//www.bilibili.com/video/BV1Lw411o7um" target="_blank">
+        <div class="bvideo-box">
+            <div class="bvideo-cover">
+                <div class="cover-default"></div>
+                <div class="bvideo-cover-layer" style="background-image:url(https://images.weserv.nl/?url=http://i2.hdslb.com/bfs/archive/0032b7734f2c510bf35ebe2a658273d231ed61f0.png)">
+                    <i class="icon-video"></i>
+                </div>
+                <span class="duration">20:19:08</span>
+            </div>
+            <div class="bvideo-info">
+                <p class="title">[Harvard 2021] ECON 2355 - Unleashing Novel Data at Scale</p>
+                <p class="card-status">
+                    <span class="play-num">
+                        <i class="fa fa-youtube-play"></i>
+                        <span>125</span></span>
+                    <span>
+                        <i class="fa fa-list-alt"></i>
+                        <span>0</span></span></p>
+                <div class="partition">
+                    <label class="card-label">视频</label>
+                    <label class="up-label"></label>
+                    <label class="up-name">MyEncyclopedia公号</label>
+                </div>
+                <div class="actions hide"></div>
+            </div>
+        </div>
+    </a>
+</div>
+<h2 id="lecture-1---introduction-to-unleashing-novel-data-at-scale">Lecture
+1 - Introduction to Unleashing Novel Data at Scale</h2>
+<ul>
+<li>Why data accessibility is so central to the advancement of knowledge
+in economics (with some historical background)</li>
+<li>An overview of the data curation pipeline
+<ul>
+<li>Step 1: Detect document layouts</li>
+<li>Step 2: OCR</li>
+<li>Step 3: Post-processing and database assembly</li>
+<li>Step 4: Convert information into computable format</li>
+</ul></li>
+<li>Why is the material covered in this course useful to social
+scientists?
+<ul>
+<li>Why there won’t be an app/commercial product capable of end-to-end
+processing of social science documents anytime soon</li>
+<li>Why manual data entry often falls short</li>
+<li>Why our problems differ from those that are the central focus of
+computer science and the digital humanities</li>
+</ul></li>
+<li>At its core, deep learning is an optimization problem, which
+economists are well-trained to understand. It would be really
+unfortunate if we did not take full advantage of the very powerful
+methods that deep learning offers, which we are well poised to
+utilize</li>
+</ul>
+<h2 id="lecture-2---why-deep-learning">Lecture 2 - Why Deep
+Learning?</h2>
+<p>This post compares rule-based and deep learning-based approaches to
+data curation. It discusses their requirements and why rule-based
+approaches often (but not always) produce disappointing results when
+applied to social science data.</p>
+<ul>
+<li>An overview of the syllabus (ultimately, the course had a few
+deviations from the original syllabus, based on student interests; final
+syllabus posted in the course section of this website)</li>
+<li>There are two distinct approaches to automated data curation
+<ul>
+<li>Tell the computer how to process the data by defining a set of
+rules</li>
+<li>Let the computer learn how to process the data from empirical
+examples, using deep learning</li>
+</ul></li>
+<li>Overview of rules, how they are used to process image scans and
+text, why they often fail, and why they sometimes succeed</li>
+<li>Deep learning, how it contrasts with rule-based approaches, and its
+requirements</li>
+<li>Does the noise from rule-based approaches really matter?</li>
+</ul>
+<h2 id="lecture-4---convolutional-neural-networks">Lecture 4 -
+Convolutional Neural Networks</h2>
+<ul>
+<li>A brief overview of convolutions</li>
+<li>Benchmark datasets for image classification (following the ConvNent
+literature requires familiarity with the benchmarks)</li>
+<li>Image classification with a linear classifier (and its
+shortcomings)</li>
+<li>CNN architectures
+<ul>
+<li>AlexNet</li>
+<li>VGG</li>
+<li>GoogLeNet</li>
+<li>ResNet</li>
+<li>ResNext</li>
+</ul></li>
+</ul>
+<h2 id="lecture-5---image-classification-training-neural-nets">Lecture 5
+- Image Classification; Training Neural Nets</h2>
+<p>This post covers two topics: using CNNs for image classification (a
+very useful task) and training neural networks in practice. Much of the
+information about training neural nets is essential to implementing deep
+learning-based approaches, whether with CNNs or with some other
+architecture.</p>
+<h3 id="image-classification">Image Classification</h3>
+<ul>
+<li>Loss functions for classification
+<ul>
+<li>SVM</li>
+<li>Softmax</li>
+</ul></li>
+<li>Deep document classification</li>
+</ul>
+<h3 id="training-neural-nets">Training Neural Nets</h3>
+<ul>
+<li>Activation functions</li>
+<li>Data pre-processing</li>
+<li>Initialization</li>
+<li>Optimization</li>
+<li>Regularization</li>
+<li>Batch normalization</li>
+<li>Dropout</li>
+<li>Data augmentation</li>
+<li>Transfer learning</li>
+<li>Setting hyperparameters</li>
+<li>Monitoring the learning process</li>
+</ul>
+<h2 id="lecture-6---other-computer-vision-problems-including-object-detection">Lecture
+6 - Other Computer Vision Problems (Including Object Detection)</h2>
+<p>This post covers object detection as well as the related problems of
+semantic segmentation, localization, and instance segmentation. Object
+detection is core to document image analysis, as it is used to determine
+the coordinates and classes of different document layout regions. The
+other problems covered are closely related.</p>
+<ul>
+<li>Semantic segmentation</li>
+<li>Localization</li>
+<li>Object detection
+<ul>
+<li>Region CNNs</li>
+<li>Fast R-CNN</li>
+<li>Faster R-CNN</li>
+<li>Mask R-CNN</li>
+<li>Features pyramids</li>
+</ul></li>
+<li>Instance segmentation</li>
+<li>Other frameworks (YOLO)</li>
+</ul>
+<h2 id="lecture-7---object-detection-in-practice">Lecture 7 - Object
+Detection in Practice</h2>
+<ul>
+<li>Selecting an object detection model</li>
+<li>Overview of Detectron2</li>
+<li>How-to in D2</li>
+</ul>
+<h2 id="lecture-8---labeling-and-deep-visualization">Lecture 8 -
+Labeling and Deep Visualization</h2>
+<h3 id="labeling">Labeling</h3>
+<ul>
+<li>Active learning for layout annotation</li>
+<li>Labeling hacks</li>
+</ul>
+<h3 id="deep-visualization">Deep visualization</h3>
+<ul>
+<li>Basic visualization approaches</li>
+<li>Gradient based ascent</li>
+<li>Deep Dream</li>
+</ul>
+<h2 id="lecture-9---generative-adversarial-networks">Lecture 9 -
+Generative Adversarial Networks</h2>
+<ul>
+<li>Overview: supervised and unsupervised learning; generative
+models</li>
+<li>Generative adversarial networks</li>
+<li>CycleGAN</li>
+</ul>
+<h2 id="lecture-10---ocr-architecture">Lecture 10 - OCR
+Architecture</h2>
+<ul>
+<li>Overview of the OCR problem</li>
+<li>Recurrent neural networks</li>
+<li>LSTMs</li>
+<li>Connectionist temporal classification</li>
+<li>Putting it together</li>
+</ul>
+<h2 id="lecture-11---ocr-and-post-processing-in-practice">Lecture 11 -
+OCR and Post-Processing in Practice</h2>
+<p>This post discusses OCR, both off-the-shelf and how to implement a
+customized OCR model. It discusses how Layout Parser can be used for
+end-to-end document image analysis, and provides concrete examples of
+creating variable domains during post-processing. It also provides an
+overview of the second half of the knowledge base, which covers NLP.</p>
+<ul>
+<li><p>Off-the-shelf OCR</p></li>
+<li><p>Designing customized OCR</p></li>
+<li><p>Putting it altogether (and Layout Parser)</p></li>
+<li><p>Creating variable domains</p></li>
+<li><p>An overview of the second half of the course (NLP)</p></li>
+</ul>
+<h2 id="lecture-12---models-of-words">Lecture 12 - Models of Words</h2>
+<ul>
+<li><p>Traditional models of words</p></li>
+<li><p>Word2Vec</p></li>
+<li><p>GloVe</p></li>
+<li><p>Evaluation</p></li>
+<li><p>Interpreting word vectors</p></li>
+<li><p>Problems with word vectors</p></li>
+</ul>
+<h2 id="lecture-13---language-modeling-and-other-topics-in-nlp">Lecture
+13 - Language Modeling and Other Topics in NLP</h2>
+<p>This post provides an introduction to language modeling, as well as
+several other important topics: dependency parsing, named entity
+recognition (NER), and labeling for NLP. Due to time constraints, the
+course is able to provide only a very brief introduction to topics like
+dependency parsing and NER, which have traditionally been quite central
+questions in NLP research.</p>
+<ul>
+<li>Language Modeling
+<ul>
+<li>Count based models</li>
+<li>Bag of words</li>
+<li>RNN (review)</li>
+<li>LSTM (review)</li>
+</ul></li>
+<li>Dependency parsing</li>
+<li>Named entity recognition</li>
+<li>Labeling for NLP</li>
+</ul>
+<h2 id="lecture-14---seq2seq-and-machine-translation">Lecture 14 -
+Seq2Seq and Machine Translation</h2>
+<p>Machine translation has pioneered some of the most productive
+innovations in neural-based NLP and hence is useful to study even for
+those who care little about machine translation per se. We will focus in
+particular on seq2seq and attention.</p>
+<ul>
+<li>Statistical machine translation</li>
+<li>Neural machine translation</li>
+</ul>
+<h2 id="lecture-15---attention-is-all-you-need">Lecture 15 - Attention
+is All You Need</h2>
+<p>This post introduces the Transformer, a seq2seq model based entirely
+on attention that has transformed NLP. Given the importance of this
+paper, there are a bunch of very well-done web resources about it, cited
+in the lecture and below, that I recommend checking out directly (there
+are others who have much more of a comparative advantage in presenting
+seminal NLP papers than I do!).</p>
+<ul>
+<li><p>A recap of attention</p></li>
+<li><p>The Transformer</p>
+<ul>
+<li>The encoder
+<ul>
+<li>Encoder self-attention</li>
+<li>Positional embeddings</li>
+<li>Add and normalize</li>
+</ul></li>
+<li>The decoder
+<ul>
+<li>Encoder-decoder attention</li>
+<li>Decoder self-attention</li>
+</ul></li>
+<li>Linear and softmax layers</li>
+<li>Training</li>
+</ul></li>
+</ul>
+<h2 id="lecture-16---transformer-based-language-models">Lecture 16 -
+Transformer-Based Language Models</h2>
+<p>This post provides an overview of various Transformer-based language
+models, discussing their architectures and which are best-suited for
+different contexts.</p>
+<ul>
+<li>Overview</li>
+<li>Contextualized word embeddings</li>
+<li>Models
+<ul>
+<li>GPT</li>
+<li>BERT</li>
+<li>RoBERTa</li>
+<li>DistilBERT</li>
+<li>ALBERT</li>
+<li>T5</li>
+<li>GPT2/GPT3</li>
+<li>Transformers XL</li>
+<li>XLNet</li>
+<li>Longformer</li>
+<li>BigBird</li>
+</ul></li>
+<li>Recap and what to use</li>
+</ul>
+<h2 id="lecture-17---understanding-transformers-visualization-and-sentiment-analysis">Lecture
+17 - Understanding Transformers, Visualization, and Sentiment
+Analysis</h2>
+<p>This post covers a variety of topics around Transformer-based
+language models: understanding how Transformer attention works,
+understanding what information is contained in their embeddings,
+visualizing embeddings, and using Transformer-based models to conduct
+sentiment analysis.</p>
+<ul>
+<li><p>What do Transformer-based models attend to?</p></li>
+<li><p>What’s in an embedding?</p></li>
+<li><p>Visualizing embeddings</p></li>
+<li><p>Sentiment analysis</p></li>
+</ul>
+<h2 id="lecture-18---nlp-with-noisy-text">Lecture 18 - NLP with Noisy
+Text</h2>
+<ul>
+<li>The Canonical Deep NLP Training Corpus</li>
+<li>A definition of noise</li>
+<li>The problem with noise</li>
+<li>Approaches for denoising</li>
+</ul>
+<h2 id="lecture-19---retrieval-and-question-answering">Lecture 19 -
+Retrieval and Question Answering</h2>
+<ul>
+<li>Reading comprehension</li>
+<li>Open-domain question answering</li>
+</ul>
+<h2 id="lecture-20---zero-shot-and-few-shot-learning-in-nlp">Lecture 20
+- Zero-Shot and Few-Shot Learning in NLP</h2>
+<ul>
+<li><p>What it means to learn in just a few shots</p></li>
+<li><p>Zero-shot and few-shot learning in practice</p></li>
+</ul>
+<h2 id="lecture-21---transformers-for-computer-vision">Lecture 21 -
+Transformers for Computer Vision</h2>
+<ul>
+<li>Transformers for computer vision</li>
+<li>Transformers for image classification</li>
+<li>Transformers for object detection</li>
+</ul>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Deep-Learning/">#Deep Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Course/">#Course</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2021/distribution-normal/">从零构建统计随机变量生成器之正态分布 Box-Muller方法</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2021/vlog-paper-mine/">Paper Explained: MINE - Mutual Information Neural Estimation (2018)</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/">https://blog.myencyclopedia.top/zh/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/">https://myencyclopedia.github.io/zh/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2021/share-harvard-ECON2355-Unleashing-Novel-Data-at-Scale/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

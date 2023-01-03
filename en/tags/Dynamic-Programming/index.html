@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>Tag: Dynamic Programming - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/tags/Dynamic-Programming/" rel="alternate" hreflang="zh" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta property="og:type" content="website">
+<meta property="og:title" content="MyEncyclopedia">
+<meta property="og:url" content="https://myencyclopedia.github.io/en/tags/Dynamic-Programming/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="MyEncyclopedia">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/en">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/en/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/en/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section section-heading">
+    <div class="container">
+        <div class="content">
+            <h5>#Dynamic Programming</h5>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/en/2020/tsp-4-search/" itemprop="url">TSP From DP to Deep Learning. Episode 4: Search for Most Likely Sequence</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-06-05T18:45:01.000Z" itemprop="datePublished">Jun 6 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/en/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            10 minutes read (About 1441 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>This is fourth episode of series: TSP From DP to Deep Learning. In
+this episode, we systematically compare different searching algorithms
+for finding most likely sequence in the context of simplied markov chain
+setting. These models can be further utilized in deep learning decoding
+stage, which will be illustrated in reinforcement learning, in the next
+episode. Full list of this series is listed below.</p>
+<ul>
+<li><p>Episode 1: <a href="/en/2020/tsp-4-search/!--swig￼6--">AC TSP on AIZU with recursive
+DP</a></p></li>
+<li><p>Episode 2: <a href="/en/2020/tsp-4-search/!--swig￼7--">TSP DP on a Euclidean
+Dataset</a></p></li>
+<li><p>Episode 3: <a href="/en/2020/tsp-4-search/!--swig￼8--">Pointer Networks in
+PyTorch</a></p></li>
+<li><p><strong>Episode 4: <a href="/en/2020/tsp-4-search/!--swig￼9--">Search for Most Likely
+Sequence</a></strong></p></li>
+<li><p>Episode 5: <a href="/en/2020/tsp-4-search/!--swig￼10--">Reinforcement Learning PyTorch
+Implementation</a></p></li>
+</ul>
+<h2 id="problem-as-markov-chain">Problem as Markov Chain</h2>
+<p>In sequence-to-sequence problem, we are always faced with same
+problem of determining the best or most likely sequence of output. This
+kind of recurring problem exists extensively in algorithms, machine
+learning where we are given initial states and the dynamics of the
+system, and the goal is to find a path that is most likely. The
+corresponding concept, in science or mathematical discipline, is called
+Markov Chain.</p>
+<p>Let describe the problem in the context of markov chain. Suppose
+there are <span class="math inline">\(n\)</span> states, and initial
+state is given by $s_0 = [0.35, 0.25, 0.4] $. The transition matrix is
+defined by <span class="math inline">\(T\)</span> where $ T[i][j]$
+denotes the probability of transitioning from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span>. Notice that each row sums to <span class="math inline">\(1.0\)</span>. <span class="math display">\[
+T=
+\begin{matrix}
+&amp; \begin{matrix}0&amp;1&amp;2\end{matrix} \\\\
+\begin{matrix}0\\\\1\\\\2\end{matrix} &amp;
+  \begin{bmatrix}0.3&amp;0.6&amp;0.1\\\\0.4&amp;0.2&amp;0.4\\\\0.3&amp;0.3&amp;0.4\end{bmatrix}\\\\
+\end{matrix}
+\]</span></p>
+<p>Probability of the next state <span class="math inline">\(s_1\)</span> is derived by multiplication of <span class="math inline">\(s_0\)</span> and <span class="math inline">\(T\)</span>, which can be visually interpreted by
+animation below.</p>
+<p><img src="/en/2020/tsp-4-search/transition-animated.svg" title="Transition Animation"></p>
+<p>The actual probability distribution value of <span class="math inline">\(s_1\)</span> is computed numerically below. Recall
+that left multiplying a row with a matrix amounts to making a linear
+combination of that row vector.</p>
+<p><span class="math display">\[
+s_1 =  \begin{bmatrix}0.35&amp; 0.25&amp; 0.4\end{bmatrix}
+\begin{matrix}
+\begin{bmatrix}0.3&amp;0.6&amp;0.1\\\\0.4&amp;0.2&amp;0.4\\\\0.3&amp;0.3&amp;0.4\end{bmatrix}\\\\
+\end{matrix}
+= \begin{bmatrix}0.325&amp; 0.35&amp; 0.255\end{bmatrix}
+\]</span> Again, state <span class="math inline">\(s_2\)</span> can be
+derived in the same way <span class="math inline">\(s_1 \times
+T\)</span>, where we assume the transitioning dynamics remains the same.
+However, in deep learning problem, the dynamics usually depends on <span class="math inline">\(s_i\)</span>, or vary according to the stage.</p>
+<p>Suppose there are only 3 stages in our problem, e.g., <span class="math inline">\(s_0 \rightarrow s_1 \rightarrow s_2\)</span>. Let
+<span class="math inline">\(L\)</span> be the number of stages and <span class="math inline">\(N\)</span> be the number of vertices in each
+stage. Hence <span class="math inline">\(L=N=3\)</span> in our problem
+setting. There could be <span class="math inline">\(N^L\)</span>
+different paths starting from initial stage and to final stage.</p>
+<p>Let us compute an arbitrary path probability as an example, <span class="math inline">\(2(s_0) \rightarrow 1(s_1) \rightarrow
+2(s_2)\)</span>. The total probability is</p>
+<p><span class="math display">\[
+p(2 \rightarrow 1 \rightarrow 2) = s_0[2] \times T[2][1] \times T[1][2]
+= 0.4 \times 0.3 \times 0.4 = 0.048
+\]</span></p>
+<h2 id="exhaustive-search">Exhaustive Search</h2>
+<p>First, we implement <span class="math inline">\(N^L\)</span>
+exhaustive or brute force search.</p>
+<p>The following Python 3 function returns one most likely sequence and
+its probability. Running the algorithm with our example produces 0.084
+and route <span class="math inline">\(0 \rightarrow 1 \rightarrow
+2\)</span>.</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_brute_force</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    <span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> combinations_with_replacement</span><br><span class="line">    v = [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>]</span><br><span class="line">    path_all = combinations_with_replacement(v, L)</span><br><span class="line"></span><br><span class="line">    max_prop = <span class="hljs-number">0.0</span></span><br><span class="line">    max_route = <span class="hljs-literal">None</span></span><br><span class="line">    prob = <span class="hljs-number">0.0</span></span><br><span class="line">    <span class="hljs-keyword">for</span> path <span class="hljs-keyword">in</span> <span class="hljs-built_in">list</span>(path_all):</span><br><span class="line">        <span class="hljs-keyword">for</span> idx, v <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(path):</span><br><span class="line">            <span class="hljs-keyword">if</span> idx == <span class="hljs-number">0</span>:</span><br><span class="line">                prob = initial[v]  <span class="hljs-comment"># reset to initial state</span></span><br><span class="line">            <span class="hljs-keyword">else</span>:</span><br><span class="line">                prev_v = path[idx-<span class="hljs-number">1</span>]</span><br><span class="line">                prob *= transition[prev_v][v]</span><br><span class="line">        <span class="hljs-keyword">if</span> prob &gt; max_prop:</span><br><span class="line">            max_prop = <span class="hljs-built_in">max</span>(max_prop, prob)</span><br><span class="line">            max_route = path</span><br><span class="line">    <span class="hljs-keyword">return</span> max_prop, max_route</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="greedy-search">Greedy Search</h2>
+<p>Exhaustive search always generates most likely sequence, as searching
+for a needle in the hay at the cost of exponential runtime complexity
+<span class="math inline">\(O(N^L)\)</span>. The simplest strategy,
+unknown as greedy, identifies one vertex in each stage and then expand
+the vertex in next stage. This strategy, of course, is not guaranteed to
+find most likely sequence but is fast. See animation below.</p>
+<p><img src="/en/2020/tsp-4-search/greedy-animated.svg" title="Greedy Search Animation"></p>
+<p>Code in Python 3 is given below. Numpy package is employed to utilize
+np.argmax() for code clarity. Notice there are 2 for loops (the other is
+np.argmax) so the runtime complexity is <span class="math inline">\(O(N\times L)\)</span>.</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_greedy</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    <span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np</span><br><span class="line">    max_route = []</span><br><span class="line">    max_prop = <span class="hljs-number">0.0</span></span><br><span class="line">    states = np.array(initial)</span><br><span class="line"></span><br><span class="line">    prev_max_v = <span class="hljs-literal">None</span></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, L):</span><br><span class="line">        max_v = np.argmax(states)</span><br><span class="line">        max_route.append(max_v)</span><br><span class="line">        <span class="hljs-keyword">if</span> l == <span class="hljs-number">0</span>:</span><br><span class="line">            max_prop = initial[max_v]</span><br><span class="line">        <span class="hljs-keyword">else</span>:</span><br><span class="line">            max_prop = max_prop * transition[prev_max_v][max_v]</span><br><span class="line">        states = max_prop * states</span><br><span class="line">        prev_max_v = max_v</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> max_prop, max_route</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="beam-search">Beam Search</h2>
+<p>We could improve greedy strategy a little bit by expanding more
+vertices in each stage. In beam search with <span class="math inline">\(k\)</span> nodes, the strategy is in each stage,
+identify <span class="math inline">\(k\)</span> nodes with highest
+probability and expand these <span class="math inline">\(k\)</span>
+nodes into next stage. In our example, <span class="math inline">\(k=2\)</span>, we select first 2 nodes in stage
+<span class="math inline">\(s_0\)</span>, expand these 2 nodes and
+evaluate <span class="math inline">\(2 \times 3\)</span> nodes in stage
+<span class="math inline">\(s_1\)</span>, then select 2 nodes and
+evaluate 6 nodes in stage <span class="math inline">\(s_2\)</span>. Beam
+search, similar to greedy strategy, is not guaranteed to find most
+likely sequence but it extends search space with linear complexity.</p>
+<p><img src="/en/2020/tsp-4-search/beam-animated.svg" title="Beam Search Animation"></p>
+<p>Below is implementation in Python 3 with PriorityQueue to select top
+<span class="math inline">\(k\)</span> nodes. Notice in order to use
+reverse order of PriorityQueue, a class with <span class="citation" data-cites="total_ordering">@total_ordering</span> is required to be
+defined. The runtime complexity is <span class="math inline">\(O(k\times
+N \times L)\)</span> .</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_beam</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span>, K: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    N = <span class="hljs-built_in">len</span>(initial)</span><br><span class="line">    <span class="hljs-keyword">from</span> queue <span class="hljs-keyword">import</span> PriorityQueue</span><br><span class="line">    current_q = PriorityQueue()</span><br><span class="line">    next_q = PriorityQueue()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> total_ordering</span><br><span class="line"><span class="hljs-meta">    @total_ordering</span></span><br><span class="line">    <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PQItem</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, prob, route</span>):</span></span><br><span class="line">            self.prob = prob</span><br><span class="line">            self.route = route</span><br><span class="line">            self.last_v = <span class="hljs-built_in">int</span>(route[-<span class="hljs-number">1</span>])</span><br><span class="line"></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__eq__</span>(<span class="hljs-params">self, other</span>):</span></span><br><span class="line">            <span class="hljs-keyword">return</span> self.prob == other.prob</span><br><span class="line"></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__lt__</span>(<span class="hljs-params">self, other</span>):</span></span><br><span class="line">            <span class="hljs-keyword">return</span> self.prob &gt; other.prob</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">        next_q.put(PQItem(initial[v], <span class="hljs-built_in">str</span>(v)))</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, L):</span><br><span class="line">        current_q = next_q</span><br><span class="line">        next_q = PriorityQueue()</span><br><span class="line">        k = K</span><br><span class="line">        <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> current_q.empty() <span class="hljs-keyword">and</span> k &gt; <span class="hljs-number">0</span>:</span><br><span class="line">            item = current_q.get()</span><br><span class="line">            prob, route, prev_v = item.prob, item.route, item.last_v</span><br><span class="line">            k -= <span class="hljs-number">1</span></span><br><span class="line">            <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">                nextItem = PQItem(prob * transition[prev_v][v], route + <span class="hljs-built_in">str</span>(v))</span><br><span class="line">                next_q.put(nextItem)</span><br><span class="line"></span><br><span class="line">    max_item = next_q.get()</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> max_item.prob, <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x), max_item.route))</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="viterbi-dp">Viterbi DP</h2>
+<p>Similarly to TSP DP version, there is a dynamic programming approach,
+widely known as Viterbi algorithm, that always finds out sequence with
+max probability while reducing runtime complexity from <span class="math inline">\(O(N^L)\)</span> to <span class="math inline">\(O(L
+\times N \times N)\)</span> (corresponding to 3 loops in code below).
+The core idea is in each stage, an array keeps most likely sequence
+ending with each vertex and use the dp array as input to next stage. For
+example, let <span class="math inline">\(dp[1][0]\)</span> be the most
+likely probability in <span class="math inline">\(s_1\)</span> stage and
+end with vertex 0. <span class="math display">\[
+dp[1][0] = \max \\{s_0[0] \rightarrow s_1[0], s_0[1] \rightarrow s_1[0],
+s_0[2] \rightarrow s_1[0]\\}
+\]</span></p>
+<p><img src="/en/2020/tsp-4-search/viterbi-animated.svg" title="Viterbi DP Animation"></p>
+<p>Illustrative code that returns max probability but not route, in
+order to emphasize 3 loop pattern and max operation, honoring the
+essence of the algorithm.</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_dp</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">float</span>:</span></span><br><span class="line">    N = <span class="hljs-built_in">len</span>(initial)</span><br><span class="line">    dp = [[<span class="hljs-number">0.0</span> <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(L)]</span><br><span class="line">    dp[<span class="hljs-number">0</span>] = initial[:]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, L):</span><br><span class="line">        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">            <span class="hljs-keyword">for</span> prev_v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">                dp[l][v] = <span class="hljs-built_in">max</span>(dp[l][v], dp[l - <span class="hljs-number">1</span>][prev_v] * transition[prev_v][v])</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(dp[L-<span class="hljs-number">1</span>])</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="probabilistic-sampling">Probabilistic Sampling</h2>
+<p>All algorithms described above are deterministic. However, in NLP
+deep learning decoding, deterministic property has disadvantage in that
+it may get trapped into repeated phrases or sentences. For example,
+paragraph like below is commonly generated: </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">This is the best of best of best of ...</span><br></pre></td></tr></tbody></table></figure> One way to get
+out of loop is resorting to probabilistic sampling. For example, we can
+generate one vertex in each stage probabilistically according to their
+weights or according to total path probability.<p></p>
+<p>For demonstration purpose, here is the code based on greedy strategy
+which probabilistically determines one node at each stage.</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_prob_greedy</span>(<span class="hljs-params">initial: <span class="hljs-type">List</span>, transition: <span class="hljs-type">List</span>, L: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">float</span>, <span class="hljs-type">Tuple</span>]:</span></span><br><span class="line">    <span class="hljs-keyword">import</span> random</span><br><span class="line">    N = <span class="hljs-built_in">len</span>(initial)</span><br><span class="line">    max_route = []</span><br><span class="line">    max_prop = <span class="hljs-number">0.0</span></span><br><span class="line">    vertices = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]</span><br><span class="line">    prob = initial[:]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, L):</span><br><span class="line">        v_lst = random.choices(vertices, prob)</span><br><span class="line">        v = v_lst[<span class="hljs-number">0</span>]</span><br><span class="line">        max_route.append(v)</span><br><span class="line">        max_prop = prob[v]</span><br><span class="line">        prob = [prob[v] * transition[v][v_target] <span class="hljs-keyword">for</span> v_target <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-keyword">return</span> max_prop, max_route</span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/en/2020/tsp-2-dp-tour/" itemprop="url">TSP From DP to Deep Learning. Episode 2: DP on Euclidean Dataset</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-05-15T06:45:01.000Z" itemprop="datePublished">May 15 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/en/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            7 minutes read (About 1098 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>This is second episode of series: TSP From DP to Deep Learning.</p>
+<ul>
+<li>Episode 1: <a href="/en/2020/tsp-2-dp-tour/!--swig￼10--">AC TSP on AIZU with recursive
+DP</a></li>
+<li><strong>Episode 2: <a href="/en/2020/tsp-2-dp-tour/!--swig￼11--">TSP DP on a Euclidean
+Dataset</a></strong></li>
+<li>Episode 3: <a href="/en/2020/tsp-2-dp-tour/!--swig￼12--">Pointer Networks in
+PyTorch</a></li>
+<li>Episode 4: <a href="/en/2020/tsp-2-dp-tour/!--swig￼13--">Search for Most Likely
+Sequence</a></li>
+<li>Episode 5: <a href="/en/2020/tsp-2-dp-tour/!--swig￼14--">Reinforcement Learning PyTorch
+Implementation</a></li>
+</ul>
+<h2 id="aizu-tsp-bottom-up-iterative-dp">AIZU TSP Bottom Up Iterative
+DP</h2>
+<p>In last episode, we provided a top down recursive DP in Python 3 and
+Java 8. Now we continue to improve and convert it to bottom up iterative
+DP version. Below is a graph with 3 vertices, the top down recursive
+calls are completely drawn.</p>
+<p><img src="/en/2020/tsp-2-dp-tour/ver3-top-down.svg" title="Top Down Calls"></p>
+<p>Looking from bottom up, we could identify corresponding topological
+computing order with ease. First, we compute all bit states with 3 ones,
+then 2 ones, then 1 one.</p>
+<p><img src="/en/2020/tsp-2-dp-tour/ver3-bottom-up.svg" title="Bottom Up States"></p>
+<p>Pseudo Java code below.</p>
+<figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> bitset_num = N; bitset_num &gt;=<span class="hljs-number">0</span>; bitset_num++) {</span><br><span class="line">	<span class="hljs-keyword">while</span>(hasNextCombination(bitset_num)) {</span><br><span class="line">		<span class="hljs-keyword">int</span> state = nextCombination(bitset_num);</span><br><span class="line">		<span class="hljs-comment">// compute dp[state][v], v-th bit is set in state</span></span><br><span class="line">		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> v = <span class="hljs-number">0</span>; v &lt; n; v++) {</span><br><span class="line">			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> u = <span class="hljs-number">0</span>; u &lt; n; u++) {</span><br><span class="line">				<span class="hljs-comment">// for each u not reached by this state</span></span><br><span class="line">				<span class="hljs-keyword">if</span> (!include(state, u)) {</span><br><span class="line">					dp[state][v] = min(dp[state][v], </span><br><span class="line">						dp[new_state_include_u][u] + dist[v][u]);</span><br><span class="line">				}</span><br><span class="line">			}</span><br><span class="line">		}</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>For example, dp[00010][1] is the min distance starting from vertex 0,
+and just arriving at vertex 1: <span class="math inline">\(0 \rightarrow
+1 \rightarrow ? \rightarrow ? \rightarrow ? \rightarrow 0\)</span>. In
+order to find out total min distance, we need to enumerate all possible
+u for first question mark. <span class="math display">\[
+(0 \rightarrow 1) +
+\begin{align*}
+  \min \left\lbrace
+  \begin{array}{r@{}l}
+    2 \rightarrow ? \rightarrow ? \rightarrow 0 + dist(1,2)
+\qquad\text{    new_state=[00110][2] } \qquad\\\\
+    3 \rightarrow ? \rightarrow ?  \rightarrow 0 + dist(1,3)
+\qquad\text{    new_state=[01010][3] } \qquad\\\\
+    4 \rightarrow ? \rightarrow ?  \rightarrow 0 + dist(1,4)
+\qquad\text{    new_state=[10010][4] } \qquad
+  \end{array}
+  \right.
+\end{align*}
+\]</span></p>
+<h3 id="java-iterative-dp-code">Java Iterative DP Code</h3>
+<p>AC code in <a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/blob/master/tsp/alg_aizu/TSP_loop.py">Python
+3</a> and <a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/blob/master/tsp/alg_aizu/Main_loop.java">Java
+8</a>. Illustrate core Java code below. </p><figure class="highlight java hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">solve</span><span class="hljs-params">()</span> </span>{</span><br><span class="line">	<span class="hljs-keyword">int</span> N = g.V_NUM;</span><br><span class="line">	<span class="hljs-keyword">long</span>[][] dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">long</span>[<span class="hljs-number">1</span> &lt;&lt; N][N];</span><br><span class="line">	<span class="hljs-comment">// init dp[][] with MAX</span></span><br><span class="line">	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; dp.length; i++) {</span><br><span class="line">		Arrays.fill(dp[i], Integer.MAX_VALUE);</span><br><span class="line">	}</span><br><span class="line">	dp[(<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> state = (<span class="hljs-number">1</span> &lt;&lt; N) - <span class="hljs-number">2</span>; state &gt;= <span class="hljs-number">0</span>; state--) {</span><br><span class="line">		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> v = <span class="hljs-number">0</span>; v &lt; N; v++) {</span><br><span class="line">			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> u = <span class="hljs-number">0</span>; u &lt; N; u++) {</span><br><span class="line">				<span class="hljs-keyword">if</span> (((state &gt;&gt; u) &amp; <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>) {</span><br><span class="line">					dp[state][v] = Math.min(dp[state][v], dp[state | <span class="hljs-number">1</span> &lt;&lt; u][u] + g.edges[v][u]);</span><br><span class="line">				}</span><br><span class="line">			}</span><br><span class="line">		}</span><br><span class="line">	}</span><br><span class="line">	<span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] == Integer.MAX_VALUE ? -<span class="hljs-number">1</span> : dp[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>];</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>In this way, runtime complexity can be spotted easily, three for
+loops leading to O(<span class="math inline">\(2^n * n * n\)</span>) =
+O(<span class="math inline">\(2^n*n^2\)</span> ).</p>
+<h2 id="dp-on-euclidean-dataset">DP on Euclidean Dataset</h2>
+<p>So far, TSP DP has been crystal clear and we move forward to
+introducing PTR_NET dataset on <a target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/0B2fg8yPGn2TCMzBtS0o4Q2RJaEU">Google
+Drive</a> by Oriol Vinyals who is the author of <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1506.03134">Pointer Networks</a>. Each line
+in the dataset has the following pattern: </p><figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x0, y0, x1, y1, ... output 1 v1 v2 v3 ... 1</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>It first lists n points in (x, y) coordinate, followed by "output",
+then followed by one of the minimal distance tours, starting and ending
+with vertex 1 (indexed from 1 not 0).</p>
+<p>Some examples of 10 vertices are:</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0.607122 0.664447 0.953593 0.021519 0.757626 0.921024 0.586376 0.433565 0.786837 0.052959 0.016088 0.581436 0.496714 0.633571 0.227777 0.971433 0.665490 0.074331 0.383556 0.104392 output 1 3 8 6 10 9 5 2 4 7 1 </span><br><span class="line">0.930534 0.747036 0.277412 0.938252 0.794592 0.794285 0.961946 0.261223 0.070796 0.384302 0.097035 0.796306 0.452332 0.412415 0.341413 0.566108 0.247172 0.890329 0.429978 0.232970 output 1 3 2 9 6 5 8 7 10 4 1 </span><br><span class="line">0.686712 0.087942 0.443054 0.277818 0.494769 0.985289 0.559706 0.861138 0.532884 0.351913 0.712561 0.199273 0.554681 0.657214 0.909986 0.277141 0.931064 0.639287 0.398927 0.406909 output 1 5 2 10 7 4 3 9 8 6 1 </span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>Plot first example using code below. </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt</span><br><span class="line">points=<span class="hljs-string">'0.607122 0.664447 0.953593 0.021519 0.757626 0.921024 0.586376 0.433565 0.786837 0.052959 0.016088 0.581436 0.496714 0.633571 0.227777 0.971433 0.665490 0.074331 0.383556 0.104392'</span></span><br><span class="line">float_list = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">float</span>(x), points.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"></span><br><span class="line">x,y = [],[]</span><br><span class="line"><span class="hljs-keyword">for</span> idx, p <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(float_list):</span><br><span class="line">  <span class="hljs-keyword">if</span> idx % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>:</span><br><span class="line">    x.append(p)</span><br><span class="line">  <span class="hljs-keyword">else</span>:</span><br><span class="line">    y.append(p)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(x)):</span><br><span class="line">  <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(x)):</span><br><span class="line">    <span class="hljs-keyword">if</span> i == j:</span><br><span class="line">      <span class="hljs-keyword">continue</span></span><br><span class="line">    plt.plot((x[i],x[j]),(y[i],y[j]))</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></tbody></table></figure><p></p>
+<figure>
+<img src="/en/2020/tsp-2-dp-tour/tsp10_full.png">
+<figcaption>
+TSP Case Fully Connected
+</figcaption>
+</figure>
+<p>Now plot the optimal tour: <span class="math display">\[
+1 \rightarrow 3 \rightarrow 8 \rightarrow 6 \rightarrow 10 \rightarrow 9
+\rightarrow 5 \rightarrow 2 \rightarrow 4 \rightarrow 7 \rightarrow 1
+\]</span></p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tour_str = <span class="hljs-string">'1 3 8 6 10 9 5 2 4 7 1'</span></span><br><span class="line">tour = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x), tour_str.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(tour)-<span class="hljs-number">1</span>):</span><br><span class="line">  p1 = tour[i] - <span class="hljs-number">1</span></span><br><span class="line">  p2 = tour[i + <span class="hljs-number">1</span>] - <span class="hljs-number">1</span></span><br><span class="line">  plt.plot((x[p1],x[p2]),(y[p1],y[p2]))</span><br><span class="line">plt.show()</span><br></pre></td></tr></tbody></table></figure>
+<figure>
+<img src="/en/2020/tsp-2-dp-tour/tsp10_tour.png">
+<figcaption>
+TSP Case Minimal Tour
+</figcaption>
+</figure>
+<h2 id="python-code-illustrated">Python Code Illustrated</h2>
+<h3 id="init-graph-edges">Init Graph Edges</h3>
+<p>Based on previous top down version, several changes are made. First,
+we need to have an edge between every 2 vertices and due to our matrix
+representation of the directed edge, edges of 2 directions are
+initialized.</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">g: Graph = Graph(N)</span><br><span class="line"><span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">	<span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N):</span><br><span class="line">		diff_x = coordinates[v][<span class="hljs-number">0</span>] - coordinates[u][<span class="hljs-number">0</span>]</span><br><span class="line">		diff_y = coordinates[v][<span class="hljs-number">1</span>] - coordinates[u][<span class="hljs-number">1</span>]</span><br><span class="line">		dist: <span class="hljs-built_in">float</span> = math.sqrt(diff_x * diff_x + diff_y * diff_y)</span><br><span class="line">		g.setDist(u, v, dist)</span><br><span class="line">		g.setDist(v, u, dist)</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="auxilliary-variable-to-track-tour-vertices">Auxilliary Variable
+to Track Tour Vertices</h3>
+<p>One major enhancement is to record the optimal tour during
+enumerating. We introduce another variable parent[bitstate][v] to track
+next vertex u, with shortest path.</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ret: <span class="hljs-built_in">float</span> = FLOAT_INF</span><br><span class="line">u_min: <span class="hljs-built_in">int</span> = -<span class="hljs-number">1</span></span><br><span class="line">	<span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.g.v_num):</span><br><span class="line">		<span class="hljs-keyword">if</span> (state &amp; (<span class="hljs-number">1</span> &lt;&lt; u)) == <span class="hljs-number">0</span>:</span><br><span class="line">			s: <span class="hljs-built_in">float</span> = self._recurse(u, state | <span class="hljs-number">1</span> &lt;&lt; u)</span><br><span class="line">				<span class="hljs-keyword">if</span> s + edges[v][u] &lt; ret:</span><br><span class="line">					ret = s + edges[v][u]</span><br><span class="line">					u_min = u</span><br><span class="line">	dp[state][v] = ret</span><br><span class="line">	self.parent[state][v] = u_min</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>After minimal tour distance is found, one optimal tour is formed with
+the help of parent variable. </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_form_tour</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">	self.tour = [<span class="hljs-number">0</span>]</span><br><span class="line">	bit = <span class="hljs-number">0</span></span><br><span class="line">	v = <span class="hljs-number">0</span></span><br><span class="line">	<span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.g.v_num - <span class="hljs-number">1</span>):</span><br><span class="line">		v = self.parent[bit][v]</span><br><span class="line">		self.tour.append(v)</span><br><span class="line">		bit = bit | (<span class="hljs-number">1</span> &lt;&lt; v)</span><br><span class="line">	self.tour.append(<span class="hljs-number">0</span>)</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>Note that for each test case, only one tour is given after "output".
+Our code may form a different tour but it has same distance as what the
+dataset generates, which can be verified by following code snippet. See
+full code on <a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/blob/master/tsp/alg_plane/TSP_plane.py">github</a>.
+</p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">tsp: TSPSolver = TSPSolver(g)</span><br><span class="line">tsp.solve()</span><br><span class="line"></span><br><span class="line">output_dist: <span class="hljs-built_in">float</span> = <span class="hljs-number">0.0</span></span><br><span class="line">output_tour = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x) - <span class="hljs-number">1</span>, output.split(<span class="hljs-string">' '</span>)))</span><br><span class="line"><span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(output_tour)):</span><br><span class="line">	pre_v = output_tour[v-<span class="hljs-number">1</span>]</span><br><span class="line">	curr_v = output_tour[v]</span><br><span class="line">	diff_x = coordinates[pre_v][<span class="hljs-number">0</span>] - coordinates[curr_v][<span class="hljs-number">0</span>]</span><br><span class="line">	diff_y = coordinates[pre_v][<span class="hljs-number">1</span>] - coordinates[curr_v][<span class="hljs-number">1</span>]</span><br><span class="line">	dist: <span class="hljs-built_in">float</span> = math.sqrt(diff_x * diff_x + diff_y * diff_y)</span><br><span class="line">	output_dist += dist</span><br><span class="line"></span><br><span class="line">	passed = <span class="hljs-built_in">abs</span>(tsp.dist - output_dist) &lt; <span class="hljs-number">10e-5</span></span><br><span class="line">	<span class="hljs-keyword">if</span> passed:</span><br><span class="line">		<span class="hljs-built_in">print</span>(<span class="hljs-string">f'passed dist=<span class="hljs-subst">{tsp.tour}</span>'</span>)</span><br><span class="line">	<span class="hljs-keyword">else</span>:</span><br><span class="line">		<span class="hljs-built_in">print</span>(<span class="hljs-string">f'Min Tour Distance = <span class="hljs-subst">{output_dist}</span>, Computed Tour Distance = <span class="hljs-subst">{tsp.dist}</span>, Expected Tour = <span class="hljs-subst">{output_tour}</span>, Result = <span class="hljs-subst">{tsp.tour}</span>'</span>)</span><br></pre></td></tr></tbody></table></figure><p></p>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+        <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            <a href="/en/2020/tsp-1-dp-alg/" itemprop="url">TSP From DP to Deep Learning. Episode 1: DP Algorithm</a>
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-05-08T06:45:01.000Z" itemprop="datePublished">May 8 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/en/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            9 minutes read (About 1417 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Travelling_salesman_problem">Travelling
+salesman problem (TSP)</a> is a classic NP hard computer algorithmic
+problem. In this series, we will first solve TSP problem in an exact
+manner by ACing TSP on aizu with dynamic programming, and then move on
+to train a Pointer Network with Pytorch to obtain an approximate
+solution with deep learning and reinforcement learning technology.
+Complete episodes are listed as follows:</p>
+<ul>
+<li><p><strong>Episode 1: <a href="/en/2020/tsp-1-dp-alg/!--swig￼6--">AC TSP on AIZU with
+recursive DP</a></strong></p></li>
+<li><p>Episode 2: <a href="/en/2020/tsp-1-dp-alg/!--swig￼7--">TSP DP on a Euclidean
+Dataset</a></p></li>
+<li><p>Episode 3: <a href="/en/2020/tsp-1-dp-alg/!--swig￼8--">Pointer Networks in
+PyTorch</a></p></li>
+<li><p>Episode 4: <a href="/en/2020/tsp-1-dp-alg/!--swig￼9--">Search for Most Likely
+Sequence</a></p></li>
+<li><p>Episode 5: <a href="/en/2020/tsp-1-dp-alg/!--swig￼10--">Reinforcement Learning PyTorch
+Implementation</a></p></li>
+</ul>
+<h2 id="tsp-problem-review">TSP Problem Review</h2>
+<p>TSP can be modelled as a graph problem where both directed and
+undirected graphs and both completely or partially connected graphs are
+applicable. The following picture in <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Travelling_salesman_problem">Wikipedia
+TSP</a> is an undirected but complete TSP with four vertices, A, B, C,
+D. TSP requries a tour with minimal total distance, starting from
+arbitrarily picked vertex and ending with the same node while covering
+all vertices exactly once. For example, <span class="math inline">\(A
+\rightarrow B \rightarrow C \rightarrow D \rightarrow A\)</span> and
+<span class="math inline">\(A \rightarrow C \rightarrow B \rightarrow D
+\rightarrow A\)</span> are valid tours and among all tours there is only
+one minimal distance value (though multiple tours with same minimum may
+exist).</p>
+<figure>
+<img src="/en/2020/tsp-1-dp-alg/wiki_k4.png">
+<figcaption>
+Wikipedia 4 Vertices Example
+</figcaption>
+</figure>
+Despite different types of graphs, notice that we can always employ an
+adjacency matrix to represent a graph. The above graph can thus be
+represented by this matrix
+<div>
+<p><span class="math display">\[
+\begin{matrix}
+&amp; \begin{matrix}A&amp;B&amp;C&amp;D\end{matrix} \\
+\begin{matrix}A\\B\\C\\D\end{matrix} &amp;
+  \begin{bmatrix}-&amp;20&amp;42&amp;35\\20&amp;-&amp;30&amp;34\\42&amp;30&amp;-&amp;12\\35&amp;34&amp;12&amp;-\end{bmatrix}\\
+\end{matrix}
+\]</span></p>
+</div>
+<p>Of course, typically, TSP problem takes the form of n cooridanates in
+a plane, corresponding to complete and undirected graph, because in
+plane every pair of vertices has one connected edge and the edge has
+same distance in both directions.</p>
+<p><img src="/en/2020/tsp-1-dp-alg/5-simplex_graph.svg" title="Fully Connected Graph"></p>
+<h2 id="aizu-tsp-online-judge">AIZU TSP Online Judge</h2>
+<p><a target="_blank" rel="noopener" href="http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DPL_2_A">AIZU</a>
+has a TSP problem where a directed and incomplete graph with V vertices
+and E directed edges is given, and the output expects minimal total
+distance. For example below having 4 vertices and 6 edges.</p>
+<p><img src="/en/2020/tsp-1-dp-alg/vertex4-problem.svg" title="Directed 4 Vertices Problem"></p>
+<p>This test case has minimal tour distance 16, with corresponding tour
+being <span class="math inline">\(0\rightarrow1\rightarrow3\rightarrow2\rightarrow0\)</span>,
+as shown in red edges. However, the AIZU problem may not have a valid
+result because not every pair of vertices is guaranteed to be connected.
+In that case, -1 is required, which can also be interpreted as
+infinity.</p>
+<p><img src="/en/2020/tsp-1-dp-alg/vertex4-sol.svg" title="Directed 4 Vertices Solution"></p>
+<h3 id="brute-force-solution">Brute Force Solution</h3>
+<p>A naive way is to enumerate all possible routes starting from vertex
+0 and keep minimal total distance ever generated. Python code below
+illustrates a 4 point vertices graph.</p>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> permutations</span><br><span class="line">v = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]</span><br><span class="line">p = permutations(v)</span><br><span class="line"><span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> <span class="hljs-built_in">list</span>(p):</span><br><span class="line">  <span class="hljs-built_in">print</span>([<span class="hljs-number">0</span>] + <span class="hljs-built_in">list</span>(t) + [<span class="hljs-number">0</span>])</span><br></pre></td></tr></tbody></table></figure>
+<p>The possible routes are </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">0</span>]</span><br><span class="line">[<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">0</span>]</span><br><span class="line">[<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">3</span>, <span class="hljs-number">0</span>]</span><br><span class="line">[<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]</span><br><span class="line">[<span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">0</span>]</span><br><span class="line">[<span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]</span><br></pre></td></tr></tbody></table></figure> This approach has a runtime
+complexity of O(<span class="math inline">\(n!\)</span>), which won't
+pass AIZU.<p></p>
+<p><img src="/en/2020/tsp-1-dp-alg/factorial_paths.svg" title="Factorial Number of Paths"></p>
+<h3 id="dynamic-programming">Dynamic Programming</h3>
+<p>To AC AIZU TSP, we need to have acceleration of the factorial runtime
+complexity by using bitmask dynamic programming. First, let us map
+visited state to a binary value. In the 4 vertices case, it's "0110" if
+node 2 and 1 already visited and ending at node 1. Besides, we need to
+track current vertex to start from. So we extend dp from one dimension
+to two dimensions <span class="math inline">\(dp[bitstate][v]\)</span>.
+In the example, it's <span class="math inline">\(dp["0110"][1]\)</span>. The transition
+formula is given by <span class="math display">\[
+dp[bitstate][v] = \min ( dp[bitstate \cup \{u\}][u] + dist(v,u) \mid u
+\notin bitstate )
+\]</span></p>
+<p>The resulting time complexity is O(<span class="math inline">\(n^2*2^n\)</span> ), since there are <span class="math inline">\(2^n * n\)</span> total states and for each state
+one more round loop is needed. Factorial and exponential functions are
+significantly different.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><span class="math inline">\(n!\)</span></th>
+<th><span class="math inline">\(n^2*2^n\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>n=8</td>
+<td>40320</td>
+<td>16384</td>
+</tr>
+<tr class="even">
+<td>n=10</td>
+<td>3628800</td>
+<td>102400</td>
+</tr>
+<tr class="odd">
+<td>n=12</td>
+<td>479001600</td>
+<td>589824</td>
+</tr>
+<tr class="even">
+<td>n=14</td>
+<td>87178291200</td>
+<td>3211264</td>
+</tr>
+</tbody>
+</table>
+<p>Pause a second and think about why bitmask DP works here. Notice
+there are lots of redundant sub calls, one of which is hightlighted in
+red ellipse below.</p>
+<p><img src="/en/2020/tsp-1-dp-alg/dp_paths.svg" title="DP Duplicate State"></p>
+<p>In this episode, a straightforward top down memoization DP version is
+given in Python 3 and Java 8. Benefit of top down DP approach is that we
+don't need to consider topological ordering when permuting all states.
+Notice that there is a trick in Java, where each element of dp is
+initialized as Integer.MAX_VALUE, so that only one statement is needed
+to update new dp value. </p><figure class="highlight java hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">res = Math.min(res, s + g.edges[v][u]);</span><br></pre></td></tr></tbody></table></figure> However, the code simplicity is at
+cost of clarity and care should be taken when dealing with actual INF
+(not reachable case). In python version, we could have used the same
+trick, perhaps by intializing with a large long value representing INF.
+But for clarity, we manually handle different cases in if-else
+statements and mark intial value as -1 (INT_INF).<p></p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">INT_INF = -<span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> s != INT_INF <span class="hljs-keyword">and</span> edges[v][u] != INT_INF:</span><br><span class="line">    <span class="hljs-keyword">if</span> ret == INT_INF:</span><br><span class="line">        ret = s + edges[v][u]</span><br><span class="line">    <span class="hljs-keyword">else</span>:</span><br><span class="line">        ret = <span class="hljs-built_in">min</span>(ret, s + edges[v][u])</span><br></pre></td></tr></tbody></table></figure>
+<p>Below is complete AC code in Python 3 and Java 8. Also can be
+downloaded on <a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/tree/master/tsp/alg_aizu">github</a>.</p>
+<h3 id="aizu-java-8-recursive-version">AIZU Java 8 Recursive
+Version</h3>
+<figure class="highlight java hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// passed http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DPL_2_A</span></span><br><span class="line"><span class="hljs-keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="hljs-keyword">import</span> java.util.Scanner;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>{</span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Graph</span> </span>{</span><br><span class="line">        <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> V_NUM;</span><br><span class="line">        <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span>[][] edges;</span><br><span class="line"></span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Graph</span><span class="hljs-params">(<span class="hljs-keyword">int</span> V_NUM)</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">this</span>.V_NUM = V_NUM;</span><br><span class="line">            <span class="hljs-keyword">this</span>.edges = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[V_NUM][V_NUM];</span><br><span class="line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; V_NUM; i++) {</span><br><span class="line">                Arrays.fill(<span class="hljs-keyword">this</span>.edges[i], Integer.MAX_VALUE);</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setDist</span><span class="hljs-params">(<span class="hljs-keyword">int</span> src, <span class="hljs-keyword">int</span> dest, <span class="hljs-keyword">int</span> dist)</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">this</span>.edges[src][dest] = dist;</span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">    }</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TSP</span> </span>{</span><br><span class="line">        <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Graph g;</span><br><span class="line">        <span class="hljs-keyword">long</span>[][] dp;</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">TSP</span><span class="hljs-params">(Graph g)</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">this</span>.g = g;</span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">solve</span><span class="hljs-params">()</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">int</span> N = g.V_NUM;</span><br><span class="line">            dp = <span class="hljs-keyword">new</span> <span class="hljs-keyword">long</span>[<span class="hljs-number">1</span> &lt;&lt; N][N];</span><br><span class="line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; dp.length; i++) {</span><br><span class="line">                Arrays.fill(dp[i], -<span class="hljs-number">1</span>);</span><br><span class="line">            }</span><br><span class="line">    </span><br><span class="line">            <span class="hljs-keyword">long</span> ret = recurse(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>);</span><br><span class="line">            <span class="hljs-keyword">return</span> ret == Integer.MAX_VALUE ? -<span class="hljs-number">1</span> : ret;</span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">long</span> <span class="hljs-title">recurse</span><span class="hljs-params">(<span class="hljs-keyword">int</span> state, <span class="hljs-keyword">int</span> v)</span> </span>{</span><br><span class="line">            <span class="hljs-keyword">int</span> ALL = (<span class="hljs-number">1</span> &lt;&lt; g.V_NUM) - <span class="hljs-number">1</span>;</span><br><span class="line">            <span class="hljs-keyword">if</span> (dp[state][v] &gt;= <span class="hljs-number">0</span>) {</span><br><span class="line">                <span class="hljs-keyword">return</span> dp[state][v];</span><br><span class="line">            }</span><br><span class="line">            <span class="hljs-keyword">if</span> (state == ALL &amp;&amp; v == <span class="hljs-number">0</span>) {</span><br><span class="line">                dp[state][v] = <span class="hljs-number">0</span>;</span><br><span class="line">                <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">            }</span><br><span class="line">            <span class="hljs-keyword">long</span> res = Integer.MAX_VALUE;</span><br><span class="line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> u = <span class="hljs-number">0</span>; u &lt; g.V_NUM; u++) {</span><br><span class="line">                <span class="hljs-keyword">if</span> ((state &amp; (<span class="hljs-number">1</span> &lt;&lt; u)) == <span class="hljs-number">0</span>) {</span><br><span class="line">                    <span class="hljs-keyword">long</span> s = recurse(state | <span class="hljs-number">1</span> &lt;&lt; u, u);</span><br><span class="line">                    res = Math.min(res, s + g.edges[v][u]);</span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line">            dp[state][v] = res;</span><br><span class="line">            <span class="hljs-keyword">return</span> res;</span><br><span class="line">    </span><br><span class="line">        }</span><br><span class="line">    </span><br><span class="line">    }</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{</span><br><span class="line">    </span><br><span class="line">        Scanner in = <span class="hljs-keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="hljs-keyword">int</span> V = in.nextInt();</span><br><span class="line">        <span class="hljs-keyword">int</span> E = in.nextInt();</span><br><span class="line">        Graph g = <span class="hljs-keyword">new</span> Graph(V);</span><br><span class="line">        <span class="hljs-keyword">while</span> (E &gt; <span class="hljs-number">0</span>) {</span><br><span class="line">            <span class="hljs-keyword">int</span> src = in.nextInt();</span><br><span class="line">            <span class="hljs-keyword">int</span> dest = in.nextInt();</span><br><span class="line">            <span class="hljs-keyword">int</span> dist = in.nextInt();</span><br><span class="line">            g.setDist(src, dest, dist);</span><br><span class="line">            E--;</span><br><span class="line">        }</span><br><span class="line">        System.out.println(<span class="hljs-keyword">new</span> TSP(g).solve());</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<h3 id="aizu-python-3-recursive-version">AIZU Python 3 Recursive
+Version</h3>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span></span><br><span class="line"></span><br><span class="line">INT_INF = -<span class="hljs-number">1</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Graph</span>:</span></span><br><span class="line">    v_num: <span class="hljs-built_in">int</span></span><br><span class="line">    edges: <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, v_num: <span class="hljs-built_in">int</span></span>):</span></span><br><span class="line">        self.v_num = v_num</span><br><span class="line">        self.edges = [[INT_INF <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(v_num)] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(v_num)]</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setDist</span>(<span class="hljs-params">self, src: <span class="hljs-built_in">int</span>, dest: <span class="hljs-built_in">int</span>, dist: <span class="hljs-built_in">int</span></span>):</span></span><br><span class="line">        self.edges[src][dest] = dist</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TSPSolver</span>:</span></span><br><span class="line">    g: Graph</span><br><span class="line">    dp: <span class="hljs-type">List</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>]]</span><br><span class="line"></span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, g: Graph</span>):</span></span><br><span class="line">        self.g = g</span><br><span class="line">        self.dp = [[<span class="hljs-literal">None</span> <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(g.v_num)] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span> &lt;&lt; g.v_num)]</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">solve</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-keyword">return</span> self._recurse(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">_recurse</span>(<span class="hljs-params">self, v: <span class="hljs-built_in">int</span>, state: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:</span></span><br><span class="line">        <span class="hljs-string">"""</span></span><br><span class="line"><span class="hljs-string">    </span></span><br><span class="line"><span class="hljs-string">        :param v:</span></span><br><span class="line"><span class="hljs-string">        :param state:</span></span><br><span class="line"><span class="hljs-string">        :return: -1 means INF</span></span><br><span class="line"><span class="hljs-string">        """</span></span><br><span class="line">        dp = self.dp</span><br><span class="line">        edges = self.g.edges</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-keyword">if</span> dp[state][v] <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:</span><br><span class="line">            <span class="hljs-keyword">return</span> dp[state][v]</span><br><span class="line">    </span><br><span class="line">        <span class="hljs-keyword">if</span> (state == (<span class="hljs-number">1</span> &lt;&lt; self.g.v_num) - <span class="hljs-number">1</span>) <span class="hljs-keyword">and</span> (v == <span class="hljs-number">0</span>):</span><br><span class="line">            dp[state][v] = <span class="hljs-number">0</span></span><br><span class="line">            <span class="hljs-keyword">return</span> dp[state][v]</span><br><span class="line">    </span><br><span class="line">        ret: <span class="hljs-built_in">int</span> = INT_INF</span><br><span class="line">        <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.g.v_num):</span><br><span class="line">            <span class="hljs-keyword">if</span> (state &amp; (<span class="hljs-number">1</span> &lt;&lt; u)) == <span class="hljs-number">0</span>:</span><br><span class="line">                s: <span class="hljs-built_in">int</span> = self._recurse(u, state | <span class="hljs-number">1</span> &lt;&lt; u)</span><br><span class="line">                <span class="hljs-keyword">if</span> s != INT_INF <span class="hljs-keyword">and</span> edges[v][u] != INT_INF:</span><br><span class="line">                    <span class="hljs-keyword">if</span> ret == INT_INF:</span><br><span class="line">                        ret = s + edges[v][u]</span><br><span class="line">                    <span class="hljs-keyword">else</span>:</span><br><span class="line">                        ret = <span class="hljs-built_in">min</span>(ret, s + edges[v][u])</span><br><span class="line">        dp[state][v] = ret</span><br><span class="line">        <span class="hljs-keyword">return</span> ret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span></span><br><span class="line">    V, E = <span class="hljs-built_in">map</span>(<span class="hljs-built_in">int</span>, <span class="hljs-built_in">input</span>().split())</span><br><span class="line">    g: Graph = Graph(V)</span><br><span class="line">    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(E):</span><br><span class="line">        src, dest, dist = <span class="hljs-built_in">map</span>(<span class="hljs-built_in">int</span>, <span class="hljs-built_in">input</span>().split())</span><br><span class="line">        g.setDist(src, dest, dist)</span><br><span class="line"></span><br><span class="line">    tsp: TSPSolver = TSPSolver(g)</span><br><span class="line">    <span class="hljs-built_in">print</span>(tsp.solve())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:</span><br><span class="line">    main()</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    
+</article>
+
+
+
+
+
+
+
+
+    
+    
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/tags/Dynamic-Programming/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/tags/Dynamic-Programming/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.en.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

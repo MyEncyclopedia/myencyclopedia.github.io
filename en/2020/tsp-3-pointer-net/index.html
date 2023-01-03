@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>TSP From DP to Deep Learning. Episode 3: Pointer Network - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/2020/tsp-3-pointer-net/" rel="alternate" hreflang="zh" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="This is third episode of series: TSP From DP to Deep Learning. In this episode, we will be entering the realm of deep learning, specifically, a type of sequence-to-sequence called Pointer Networks is">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TSP From DP to Deep Learning. Episode 3: Pointer Network">
+<meta property="og:url" content="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="This is third episode of series: TSP From DP to Deep Learning. In this episode, we will be entering the realm of deep learning, specifically, a type of sequence-to-sequence called Pointer Networks is">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/convex_hull.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/tsp.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/delaunay_triangulation.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/ptr_net.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/data_loader.svg">
+<meta property="og:image" content="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/ex_padded_seq.jpg">
+<meta property="article:published_time" content="2020-05-22T06:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:17.918Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="RNN">
+<meta property="article:tag" content="PyTorch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/convex_hull.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/en">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/en/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/en/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#pointer-networks">1&nbsp;&nbsp;<b>Pointer Networks</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#convex-hull">1.1&nbsp;&nbsp;Convex Hull</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#tsp">1.2&nbsp;&nbsp;TSP</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#delaunay-triangulation">1.3&nbsp;&nbsp;Delaunay Triangulation</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#sequence-to-sequence-model">1.4&nbsp;&nbsp;Sequence-to-Sequence Model</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#content-based-input-attention">1.5&nbsp;&nbsp;Content Based Input
+Attention</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#pointer-networks-1">1.6&nbsp;&nbsp;Pointer Networks</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#more-on-attention">2&nbsp;&nbsp;<b>More on Attention</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#pytorch-implementation">3&nbsp;&nbsp;<b>PyTorch Implementation</b></a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#pytorch-dataset">3.1&nbsp;&nbsp;PyTorch Dataset</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#pytorch-pad_packed_sequence">3.2&nbsp;&nbsp;PyTorch pad_packed_sequence</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#attention-code">3.3&nbsp;&nbsp;Attention Code</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#references">4&nbsp;&nbsp;<b>References</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#pointer-networks"><span class="toc-text">Pointer Networks</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#convex-hull"><span class="toc-text">Convex Hull</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tsp"><span class="toc-text">TSP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#delaunay-triangulation"><span class="toc-text">Delaunay Triangulation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sequence-to-sequence-model"><span class="toc-text">Sequence-to-Sequence Model</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#content-based-input-attention"><span class="toc-text">Content Based Input
+Attention</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pointer-networks-1"><span class="toc-text">Pointer Networks</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#more-on-attention"><span class="toc-text">More on Attention</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pytorch-implementation"><span class="toc-text">PyTorch Implementation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#pytorch-dataset"><span class="toc-text">PyTorch Dataset</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pytorch-pad_packed_sequence"><span class="toc-text">PyTorch pad_packed_sequence</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#attention-code"><span class="toc-text">Attention Code</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#references"><span class="toc-text">References</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            TSP From DP to Deep Learning. Episode 3: Pointer Network
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-05-22T06:45:01.000Z" itemprop="datePublished">May 22 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/en/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            9 minutes read (About 1349 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>This is third episode of series: TSP From DP to Deep Learning. In
+this episode, we will be entering the realm of deep learning,
+specifically, a type of sequence-to-sequence called Pointer Networks is
+introduced. It is tailored to solve problems like TSP or Convex Hull.
+Full list of this series is listed below.</p>
+<ul>
+<li><p>Episode 1: <a href="/en/2020/tsp-3-pointer-net/!--swig￼4--">AC TSP on AIZU with recursive
+DP</a></p></li>
+<li><p>Episode 2: <a href="/en/2020/tsp-3-pointer-net/!--swig￼5--">TSP DP on a Euclidean
+Dataset</a></p></li>
+<li><p><strong>Episode 3: <a href="/en/2020/tsp-3-pointer-net/!--swig￼6--">Pointer Networks in
+PyTorch</a></strong></p></li>
+<li><p>Episode 4: <a href="/en/2020/tsp-3-pointer-net/!--swig￼7--">Search for Most Likely
+Sequence</a></p></li>
+<li><p>Episode 5: <a href="/en/2020/tsp-3-pointer-net/!--swig￼8--">Reinforcement Learning PyTorch
+Implementation</a></p></li>
+</ul>
+<h2 id="pointer-networks">Pointer Networks</h2>
+<p>In traditional sequence-to-sequence RNN, output classes depend on
+pre-defined size. For instance, a word generating RNN will utter one
+word from vocabulary of <span class="math inline">\(|V|\)</span> size at
+each time step. However, there is large set of problems such as Convex
+Hull, Delaunay Triangulation and TSP, where range of the each output is
+not pre-defined, but of variable size, defined by the input. <em>Pointer
+Networks </em> overcame the constraint by selecting <span class="math inline">\(i\)</span> -th input with probability derived from
+attention score.</p>
+<h3 id="convex-hull">Convex Hull</h3>
+<p>In following example, 10 points are given, the output is a sequence
+of points that bounds the set of all points. Each value in the output
+sequence is a integer ranging from 1 to 10, in this case, which is the
+value given by the concrete example. Generally, finding exact solution
+has been proven to be equivelent to sort problem, and has time
+complexity <span class="math inline">\(O(n*log(n))\)</span>.</p>
+<figure>
+<img src="/en/2020/tsp-3-pointer-net/./convex_hull.png" alt="image info">
+<figcaption aria-hidden="true">image info</figcaption>
+</figure>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\text{Input:  } \mathcal{P} &amp;=&amp; \left\{P_{1}, \ldots,
+P_{10} \right\} \\
+&amp;\text{Output:  } C^{\mathcal{P}} &amp;=&amp; \{2,4,3,5,6,7,2\}
+\end{align*}
+\]</span></p>
+</div>
+<h3 id="tsp">TSP</h3>
+<p>TSP is almost identical to Convex Hull problem, though output
+sequence is of fixed length. In previous epsiode, we reduced from <span class="math inline">\(O(n!)\)</span> to <span class="math inline">\(O(n^2*2^n)\)</span>.</p>
+<figure>
+<img src="/en/2020/tsp-3-pointer-net/./tsp.svg" alt="image info">
+<figcaption aria-hidden="true">image info</figcaption>
+</figure>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\text{Input:  } \mathcal{P} &amp;= &amp;\left\{P_{1}, \ldots, P_{6}
+\right\} \\
+&amp;\text{Output:  } C^{\mathcal{P}} &amp;=&amp; \{1,3,2,4,5,6,1\}
+\end{align*}
+\]</span></p>
+</div>
+<h3 id="delaunay-triangulation">Delaunay Triangulation</h3>
+<p>A Delaunay triangulation for a set of points in a plane is a
+triangulation such that each circumcircle of every triangle is empty,
+meaning no point from <span class="math inline">\(\mathcal{P}\)</span>
+in its interior. This kind of problem outputs a sequence of sets, and
+each item in the set ranges from the input set <span class="math inline">\(\mathcal{P}\)</span>. <img src="/en/2020/tsp-3-pointer-net/./delaunay_triangulation.png" alt="image info"></p>
+<div>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\text{Input:  } \mathcal{P} &amp;=&amp; \left\{P_{1}, \ldots, P_{5}
+\right\} \\
+&amp;\text{Output:  } C^{\mathcal{P}} &amp;=&amp;
+\{(1,2,4),(1,4,5),(1,3,5),(1,2,3)\}
+\end{align*}
+\]</span></p>
+</div>
+<h3 id="sequence-to-sequence-model">Sequence-to-Sequence Model</h3>
+<p>Suppose now n is fixed. given a training pair, <span class="math inline">\((\mathcal{P}, C^{\mathcal{P}})\)</span>, the
+vanilla sequence-to-sequence model parameterized by <span class="math inline">\(\theta\)</span> computes the conditional
+probability.</p>
+<p><span class="math display">\[
+\begin{equation}
+p\left(\mathcal{C}^{\mathcal{P}} | \mathcal{P} ;
+\theta\right)=\prod_{i=1}^{m(\mathcal{P})} p\left(C_{i} | C_{1}, \ldots,
+C_{i-1}, \mathcal{P} ; \theta\right)
+\end{equation}
+\]</span> The parameters of the model are learnt by maximizing the
+conditional probabilities for the training set, i.e. <span class="math display">\[
+\begin{equation}
+\theta^{*}=\underset{\theta}{\arg \max } \sum_{\mathcal{P},
+\mathcal{C}^{\mathcal{P}}} \log p\left(\mathcal{C}^{\mathcal{P}} |
+\mathcal{P} ; \theta\right)
+\end{equation}
+\]</span></p>
+<h3 id="content-based-input-attention">Content Based Input
+Attention</h3>
+<p>When attention is applied to vanilla sequence-to-sequence model,
+better result is obtained.</p>
+<p>Let encoder and decoder states be $ (e_{1}, , e_{n}) $ and $ (d_{1},
+, d_{m()}) $, respectively. At each output time <span class="math inline">\(i\)</span>, compute the attention vector <span class="math inline">\(d_i\)</span> to be linear combination of $ (e_{1},
+, e_{n}) $ with weights $ (a_{1}^{i}, , a_{n}^{i}) $ <span class="math display">\[
+d_{i} = \sum_{j=1}^{n} a_{j}^{i} e_{j}
+\]</span></p>
+$ (a_{1}^{i}, , a_{n}^{i}) $ is softmax value of $ (u_{1}^{i}, ,
+u_{n}^{i}) $ and <span class="math inline">\(u_{j}^{i}\)</span> can be
+considered as distance between <span class="math inline">\(d_{i}\)</span> and <span class="math inline">\(e_{j}\)</span>. Notice that <span class="math inline">\(v\)</span>, <span class="math inline">\(W_1\)</span>, and <span class="math inline">\(W_2\)</span> are learnable parameters of the
+model.
+<div>
+<p><span class="math display">\[
+\begin{eqnarray}
+u_{j}^{i} &amp;=&amp; v^{T} \tanh \left(W_{1} e_{j}+W_{2}
+d_\right) \quad j \in(1, \ldots, n) \\
+a_{j}^{i} &amp;=&amp; \operatorname{softmax}\left(u_{j}^{i}\right) \quad
+j \in(1, \ldots, n)
+\end{eqnarray}
+\]</span></p>
+</div>
+<h3 id="pointer-networks-1">Pointer Networks</h3>
+<figure>
+<img src="/en/2020/tsp-3-pointer-net/./ptr_net.png" alt="image info">
+<figcaption aria-hidden="true">image info</figcaption>
+</figure>
+<p>Pointer Networks does not blend the encoder state <span class="math inline">\(e_j\)</span> to propagate extra information to the
+decoder, but instead, use <span class="math inline">\(u^i_j\)</span> as
+pointers to the input element.</p>
+<div>
+<p><span class="math display">\[
+\begin{eqnarray*}
+u_{j}^{i} &amp;=&amp; v^{T} \tanh \left(W_{1} e_{j}+W_{2} d_{i}\right)
+\quad j \in(1, \ldots, n) \\
+p\left(C_{i} | C_{1}, \ldots, C_{i-1}, \mathcal{P}\right) &amp;=&amp;
+\operatorname{softmax}\left(u^{i}\right)
+\end{eqnarray*}
+\]</span></p>
+</div>
+<h2 id="more-on-attention">More on Attention</h2>
+<p>In <em>FloydHub Blog - Attention Mechanism </em>, a clear and
+detailed explanation of difference and similarity between the classic
+first type of Attention, commonly referred to as Additive Attention by
+<em>Dzmitry Bahdanau </em> and second classic type, known as
+Multiplicative Attention and proposed by <em>Thang Luong </em>, is
+discussed.</p>
+It's well known that in Luong Attention, three ways of alignment scoring
+function is defined, or the distance between <span class="math inline">\(d_{i}\)</span> and <span class="math inline">\(e_{j}\)</span>.
+<div>
+<p><span class="math display">\[
+\operatorname{score} \left( d_i, e_j \right)=
+\begin{cases}
+d_i^{\top} e_j &amp; \text { dot } \\
+d_i^{\top} W_a e_j &amp; \text { general } \\
+v_a^{\top} \tanh \left( W_a \left[ d_i ; e_j \right] \right) &amp; \text
+{ concat }
+\end{cases}
+\]</span></p>
+</div>
+<h2 id="pytorch-implementation">PyTorch Implementation</h2>
+<p>In <a href="/en/2020/tsp-3-pointer-net/!--swig￼10--">episode 2</a>, we have introduced TSP
+dataset where each case is a line, of following form.</p>
+<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x0, y0, x1, y1, ... output 1 v1 v2 v3 ... 1</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="pytorch-dataset">PyTorch Dataset</h3>
+<p>Each case is converted to (input, input_len, output_in, output_out,
+output_len) of type nd.ndarray with appropriate padding and encapsulated
+in a extended PyTorch Dataset. </p><figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> torch.utils.data <span class="hljs-keyword">import</span> Dataset</span><br><span class="line"></span><br><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TSPDataset</span>(<span class="hljs-params">Dataset</span>):</span></span><br><span class="line">	<span class="hljs-string">"each data item of form (input, input_len, output_in, output_out, output_len)"</span></span><br><span class="line">	data: <span class="hljs-type">List</span>[<span class="hljs-type">Tuple</span>[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]]</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__len__</span>(<span class="hljs-params">self</span>):</span></span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.data)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__getitem__</span>(<span class="hljs-params">self, index</span>):</span></span><br><span class="line">		<span class="hljs-built_in">input</span>, input_len, output_in, output_out, output_len = self.data[index]</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-built_in">input</span>, input_len, output_in, output_out, output_len</span><br></pre></td></tr></tbody></table></figure> <img src="/en/2020/tsp-3-pointer-net/./data_loader.svg" alt="image info"><p></p>
+<h3 id="pytorch-pad_packed_sequence">PyTorch pad_packed_sequence</h3>
+<p>Code in PyTorch seq-to-seq model typically utilizes
+<strong>pack_padded_sequence</strong> and
+<strong>pad_packed_sequence</strong> API to reduce computational cost. A
+detailed explanation is given here
+https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#decoder-1.</p>
+<figure>
+<img src="/en/2020/tsp-3-pointer-net/./ex_padded_seq.jpg" alt="image info">
+<figcaption aria-hidden="true">image info</figcaption>
+</figure>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RNNEncoder</span>(<span class="hljs-params">nn.Module</span>):</span></span><br><span class="line">	rnn: <span class="hljs-type">Union</span>[nn.LSTM, nn.GRU, nn.RNN]</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, rnn_type: <span class="hljs-built_in">str</span>, bidirectional: <span class="hljs-built_in">bool</span>, num_layers: <span class="hljs-built_in">int</span>, input_size: <span class="hljs-built_in">int</span>, hidden_size: <span class="hljs-built_in">int</span>, dropout: <span class="hljs-built_in">float</span></span>):</span></span><br><span class="line">		<span class="hljs-built_in">super</span>(RNNEncoder, self).__init__()</span><br><span class="line">		<span class="hljs-keyword">if</span> bidirectional:</span><br><span class="line">			<span class="hljs-keyword">assert</span> hidden_size % <span class="hljs-number">2</span> == <span class="hljs-number">0</span></span><br><span class="line">			hidden_size = hidden_size // <span class="hljs-number">2</span></span><br><span class="line">		self.rnn = rnn_init(rnn_type, input_size=input_size, hidden_size=hidden_size, bidirectional=bidirectional,num_layers=num_layers, dropout=dropout)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">forward</span>(<span class="hljs-params">self, src: Tensor, src_lengths: Tensor, hidden: Tensor = <span class="hljs-literal">None</span></span>) -&gt; <span class="hljs-type">Tuple</span>[Tensor, Tensor]:</span></span><br><span class="line">		lengths = src_lengths.view(-<span class="hljs-number">1</span>).tolist()</span><br><span class="line">		packed_src = pack_padded_sequence(src, lengths)</span><br><span class="line">		memory_bank, hidden_final = self.rnn(packed_src, hidden)</span><br><span class="line">		memory_bank = pad_packed_sequence(memory_bank)[<span class="hljs-number">0</span>]</span><br><span class="line">		<span class="hljs-keyword">return</span> memory_bank, hidden_final</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="attention-code">Attention Code</h3>
+<figure class="highlight python hljs"><figcaption><span>{linenos</span></figcaption><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Attention</span>(<span class="hljs-params">nn.Module</span>):</span></span><br><span class="line">	linear_out: nn.Linear</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, dim: <span class="hljs-built_in">int</span></span>):</span></span><br><span class="line">		<span class="hljs-built_in">super</span>(Attention, self).__init__()</span><br><span class="line">		self.linear_out = nn.Linear(dim * <span class="hljs-number">2</span>, dim, bias=<span class="hljs-literal">False</span>)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">score</span>(<span class="hljs-params">self, src: Tensor, target: Tensor</span>) -&gt; Tensor:</span></span><br><span class="line">		batch_size, src_len, dim = src.size()</span><br><span class="line">		_, target_len, _ = target.size()</span><br><span class="line">		target_ = target</span><br><span class="line">		src_ = src.transpose(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)</span><br><span class="line">		<span class="hljs-keyword">return</span> torch.bmm(target_, src_)</span><br><span class="line"></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">forward</span>(<span class="hljs-params">self, src: Tensor, target: Tensor, src_lengths: Tensor</span>) -&gt; <span class="hljs-type">Tuple</span>[Tensor, Tensor]:</span></span><br><span class="line">		<span class="hljs-keyword">assert</span> target.dim() == <span class="hljs-number">3</span></span><br><span class="line"></span><br><span class="line">		batch_size, src_len, dim = src.size()</span><br><span class="line">		_, target_len, _ = target.size()</span><br><span class="line"></span><br><span class="line">		align_score = self.score(src, target)</span><br><span class="line"></span><br><span class="line">		mask = sequence_mask(src_lengths)</span><br><span class="line">		<span class="hljs-comment"># (batch_size, max_len) -&gt; (batch_size, 1, max_len)</span></span><br><span class="line">		mask = mask.unsqueeze(<span class="hljs-number">1</span>)</span><br><span class="line">		align_score.data.masked_fill_(~mask, -<span class="hljs-built_in">float</span>(<span class="hljs-string">'inf'</span>))</span><br><span class="line">		align_score = F.softmax(align_score, -<span class="hljs-number">1</span>)</span><br><span class="line"></span><br><span class="line">		c = torch.bmm(align_score, src)</span><br><span class="line"></span><br><span class="line">		concat_c = torch.cat([c, target], -<span class="hljs-number">1</span>)</span><br><span class="line">		attn_h = self.linear_out(concat_c)</span><br><span class="line"></span><br><span class="line">		<span class="hljs-keyword">return</span> attn_h, align_score</span><br></pre></td></tr></tbody></table></figure>
+<p>Complete PyTorch implementation source code is also available on <a target="_blank" rel="noopener" href="https://github.com/MyEncyclopedia/blog/tree/master/tsp/ptr_net_pytorch">github</a>.</p>
+<h2 id="references">References</h2>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Algorithm/">#Algorithm</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/Deep-Learning/">#Deep Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/RNN/">#RNN</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/en/tags/PyTorch/">#PyTorch</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/en/2020/tsp-4-search/">TSP From DP to Deep Learning. Episode 4: Search for Most Likely Sequence</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/en/2020/tsp-2-dp-tour/">TSP From DP to Deep Learning. Episode 2: DP on Euclidean Dataset</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/en/2020/tsp-3-pointer-net/">https://blog.myencyclopedia.top/en/2020/tsp-3-pointer-net/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/">https://myencyclopedia.github.io/en/2020/tsp-3-pointer-net/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>English</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/tsp-3-pointer-net/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/tsp-3-pointer-net/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.en.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>

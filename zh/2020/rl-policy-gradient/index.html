@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>深度强化学习之：Policy Gradient Theorem 一些理解 - MyEncyclopedia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+<link href="/en/2020/rl-policy-gradient/" rel="alternate" hreflang="en" />
+    
+
+
+<meta name="description" content="">
+
+
+
+
+
+    <meta name="description" content="Policy gradient 定理作为现代深度强化学习的基石，同时也是actor-critic的基础，重要性不言而喻。但是它的推导和理解不是那么浅显，不同的资料中又有着众多形式，不禁令人困惑。本篇文章MyEncyclopedia试图总结众多资料背后的一些相通的地方，并写下自己的一些学习理解心得。 引入 Policy Gradient Policy gradient 引入的目的是若我们将策略 \(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深度强化学习之：Policy Gradient Theorem 一些理解">
+<meta property="og:url" content="https://myencyclopedia.github.io/zh/2020/rl-policy-gradient/">
+<meta property="og:site_name" content="MyEncyclopedia">
+<meta property="og:description" content="Policy gradient 定理作为现代深度强化学习的基石，同时也是actor-critic的基础，重要性不言而喻。但是它的推导和理解不是那么浅显，不同的资料中又有着众多形式，不禁令人困惑。本篇文章MyEncyclopedia试图总结众多资料背后的一些相通的地方，并写下自己的一些学习理解心得。 引入 Policy Gradient Policy gradient 引入的目的是若我们将策略 \(">
+<meta property="og:locale">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-policy-gradient/policy_net.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-policy-gradient/reinforce.png">
+<meta property="og:image" content="https://myencyclopedia.github.io/zh/2020/rl-policy-gradient/pg_sample.png">
+<meta property="article:published_time" content="2020-12-11T18:45:01.000Z">
+<meta property="article:modified_time" content="2022-01-27T08:59:18.006Z">
+<meta property="article:author" content="MyEncyclopedia">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta property="article:tag" content="Deep Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://myencyclopedia.github.io/zh/2020/rl-policy-gradient/policy_net.png">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt="" height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/about">About</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="目录">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#引入-policy-gradient">1&nbsp;&nbsp;<b>引入 Policy Gradient</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#policy-gradient-theorem">2&nbsp;&nbsp;<b>Policy Gradient Theorem</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#policy-gradient-theorem---trajectory-form">3&nbsp;&nbsp;<b>Policy Gradient
+Theorem - Trajectory Form</b></a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#和监督学习的联系">4&nbsp;&nbsp;<b>和监督学习的联系</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://myencyclopedia.github.io">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <aside id='article-toc' role="navigation" class='fixed'>
+        <div id='article-toc-inner'>
+            
+            <strong class="sidebar-title">目录</strong>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E5%85%A5-policy-gradient"><span class="toc-text">引入 Policy Gradient</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#policy-gradient-theorem"><span class="toc-text">Policy Gradient Theorem</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#policy-gradient-theorem---trajectory-form"><span class="toc-text">Policy Gradient
+Theorem - Trajectory Form</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0%E7%9A%84%E8%81%94%E7%B3%BB"><span class="toc-text">和监督学习的联系</span></a></li></ol>
+            
+        </div>
+        
+        </aside>
+                <style>
+            #article-toc-inner:after,#article-toc-inner:before,.inner:after,.inner:before {
+                content: "";
+                display: table
+            }
+            
+            #article-toc-inner:after,.inner:after {
+                clear: both
+            }
+            @media screen {
+                #article-toc-inner,.inner {
+                    padding: 0 20px
+                }
+            }
+            #article-toc {
+                display: none;
+                float: left;
+                width: 25%;
+                margin-left: -220px;
+                opacity: .8
+            }
+            @media screen and (min-width:769px) {
+                #article-toc {
+                    display: block
+                }
+            }
+ 
+           #article-toc.fixed {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 10 px;
+                padding-top: 55px;
+            }
+            .fixed #article-toc-inner {
+                position: fixed;
+                width: 220px;
+                top: 0;
+                bottom: 0;
+                padding-top: 55px;
+            }
+            </style>
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            深度强化学习之：Policy Gradient Theorem 一些理解
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            
+                <time datetime="2020-12-11T18:45:01.000Z" itemprop="datePublished">12月 12 2020</time>
+            
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Tech-Blog/">Tech Blog</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            17 分钟 读完 (约 2538 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p>Policy gradient
+定理作为现代深度强化学习的基石，同时也是actor-critic的基础，重要性不言而喻。但是它的推导和理解不是那么浅显，不同的资料中又有着众多形式，不禁令人困惑。本篇文章MyEncyclopedia试图总结众多资料背后的一些相通的地方，并写下自己的一些学习理解心得。</p>
+<h2 id="引入-policy-gradient">引入 Policy Gradient</h2>
+Policy gradient 引入的目的是若我们将策略 <span class="math inline">\(\pi_{\theta}\)</span> 的参数 <span class="math inline">\(\theta\)</span> 直接和一个标量 <span class="math inline">\(J\)</span>
+直接联系在一起的话，就能够利用目前最流行的深度学习自动求导的方法，迭代地去找到
+<span class="math inline">\(\theta^*\)</span> 来最大化 <span class="math inline">\(J\)</span>：
+<div>
+<p><span class="math display">\[
+\theta^{\star}=\arg \max _{\theta} J(\theta)
+\]</span></p>
+</div>
+<div>
+<p><span class="math display">\[
+{\theta}_{t+1} \doteq {\theta}_{t}+\alpha \nabla J(\theta)
+\]</span></p>
+</div>
+此时，训练神经网络成功地收敛到 <span class="math inline">\(\theta^{*}\)</span> 时可以直接给出任意一个状态 s
+的动作分布。
+<figure>
+<img src="/zh/2020/rl-policy-gradient/policy_net.png">
+<figcaption>
+</figcaption>
+</figure>
+<p>那么问题来了，首先一个如何定义 <span class="math inline">\(J(\theta)\)</span>，其次，如何求出或者估计 $
+J()$。</p>
+<p>第一个问题比较直白，用value function或者广义的expected
+return都可以。</p>
+<p>这里列举一些常见的定义。对于episodic 并且初始都是 <span class="math inline">\(s_0\)</span>状态的情况，直接定义成v值，即Sutton教程中的episodic情况下的定义</p>
+<div>
+<p><span class="math display">\[
+J(\boldsymbol{\theta}) \doteq
+v_{\pi_{\boldsymbol{\theta}}}\left(s_{0}\right)  \quad \quad
+\text{(1.1)}
+\]</span></p>
+</div>
+进一步，上式等价于 <span class="math inline">\(V(s)\)</span>
+在状态平稳分布下的均值。
+<div>
+<p><span class="math display">\[
+\begin{aligned}
+J(\theta) &amp;= \sum_{s \in \mathcal{S}} d^{\pi}(s) V^{\pi}(s) \\
+&amp;=\sum_{s \in \mathcal{S}} d^{\pi}(s) \sum_{a \in \mathcal{A}}
+\pi_{\theta}(a \mid s) Q^{\pi}(s, a)
+\end{aligned} \quad \quad \text{(1.2)}
+\]</span></p>
+</div>
+<p>其中，状态平稳分布 <span class="math inline">\(d^{\pi}(s)\)</span>
+定义为</p>
+<div>
+<p><span class="math display">\[
+d^{\pi}(s)=\lim _{t \rightarrow \infty} P\left(s_{t}=s \mid s_{0},
+\pi_{\theta}\right)
+\]</span></p>
+</div>
+另一种定义从trajectory角度出发，公式如下：
+<div>
+<p><span class="math display">\[
+J(\boldsymbol{\theta}) \doteq E_{\tau \sim
+p_{\theta}(\tau)}\left[\sum_{t} r\left(\mathbf{s}_{t},
+\mathbf{a}_{t}\right)\right] \quad \quad \text{(1.3)}
+\]</span></p>
+</div>
+<p>即$ $ 是一次trajectory，服从以 <span class="math inline">\(\theta\)</span> 作为参数的随机变量</p>
+<div>
+<p><span class="math display">\[
+\tau \sim p_{\theta}\left(\mathbf{s}_{1}, \mathbf{a}_{1}, \ldots,
+\mathbf{s}_{T}, \mathbf{a}_{T}\right)
+\]</span></p>
+</div>
+<p><span class="math inline">\(J(\theta)\)</span> 对于所有的可能的 <span class="math inline">\(\tau\)</span> 求 expected
+return。这种视角下对于finite 和 infinite horizon来说也有变形。</p>
+Infinite horizon 情况下，通过 <span class="math inline">\((s,
+a)\)</span> 的marginal distribution来计算
+<div>
+<p><span class="math display">\[
+J(\boldsymbol{\theta}) \doteq E_{(\mathbf{s}, \mathbf{a}) \sim
+p_{\theta}(\mathbf{s}, \mathbf{a})}[r(\mathbf{s}, \mathbf{a})] \quad
+\quad \text{(1.4)}
+\]</span></p>
+</div>
+Finite horizon 情况下，通过每一时刻下 <span class="math inline">\((s_t,
+a_t)\)</span> 的marginal distribution来计算
+<div>
+<p><span class="math display">\[
+J(\boldsymbol{\theta}) \doteq \sum_{t=1}^{T} E_{\left(\mathbf{s}_{t},
+\mathbf{a}_{t}\right) \sim p_{\theta}\left(\mathbf{s}_{t},
+\mathbf{a}_{t}\right)} \quad \quad \text{(1.5)}
+\]</span></p>
+</div>
+关于第二个问题，如何求出或者估计 $ J()$ 就是 policy gradient theorem
+的主题了。仔细想想确实会有一些问题。一是 reward 随机变量 <span class="math inline">\(R(s, a)\)</span> 是离散情况下 $ J()$
+还是否存在，再是 <span class="math inline">\(J(\theta)\)</span>
+不仅取决于agent 主观的 <span class="math inline">\(\pi_{\theta}\)</span>，还取决于环境客观的dynamics
+model
+<div>
+<p><span class="math display">\[
+p\left(s^{\prime}, r \mid s, a\right) =
+\operatorname{Pr}\left\{S_{t}=s^{\prime}, R_{t}=r \mid S_{t-1}=s,
+A_{t-1}=a\right\}
+\]</span></p>
+</div>
+<p>当环境dynamics未知时，如何再去求 $ J()$
+呢。还有就是如果涉及到状态的分布也是取决于环境dynamics的，计算 $ J()$
+也面临同样的问题。</p>
+<p>幸好，policy
+gradient定理完美的解答了上述问题。我们先来看看它的表述内容。</p>
+<h2 id="policy-gradient-theorem">Policy Gradient Theorem</h2>
+策略梯度定理证明了，无论定义何种 <span class="math inline">\(J(\theta)\)</span> ，策略梯度等比于下式，其中
+<span class="math inline">\(\mu(s)\)</span> 为 <span class="math inline">\(\pi_{\theta}\)</span>
+下的状态分布。等比系数在episodic情况下为episode的平均长度，在infinite
+horizon情况下为1。
+<div>
+<p><span class="math display">\[
+\nabla J(\boldsymbol{\theta}) \propto \sum_{s} \mu(s) \sum_{a}
+q_{\pi}(s, a) \nabla \pi(a \mid s, \boldsymbol{\theta}) \quad \quad
+\text{(2.1)}
+\]</span></p>
+</div>
+考虑到系数可以包含在步长 <span class="math inline">\(\alpha\)</span>
+中， <span class="math inline">\(\mu(s)\)</span> 是on policy <span class="math inline">\(\pi_{\theta}\)</span> 的权重，<span class="math inline">\(\nabla J(\theta)\)</span>
+也可以写成期望形式的等式，注意，下式中 <span class="math inline">\(S_t\)</span> 从具体 <span class="math inline">\(s\)</span> 变成了随机变量，随机概率部分移到了
+<span class="math inline">\(\mathbb{E}_{\pi}\)</span>中了。
+<div>
+<p><span class="math display">\[
+\nabla J(\boldsymbol{\theta}) =\mathbb{E}_{\pi}\left[\sum_{a}
+q_{\pi}\left(S_{t}, a\right) \nabla \pi\left(a \mid S_{t},
+\boldsymbol{\theta}\right)\right]  \quad \quad \text{(2.2)}
+\]</span></p>
+</div>
+<p>Policy Gradient 定理的伟大之处在于等式右边并没有 <span class="math inline">\(d^{\pi}(s)\)</span>，或者环境transition model
+<span class="math inline">\(p\left(s^{\prime}, r \mid s,
+a\right)\)</span>！同时，等式右边变换成了最利于统计采样的期望形式，因为期望可以通过样本的平均来估算。</p>
+<p>但是，这里必须注意的是action space的期望并不是基于 $(a S_{t}, ) $
+的权重的，因此，继续改变形式，引入 action space的 on policy 权重 $(a
+S_{t}, ) $ ，得到 2.3式。</p>
+<div>
+<p><span class="math display">\[
+\nabla J(\boldsymbol{\theta})=\mathbb{E}_{\pi}\left[\sum_{a} \pi\left(a
+\mid S_{t}, \boldsymbol{\theta}\right) q_{\pi}\left(S_{t}, a\right)
+\frac{\nabla \pi\left(a \mid S_{t},
+\boldsymbol{\theta}\right)}{\pi\left(a \mid S_{t},
+\boldsymbol{\theta}\right)}\right] \quad \quad \text{(2.3)}
+\]</span></p>
+</div>
+将 <span class="math inline">\(a\)</span> 替换成 $A_{t} $，得到2.4式
+<div>
+<p><span class="math display">\[
+\nabla J(\boldsymbol{\theta})==\mathbb{E}_{\pi}\left[q_{\pi}\left(S_{t},
+A_{t}\right) \frac{\nabla \pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}\right)}{\pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}\right)}\right]  \quad \quad \text{(2.4)}
+\]</span></p>
+</div>
+<p>将 <span class="math inline">\(q_{\pi}\)</span>替换成 <span class="math inline">\(G_t\)</span>，由于</p>
+<div>
+<p><span class="math display">\[
+\mathbb{E}_{\pi}[G_{t} \mid S_{t}, A_{t}]= q_{\pi}\left(S_{t},
+A_{t}\right)
+\]</span></p>
+</div>
+<p>得到2.5式</p>
+<div>
+<p><span class="math display">\[
+\nabla J(\boldsymbol{\theta})==\mathbb{E}_{\pi}\left[G_{t} \frac{\nabla
+\pi\left(A_{t} \mid S_{t}, \boldsymbol{\theta}\right)}{\pi\left(A_{t}
+\mid S_{t}, \boldsymbol{\theta}\right)}\right]  \quad \quad \text{(2.5)}
+\]</span></p>
+</div>
+至此，action 和 state space的权重都源自 <span class="math inline">\(\pi_{\theta}\)</span>，期望内的随机变量可以通过
+<span class="math inline">\(\pi_{\theta}\)</span> 在每一时间 t
+采样来无偏估计，这便是大名鼎鼎的 REINFORCE 算法，即Monte Carlo Policy
+Gradient。
+<div>
+<p><span class="math display">\[
+\nabla J(\boldsymbol{\theta}) \approx G_{t} \frac{\nabla \pi\left(A_{t}
+\mid S_{t}, \boldsymbol{\theta}\right)}{\pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}\right)} \quad \quad \text{(2.6)}
+\]</span></p>
+</div>
+此时，<span class="math inline">\(\theta\)</span> 迭代更新公式为
+<div>
+<p><span class="math display">\[
+\boldsymbol{\theta}_{t+1} \doteq \boldsymbol{\theta}_{t}+\alpha G_{t}
+\frac{\nabla \pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}_{t}\right)}{\pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}_{t}\right)}  \quad \quad \text{(2.7)}
+\]</span></p>
+</div>
+下面是REINFORCE算法完整流程
+<figure>
+<img src="/zh/2020/rl-policy-gradient/reinforce.png">
+<figcaption>
+</figcaption>
+</figure>
+<h2 id="policy-gradient-theorem---trajectory-form">Policy Gradient
+Theorem - Trajectory Form</h2>
+Trajectory 形式的策略梯度定理也很常见，这里也总结一下，回顾 1.3 式 <span class="math inline">\(J(\theta)\)</span>的定义
+<div>
+<p><span class="math display">\[
+J(\boldsymbol{\theta}) \doteq E_{\tau \sim
+p_{\theta}(\tau)}\left[\sum_{t} r\left(\mathbf{s}_{t},
+\mathbf{a}_{t}\right)\right] \quad \quad \text{(1.3)}
+\]</span></p>
+</div>
+最后可以证明出
+<div>
+<p><span class="math display">\[
+\nabla_{\theta} J\left(\pi_{\theta}\right)=\underset{\tau \sim
+\pi_{\theta}}{\mathrm{E}}\left[\sum_{t=0}^{T} \nabla_{\theta} \log
+\pi_{\theta}\left(a_{t} \mid s_{t}\right) R(\tau)\right] \quad \quad
+\text{(3.1)}
+\]</span></p>
+</div>
+3.1式中每一时刻 t 中依赖全时刻的 <span class="math inline">\(R(\tau)\)</span> ，进一步优化可以证明，时刻 t
+只依赖于后续reward sum，即 reward-to-go， $ _{t}$
+<div>
+<p><span class="math display">\[
+\hat{R}_{t} \doteq \sum_{t^{\prime}=t}^{T} R\left(s_{t^{\prime}},
+a_{t^{\prime}}, s_{t^{\prime}+1}\right)
+\]</span></p>
+</div>
+最终的策略梯度定理的形式为：
+<div>
+<p><span class="math display">\[
+\nabla_{\theta} J\left(\pi_{\theta}\right)=\underset{\tau \sim
+\pi_{\theta}}{\mathrm{E}}\left[\sum_{t=0}^{T} \nabla_{\theta} \log
+\pi_{\theta}\left(a_{t} \mid s_{t}\right) \hat{R}_{t} \right] \quad
+\quad \text{(3.2)}
+\]</span></p>
+</div>
+由于 log-derivative trick的存在，3.2式和2.5式（Sutton 教程中的policy
+gradient）等价。
+<div>
+<p><span class="math display">\[
+\nabla_{\theta} \log \pi_{\theta}(a)=\frac{\nabla_{\theta}
+\pi_{\theta}}{\pi_{\theta}} \quad \quad \text{(3.3)}
+\]</span></p>
+</div>
+<h2 id="和监督学习的联系">和监督学习的联系</h2>
+<p>Policy Gradient中的 <span class="math inline">\(\nabla_{\theta} \log
+\pi\)</span> 广泛存在在机器学习范畴中，被称为 score function gradient
+estimator。RL 在supervised learning settings 中有 imitation
+learning，即通过专家的较优stochastic policy <span class="math inline">\(\pi_{\theta}(a|s)\)</span> 收集数据集</p>
+<div>
+<p><span class="math display">\[
+\{(s_1, a^{*}_1), (s_2, a^{*}_2), ...\}
+\]</span></p>
+</div>
+算法有监督的学习去找到max log likelyhook 的 <span class="math inline">\(\theta^{*}\)</span>
+<div>
+<p><span class="math display">\[
+\theta^{*}=\operatorname{argmax}_{\theta} \sum_{n} \log
+\pi_{\theta}\left(a_{n}^{*} \mid s_{n}\right) \quad \quad \text{(4.1)}
+\]</span></p>
+</div>
+此时，参数迭代公式为
+<div>
+<p><span class="math display">\[
+\theta_{n+1} \leftarrow \theta_{n}+\alpha_{n} \nabla_{\theta} \log
+\pi_{\theta}\left(a_{n}^{*} \mid s_{n}\right) \quad \quad \text{(4.2)}
+\]</span></p>
+</div>
+<p>对照Policy Graident RL，on-policy <span class="math inline">\(\pi_{\theta}(a|s)\)</span> 产生数据集</p>
+<div>
+<p><span class="math display">\[
+\{(s_1, a_1, r_1), (s_2, a_2, r_2), ...\}
+\]</span></p>
+</div>
+<p>目标是最大化on-policy <span class="math inline">\(\pi_{\theta}\)</span> 分布下的expected return</p>
+<div>
+<p><span class="math display">\[
+\theta^{*}=\operatorname{argmax}_{\theta} \sum_{n} R(\tau_{n})
+\]</span></p>
+</div>
+对照2.7式 <span class="math inline">\(\theta\)</span>
+的更新公式，2.7式可以写成如下4.3式
+<div>
+<p><span class="math display">\[
+\theta_{n+1} \leftarrow \theta_{n}+\alpha_{n}  G_{n} \nabla_{\theta}
+\log \pi_{\theta}\left(a_{n} \mid s_{n}\right) \quad \quad \text{(4.3)}
+\]</span></p>
+</div>
+<p>对比 4.3 和 4.2，发现此时4.3中只多了一个权重系数 <span class="math inline">\(G_n\)</span>。</p>
+<p>关于 $G_{n} <em>{} </em>{}(a_{n} s_{n}) $ 或者 <span class="math inline">\(G_{t} \frac{\nabla \pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}_{t}\right)}{\pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}_{t}\right)}\)</span> 有一些深入的理解。</p>
+首先policy gradient RL 不像supervised imitation learning直接有label
+作为signal，PG
+RL必须通过采样不同的action获得reward或者return作为signal，即1.4式中的
+<div>
+<p><span class="math display">\[
+E_{(\mathbf{s}, \mathbf{a}) \sim p_{\theta}(\mathbf{s},
+\mathbf{a})}[r(\mathbf{s}, \mathbf{a})] \quad \quad \text{(5.1)}
+\]</span></p>
+</div>
+广义的score function gradient estimator
+对于形式为5.2的函数期望求gradient。对比上式，PG RL ， <span class="math inline">\(f(x)\)</span>视为reward 随机变量，期望是under
+on-policy <span class="math inline">\(\pi_{\theta}\)</span>。
+<div>
+<p><span class="math display">\[
+E_{x \sim p(x \mid \theta)}[f(x)] \quad \quad \text{(5.2)}
+\]</span></p>
+</div>
+以下是score function gradient
+estimator的推导，这里不做赘述，主要利用了3.3式的 log-derivative trick。
+<div>
+<p><span class="math display">\[
+\begin{aligned} \nabla_{\theta} E_{x}[f(x)] &amp;=\nabla_{\theta}
+\sum_{x} p(x) f(x) \\ &amp;=\sum_{x} \nabla_{\theta} p(x) f(x) \\
+&amp;=\sum_{x} p(x) \frac{\nabla_{\theta} p(x)}{p(x)} f(x) \\
+&amp;=\sum_{x} p(x) \nabla_{\theta} \log p(x) f(x) \\
+&amp;=E_{x}\left[f(x) \nabla_{\theta} \log p(x)\right] \end{aligned}
+\quad \quad \text{(5.3)}
+\]</span></p>
+</div>
+<p>Policy Gradient 工作的机制大致如下</p>
+<p>首先，根据现有的 on-policy <span class="math inline">\(\pi_{\theta}\)</span> 采样出一些动作 action
+产生trajectories，这些trajectories最终得到反馈 <span class="math inline">\(R(\tau)\)</span></p>
+<figure>
+<img src="/zh/2020/rl-policy-gradient/pg_sample.png">
+<figcaption>
+</figcaption>
+</figure>
+用采样到的数据通过R加权来代替imitation learning的labeled loss
+<div>
+<p><span class="math display">\[
+R(s,a) \nabla \pi_{\theta_{t}}(a \mid s) \approx \nabla
+\pi_{\theta_{t}}(a^{*} \mid s)
+\]</span></p>
+</div>
+<p>最后，由于采样到的action分布服从于<span class="math inline">\(a \sim
+\pi_{\theta}(a)\)</span> ，除掉 <span class="math inline">\(\pi_{\theta}\)</span> ：</p>
+<p><span class="math inline">\(G_{t} \frac{\nabla \pi\left(A_{t} \mid
+S_{t}, \boldsymbol{\theta}_{t}\right)}{\pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}_{t}\right)}\)</span></p>
+<p>此时，采样的均值可以去无偏估计2.2式中的Expectation。</p>
+<div>
+<p><span class="math display">\[
+\sum_N G_{t} \frac{\nabla \pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}_{t}\right)}{\pi\left(A_{t} \mid S_{t},
+\boldsymbol{\theta}_{t}\right)}
+\]</span></p>
+</div>
+<div>
+<p><span class="math display">\[
+=\mathbb{E}_{\pi}\left[\sum_{a} q_{\pi}\left(S_{t}, a\right) \nabla
+\pi\left(a \mid S_{t}, \boldsymbol{\theta}\right)\right]
+\]</span></p>
+</div>
+<link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
+    
+    </div>
+    
+    <div class="columns is-variable is-1 is-multiline is-mobile">
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Python/">#Python</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Reinforcement-Learning/">#Reinforcement Learning</a></span>
+    
+        <span class="column is-narrow"><a class="tag is-light article-tag" href="/tags/Deep-Learning/">#Deep Learning</a></span>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/zh/2020/paper-rl-pg-sutton-1999/">解读深度强化学习基石论文：函数近似的策略梯度方法</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/zh/2020/rl-dqn-mario/">深度强化学习之：DQN训练超级玛丽闯关</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div>
+<p class="note note-warning">
+<strong>Author and License</strong> <a href="mailto:dingding303@gmail.com">Contact MyEncyclopedia to Authorize</a> <br>
+<strong>myencyclopedia.top link</strong> <a target="_blank" rel="noopener" href="https://blog.myencyclopedia.top/zh/2020/rl-policy-gradient/">https://blog.myencyclopedia.top/zh/2020/rl-policy-gradient/</a> <br>
+<strong>github.io link</strong> <a href="https://myencyclopedia.github.io/zh/2020/rl-policy-gradient/">https://myencyclopedia.github.io/zh/2020/rl-policy-gradient/</a> <br>
+
+<img src="/about/me_wechat_scan_search_white.png" />
+</p>
+</div>
+
+
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2023 MyEncyclopedia&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        target="_blank" rel="noopener" href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" target="_blank" rel="noopener" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+<div class="column is-narrow has-text-centered">
+    <div class="dropdown is-up is-right is-hoverable" style="margin-top: -0.2em;">
+        <div class="dropdown-trigger">
+            <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu7">
+                <span class="icon">
+                    <i class="fas fa-globe"></i>
+                </span>
+                <span>简体中文</span>
+                <span class="icon is-small">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+            </button>
+        </div>
+        <div class="dropdown-menu has-text-left" role="menu">
+            <div class="dropdown-content">
+            
+                <a href="/2020/rl-policy-gradient/" class="dropdown-item">
+                    简体中文
+                </a>
+            
+                <a href="/en/2020/rl-policy-gradient/" class="dropdown-item">
+                    English
+                </a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<style>
+ .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 100%;
+  }
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+        // ...options...
+    });
+});
+</script>
+
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索" />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>
