@@ -18,12 +18,12 @@
 
 
 
-    <meta name="description" content="NeuralProphet 深度学习版 Prophet NeuralProphet 是 Facebook开发的新一代 Prophet 时间序列预测框架。加入了 PyTorch 的自回归 （AR）模块，并用 PyTorch 重新实现了 Prophet，它的显著特性如下  使用 PyTorch 的优化，性能比原始 Prophet 快不少 引入 AR-Net 建模时间序列自回归，并配有非线性层 自定义损">
+    <meta name="description" content="NeuralProphet深度学习版Prophet NeuralProphet 负有盛名，是 Facebook开发的新一代 Prophet 时间序列预测框架，堪称时间序列预测神器。但是它的API使用，调参，原理不太为大家所知，我们会花几期文章和视频，我们将由浅入深，由实践至原理，揭开其神秘面纱。 NeuralProphet 继承了 Prophet 模块可接受性的特点，将预测的值分解到趋势、季节性、">
 <meta property="og:type" content="article">
 <meta property="og:title" content="初识时间序列预测神器 NeuralProphet 实战预测股票指数">
 <meta property="og:url" content="https://myencyclopedia.github.io/zh/2023/docker-neuralprophet/">
 <meta property="og:site_name" content="MyEncyclopedia">
-<meta property="og:description" content="NeuralProphet 深度学习版 Prophet NeuralProphet 是 Facebook开发的新一代 Prophet 时间序列预测框架。加入了 PyTorch 的自回归 （AR）模块，并用 PyTorch 重新实现了 Prophet，它的显著特性如下  使用 PyTorch 的优化，性能比原始 Prophet 快不少 引入 AR-Net 建模时间序列自回归，并配有非线性层 自定义损">
+<meta property="og:description" content="NeuralProphet深度学习版Prophet NeuralProphet 负有盛名，是 Facebook开发的新一代 Prophet 时间序列预测框架，堪称时间序列预测神器。但是它的API使用，调参，原理不太为大家所知，我们会花几期文章和视频，我们将由浅入深，由实践至原理，揭开其神秘面纱。 NeuralProphet 继承了 Prophet 模块可接受性的特点，将预测的值分解到趋势、季节性、">
 <meta property="og:locale">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2023/docker-neuralprophet/10_year.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2023/docker-neuralprophet/sp500.png">
@@ -53,7 +53,7 @@
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2023/docker-neuralprophet/pred_holiday_comp.png">
 <meta property="og:image" content="https://myencyclopedia.github.io/zh/2023/docker-neuralprophet/pred_holiday_no_hist.png">
 <meta property="article:published_time" content="2023-01-01T18:45:01.000Z">
-<meta property="article:modified_time" content="2023-01-03T02:30:32.149Z">
+<meta property="article:modified_time" content="2023-01-03T02:40:51.620Z">
 <meta property="article:author" content="MyEncyclopedia">
 <meta property="article:tag" content="docker">
 <meta property="article:tag" content="notebook">
@@ -144,8 +144,7 @@
                     
                     
                     
-                    <a class="navbar-item" href="#neuralprophet-深度学习版-prophet">1&nbsp;&nbsp;<b>NeuralProphet 深度学习版
-Prophet</b></a>
+                    <a class="navbar-item" href="#neuralprophet深度学习版prophet">1&nbsp;&nbsp;<b>NeuralProphet深度学习版Prophet</b></a>
                     
                     
                     <hr class="navbar-divider">
@@ -193,15 +192,11 @@ Prophet</b></a>
                     
                     
                     
-                    <a class="navbar-item" href="#section">5.2&nbsp;&nbsp;</a>
+                    <a class="navbar-item" href="#模块归因-1">5.2&nbsp;&nbsp;模块归因</a>
                     
                     
                     
-                    <a class="navbar-item" href="#模块归因-1">5.3&nbsp;&nbsp;模块归因</a>
-                    
-                    
-                    
-                    <a class="navbar-item" href="#仅预测未来-1">5.4&nbsp;&nbsp;仅预测未来</a>
+                    <a class="navbar-item" href="#仅预测未来-1">5.3&nbsp;&nbsp;仅预测未来</a>
                     
                     
                     <hr class="navbar-divider">
@@ -265,8 +260,7 @@ Prophet</b></a>
         <div id='article-toc-inner'>
             
             <strong class="sidebar-title">目录</strong>
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#neuralprophet-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%89%88-prophet"><span class="toc-text">NeuralProphet 深度学习版
-Prophet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85neuralprophet"><span class="toc-text">安装NeuralProphet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E6%99%AE%E5%B0%94-500-%E6%8C%87%E6%95%B0%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-text">标准普尔 500 指数数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%B8%80%E8%B6%8B%E5%8A%BF"><span class="toc-text">模块一：趋势</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-text">训练模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E9%AA%8C%E8%AF%81%E9%9B%86"><span class="toc-text">预测验证集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%BD%92%E5%9B%A0"><span class="toc-text">模块归因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%85%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5"><span class="toc-text">仅预测未来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%BA%8C%E5%AD%A3%E8%8A%82%E6%80%A7"><span class="toc-text">模块二：季节性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E9%AA%8C%E8%AF%81%E9%9B%86-1"><span class="toc-text">预测验证集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#section"><span class="toc-text"></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%BD%92%E5%9B%A0-1"><span class="toc-text">模块归因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%85%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5-1"><span class="toc-text">仅预测未来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%B8%89%E8%87%AA%E5%9B%9E%E5%BD%92-ar"><span class="toc-text">模块三：自回归 AR</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B-1"><span class="toc-text">训练模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E9%AA%8C%E8%AF%81%E9%9B%86-2"><span class="toc-text">预测验证集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%BD%92%E5%9B%A0-2"><span class="toc-text">模块归因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%85%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5-2"><span class="toc-text">仅预测未来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%9B%9B%E4%BA%8B%E4%BB%B6%E8%8A%82%E6%97%A5"><span class="toc-text">模块四：事件（节日）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E9%AA%8C%E8%AF%81%E9%9B%86-3"><span class="toc-text">预测验证集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%BD%92%E5%9B%A0-3"><span class="toc-text">模块归因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%85%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5-3"><span class="toc-text">仅预测未来</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#neuralprophet%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%89%88prophet"><span class="toc-text">NeuralProphet深度学习版Prophet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85neuralprophet"><span class="toc-text">安装NeuralProphet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E6%99%AE%E5%B0%94-500-%E6%8C%87%E6%95%B0%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-text">标准普尔 500 指数数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%B8%80%E8%B6%8B%E5%8A%BF"><span class="toc-text">模块一：趋势</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-text">训练模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E9%AA%8C%E8%AF%81%E9%9B%86"><span class="toc-text">预测验证集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%BD%92%E5%9B%A0"><span class="toc-text">模块归因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%85%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5"><span class="toc-text">仅预测未来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%BA%8C%E5%AD%A3%E8%8A%82%E6%80%A7"><span class="toc-text">模块二：季节性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E9%AA%8C%E8%AF%81%E9%9B%86-1"><span class="toc-text">预测验证集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%BD%92%E5%9B%A0-1"><span class="toc-text">模块归因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%85%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5-1"><span class="toc-text">仅预测未来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E4%B8%89%E8%87%AA%E5%9B%9E%E5%BD%92-ar"><span class="toc-text">模块三：自回归 AR</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B-1"><span class="toc-text">训练模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E9%AA%8C%E8%AF%81%E9%9B%86-2"><span class="toc-text">预测验证集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%BD%92%E5%9B%A0-2"><span class="toc-text">模块归因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%85%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5-2"><span class="toc-text">仅预测未来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%9B%9B%E4%BA%8B%E4%BB%B6%E8%8A%82%E6%97%A5"><span class="toc-text">模块四：事件（节日）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E9%AA%8C%E8%AF%81%E9%9B%86-3"><span class="toc-text">预测验证集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%BD%92%E5%9B%A0-3"><span class="toc-text">模块归因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%85%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5-3"><span class="toc-text">仅预测未来</span></a></li></ol></li></ol>
             
         </div>
         
@@ -334,32 +328,31 @@ Prophet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href
         <span class="column is-narrow">
             
             
-            18 分钟 读完 (约 2690 字)
+            19 分钟 读完 (约 2793 字)
         </span>
         
     </div>
     <div class="article-entry is-size-6-mobile" itemprop="articleBody">
     
-        <html><head></head><body><h2 id="neuralprophet-深度学习版-prophet">NeuralProphet 深度学习版
-Prophet</h2>
-<p>NeuralProphet 是 Facebook开发的新一代 Prophet
-时间序列预测框架。加入了 PyTorch 的自回归 （AR）模块，并用 PyTorch
-重新实现了 Prophet，它的显著特性如下</p>
+        <html><head></head><body><h2 id="neuralprophet深度学习版prophet">NeuralProphet深度学习版Prophet</h2>
+<p><code>NeuralProphet</code> 负有盛名，是 Facebook开发的新一代 Prophet
+时间序列预测框架，堪称时间序列预测神器。但是它的API使用，调参，原理不太为大家所知，我们会花几期文章和视频，我们将由浅入深，由实践至原理，揭开其神秘面纱。</p>
+<p><code>NeuralProphet</code> 继承了 Prophet
+模块可接受性的特点，将预测的值分解到趋势、季节性、AR、事件（节日）几个模块。其中
+AR 部分的神经网络实现由 <em><u>AR-Net: A simple Auto-Regressive Neural
+Network for time-series</u></em> 这篇论文详细描述。此外，NeuralProphet
+整体用 PyTorch 重新实现，主要特性如下</p>
 <ul>
 <li>使用 PyTorch 的优化，性能比原始 Prophet 快不少</li>
 <li>引入 AR-Net 建模时间序列自回归，并配有非线性层</li>
 <li>自定义损失和指标</li>
-<li>滞后协变量（lagged covariates） 和 AR 本地上下文特性 （local context
-with support for auto-regression）</li>
+<li>滞后协变量（lagged covariates） 和 AR 本地上下文特性 （local
+context）</li>
 </ul>
-<p>NeuralProphet 继承了 Prophet
-模块可接受性的特点，将预测的值分解到趋势、季节性、AR、事件（节日）几个模块。其中
-AR 部分的神经网络实现由 AR-Net: A simple Auto-Regressive Neural Network
-for time-series 这篇论文详细描述。</p>
-<p>尽管 NeuralProphet
+<p>尽管 <code>NeuralProphet</code>
 有不少优势，但是使用起来小问题不断，主要表现为文档不甚详细，API
 设计的比较智能（隐晦），坑不少。这一期我们来实战体验一下，后续会深入代码和论文。</p>
-<p>相关论文链接</p>
+<p><em><u>相关论文链接：</u></em></p>
 <ul>
 <li><p>[Prophet] Forecasting at scale <a target="_blank" rel="noopener" href="https://peerj.com/preprints/3190/">https://peerj.com/preprints/3190/</a></p></li>
 <li><p>NeuralProphet: Explainable Forecasting at Scale <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2111.15397">https://arxiv.org/abs/2111.15397</a></p></li>
@@ -375,10 +368,11 @@ NeuralProphet，最好安装实时版本，允许你实时可视化模型损失�
 <p>要注意一点，安装 neuralprophet 会关联安装 Pytorch
 CPU版本库，如果你需要使用 GPU 或者不希望覆盖原有的 Pytorch
 版本，请手动安装。</p>
-<p>此外，<code>MyEncyclopedia</code> 和往常一样，为大家准备了一个 docker
-镜像，预装最新的 NeuralProphet
+<p>此外，<strong>MyEncyclopedia</strong> 和往常一样，为大家准备了一个
+docker 镜像，预装最新的 NeuralProphet
 库，镜像中还包含预下载的数据集和本文所有的 Jupyter Notebook
-代码。大家关注<code>MyEncyclopedia</code> 公众号，执行下面命令后网页打开
+代码。大家关注
+<strong>MyEncyclopedia公众号</strong>，执行下面命令后网页打开
 http://localhost:8888/ 开箱即用</p>
 <figure class="highlight bash hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker pull myencyclopedia/neuralprophet-tut</span><br><span class="line">docker run -p 8888:8888 myencyclopedia/neuralprophet-tut bash -c <span class="hljs-string">'jupyter notebook --port 8888 --NotebookApp.token='</span><span class="hljs-string">' --NotebookApp.password='</span><span class="hljs-string">' --ip 0.0.0.0 --allow-root'</span></span><br></pre></td></tr></tbody></table></figure>
 <h2 id="标准普尔-500-指数数据集">标准普尔 500 指数数据集</h2>
@@ -404,8 +398,7 @@ NeuralProphet，我们必须确保数据的格式包含如下两列：日期列�
 <li><p>总共<strong>2080</strong>条数据中非空数据有<strong>2007</strong>条</p></li>
 <li><p>开始日期为 <strong>2012-12-24</strong>，结束日期
 <strong>2020-12-11</strong></p></li>
-<li><p>在有效时间段 2012-12-24 至
-2020-12-11，非交易的日期（周末，节日）没有在列。</p></li>
+<li><p>在上述有效时间段内，非交易的日期（周末，节日）没有在列。</p></li>
 </ul>
 <h2 id="模块一趋势">模块一：趋势</h2>
 <p>使用
@@ -426,28 +419,30 @@ NeuralProphet，我们可以通过指定几个重要参数来对时间序列数�
 <p>训练最终趋于稳定。我们来看看 <code>split_df API</code> 的细节。</p>
 <p><img src="/zh/2023/docker-neuralprophet/trend_df_train.png"></p>
 <p><img src="/zh/2023/docker-neuralprophet/trend_df_val.png"></p>
-<p><code>df_train</code> 共1606 行，为前 80% 记录，df_val 共401
-行，为后20% 记录，两者没有交集，合计 2007 行数据，等于 df_sp500
-有效数据数。原来默认情况下 <code>split_df</code> 会扔掉 y 值为 NaN
+<p><code>df_train</code> 共1606 行，为前 80% 记录，<code>df_val</code>
+共401 行，为后20% 记录，两者没有交集，合计 2007 行数据，等于
+<code>df_sp500</code> 有效数据数。原来默认情况下 <code>split_df</code>
+会扔掉 y 值为 NaN
 数据。这里两者没有交集，大家注意对比启用AR后的数据切分两者会有交集。原有是启用自回归后，预测需要过去
 k 个点作为输入。</p>
 <h3 id="预测验证集">预测验证集</h3>
 <p>接着来看看验证集，即 <code>df_val</code> 上的预测表现。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">future = model.make_future_dataframe(df_sp500, periods=<span class="hljs-number">60</span>, n_historic_predictions=<span class="hljs-literal">True</span>)</span><br><span class="line">forecast = model.predict(future)</span><br><span class="line">fig = model.plot(forecast)</span><br><span class="line">fig.show()</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/pred_trend.png"></p>
-<p>make_future_dataframe 准备好待预测的数据格式，参数
-periods=60，n_historic_predictions=True 意义扩展 df_sp500
-到未来60天后，同时保留所有所有现有 df_sp500
-的数据点，这些历史点也将做预测。我们 dump 出 make_future_dataframe 后的
-future 变量。</p>
+<p><code>make_future_dataframe</code> 准备好待预测的数据格式，参数
+<code>periods=60</code>，<code>n_historic_predictions=True</code>
+意义扩展 df_sp500 到未来60天后，同时保留所有所有现有
+<code>df_sp500</code> 的数据点，这些历史点也将做预测。我们 dump 出
+<code>make_future_dataframe</code> 后的 <code>future</code> 变量。</p>
 <p><img src="/zh/2023/docker-neuralprophet/trend_future.png"></p>
 <p><img src="/zh/2023/docker-neuralprophet/trend_future_y.png"></p>
-<p>future 序列扩展了 df_sp500，有 y 值的共2007条，和 df_sp500
-一致。时间扩展到了 2021-02-09，大约是 2021-12-11
-后的60天，这个也和总条数 2140 一致，等于 df_sp500 总条数 2080 加上
-periods=60 的部分。</p>
-<p>接着来看 predict 后的 forecast 变量。y 列依然有 2007 条，多了 yhat1
-和 trend 两列。</p>
+<p><code>future</code> 序列扩展了 <code>df_sp500</code>，有 y
+值的共2007条，和 <code>df_sp500</code> 一致。时间扩展到了
+2021-02-09，大约是 2021-12-11 后的60天，这个也和总条数 2140 一致，等于
+<code>df_sp500</code> 总条数 2080 加上 <code>periods=60</code>
+的部分。</p>
+<p>接着来看 predict 后的 <code>forecast</code> 变量。y 列依然有 2007
+条，多了 yhat1 和 trend 两列。</p>
 <p><img src="/zh/2023/docker-neuralprophet/trend_forecast.png"></p>
 <p>最后，<code>model.plot(forecast)</code>
 会绘制出事实点和预测点的曲线，注意图中预测值比实际值要稍长一些，因为预测值到
@@ -460,7 +455,7 @@ periods=60 的部分。</p>
 <p>很明显，我们的模型捕捉到了标准普尔 500
 指数的总体上涨趋势，但该模型存在欠拟合问题，尤其是当我们查看未知未来的60天的预测，更能发现问题。</p>
 <h3 id="仅预测未来">仅预测未来</h3>
-<p>同样的预测代码，将 n_historic_predictions 改成 False
+<p>同样的预测代码，将<code>n_historic_predictions</code> 改成 False
 会只预测未知未来60天。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">future = model.make_future_dataframe(df_sp500, periods=<span class="hljs-number">60</span>, n_historic_predictions=<span class="hljs-literal">False</span>)</span><br><span class="line">forecast = model.predict(future)</span><br><span class="line">fig = model.plot(forecast)</span><br><span class="line">fig.show()</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/pred_trend_no_hist.png"></p>
@@ -472,7 +467,6 @@ periods=60 的部分。</p>
 <h3 id="预测验证集-1">预测验证集</h3>
 <p><img src="/zh/2023/docker-neuralprophet/pred_season.png"></p>
 <p>和之前一条直线相比，现在对数据的预测显得更现实些。</p>
-<h3 id="section"></h3>
 <h3 id="模块归因-1">模块归因</h3>
 <p>现在预测的 Y 值是两个部分的模块的加和了。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fig_components = model.plot_components(forecast)</span><br></pre></td></tr></tbody></table></figure>
@@ -485,56 +479,64 @@ periods=60 的部分。</p>
 AR 来进一步拟合。</p>
 <h2 id="模块三自回归-ar">模块三：自回归 AR</h2>
 <p>AR-Net
-是一种用于时间序列预测的自回归神经网络。自回归模型使用来自先前时间步长的过去历史数据来预测，这就是<strong>自回归</strong>一词的来源。</p>
+是一种用于时间序列预测的自回归神经网络。自回归模型使用来自过去历史数据点来预测后续点，这就是<strong>自回归</strong>一词的来源。</p>
 <p>例如，为了预测标准普尔 500 指数的价格，我们可以训练一个模型，使用过去
 60 天的价格来预测未来 60
 天的价格。分别对应以下代码中的<strong>n_lags</strong>和<strong>n_forecasts</strong>参数。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">model = NeuralProphet(</span><br><span class="line">    n_forecasts=<span class="hljs-number">60</span>,</span><br><span class="line">    n_lags=<span class="hljs-number">60</span>,</span><br><span class="line">    changepoints_range=<span class="hljs-number">0.95</span>,</span><br><span class="line">    n_changepoints=<span class="hljs-number">100</span>,</span><br><span class="line">    yearly_seasonality=<span class="hljs-literal">True</span>,</span><br><span class="line">    weekly_seasonality=<span class="hljs-literal">False</span>,</span><br><span class="line">    daily_seasonality=<span class="hljs-literal">False</span>,</span><br><span class="line">    batch_size=<span class="hljs-number">32</span>,</span><br><span class="line">    epochs=<span class="hljs-number">100</span>,</span><br><span class="line">    learning_rate=<span class="hljs-number">1.0</span>,</span><br><span class="line">)</span><br></pre></td></tr></tbody></table></figure>
 <h3 id="训练模型-1">训练模型</h3>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">df_train, df_val = model.split_df(df_sp500, freq=<span class="hljs-string">"D"</span>, valid_p=<span class="hljs-number">0.2</span>)</span><br><span class="line">metrics = model.fit(df_train,</span><br><span class="line">                    freq=<span class="hljs-string">'D'</span>,</span><br><span class="line">                    validation_df=df_val,</span><br><span class="line">                    progress=<span class="hljs-string">"plot"</span></span><br><span class="line">                    )</span><br></pre></td></tr></tbody></table></figure>
-<p>切分训练和验证集代码一样，但是由于引入 AR，df_train，df_val
+<p>切分训练和验证集代码一样，但是由于引入
+AR，<code>df_train</code>，<code>df_val</code>
 之间有60条数据重合，这是因为，在验证或者预测过程中，传入的 dataframe
 前60条不做预测，从61条开始预测，预测会使用当前日期前60条作为 AR
 模块的输入。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">len</span>(<span class="hljs-built_in">set</span>(df_train.ds.tolist()).intersection(<span class="hljs-built_in">set</span>(df_val.ds.tolist())))</span><br><span class="line"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-number">60</span></span><br></pre></td></tr></tbody></table></figure>
-<p>不过奇怪的是，df_train 加上 df_val 总共有 2305 + 665 = 2970
-条记录，时间跨度依然是 2012-12-24 至
-2020-12-11。但是去除重复的60条记录后居然剩余2910 条， 比 df_sp500 2080
-条记录数还要多不少。</p>
+<p>不过奇怪的是，<code>df_train</code> 加上 <code>df_val</code> 总共有
+2305 + 665 = 2970 条记录，时间跨度依然是 2012-12-24 至
+2020-12-11。但是去除重复的60条记录后居然剩余2910 条， 比
+<code>df_sp500</code> 2080 条记录数还要多不少。</p>
 <p><img src="/zh/2023/docker-neuralprophet/ar_df_train.png"></p>
 <p><img src="/zh/2023/docker-neuralprophet/ar_df_val.png"></p>
-<p>这里笔者稍微花了点时间终于弄清楚：df_train 和 df_val 会填充
-2012-12-24 至 2020-12-11 所有的 missing 日期，并使用插值填充 y！</p>
+<p>这里笔者稍微花了点时间终于弄清楚：<code>df_train</code> 和
+<code>df_val</code> 会填充 2012-12-24 至 2020-12-11 所有的 missing
+日期，并使用插值填充 y！</p>
 <p><img src="/zh/2023/docker-neuralprophet/ar_df_train_head.png"></p>
 <h3 id="预测验证集-2">预测验证集</h3>
-<p>这一次，我们将 periods 设成 0，也就是不扩展 df_sp500
-时间到未知的未来。</p>
+<p>这一次，我们将 <code>periods</code> 设成 0，也就是不扩展
+<code>df_sp500</code> 时间到未知的未来。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">future = model.make_future_dataframe(df_sp500, periods=<span class="hljs-number">0</span>, n_historic_predictions=<span class="hljs-literal">True</span>)</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/ar_future.png"></p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">forecast = model.predict(future)</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/ar_forecast.png"></p>
-<p>forecast 格式变得复杂，引入了 yhat1, yhat2, ...，yhat60，ar1, ar2,
-...，ar60 等众多列，这里的60对应于 n_forecasts=60</p>
-<p>第一个预测值开始于 forecast 的第61条记录，对应于 n_lags = 60</p>
+<p><code>forecast</code> 格式变得复杂，引入了 yhat1, yhat2,
+...，yhat60，ar1, ar2, ...，ar60 等众多列，这里的60对应于
+<code>n_forecasts=60</code></p>
+<p>第一个预测值开始于 <code>forecast</code> 的第61条记录，对应于
+<code>n_lags = 60</code></p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">forecast[~forecast.yhat1.isnull()]</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/ar_forecast_predicted.png"></p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fig = model.plot(forecast)</span><br><span class="line">fig.show()</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/pred_ar.png"></p>
 <h3 id="模块归因-2">模块归因</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fig_components = model.plot_components(forecast)</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/pred_ar_comp.png"></p>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plot_forecast(model, sp500_data, periods=60, historic_predictions=False, highlight_steps_ahead=60)</span><br></pre></td></tr></tbody></table></figure>
 <h3 id="仅预测未来-2">仅预测未来</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">future = model.make_future_dataframe(df_sp500, periods=<span class="hljs-number">60</span>, n_historic_predictions=<span class="hljs-literal">False</span>)</span><br><span class="line">forecast = model.predict(future)</span><br><span class="line">fig = model.plot(forecast)</span><br><span class="line">fig.show()</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/pred_ar_no_hist.png"></p>
 <h2 id="模块四事件节日">模块四：事件（节日）</h2>
 <p>我们还可以配置模型以考虑节假日因素，因为节假日很可能会影响股市走势。</p>
 <figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">model = NeuralProphet(</span><br><span class="line">    n_forecasts=<span class="hljs-number">60</span>,</span><br><span class="line">    n_lags=<span class="hljs-number">60</span>,</span><br><span class="line">    changepoints_range=<span class="hljs-number">0.95</span>,</span><br><span class="line">    n_changepoints=<span class="hljs-number">100</span>,</span><br><span class="line">    yearly_seasonality=<span class="hljs-literal">True</span>,</span><br><span class="line">    weekly_seasonality=<span class="hljs-literal">False</span>,</span><br><span class="line">    daily_seasonality=<span class="hljs-literal">False</span>,</span><br><span class="line">    batch_size=<span class="hljs-number">32</span>,</span><br><span class="line">    epochs=<span class="hljs-number">100</span>,</span><br><span class="line">    learning_rate=<span class="hljs-number">1.0</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">model = model.add_country_holidays(<span class="hljs-string">"US"</span>, mode=<span class="hljs-string">"additive"</span>, lower_window=-<span class="hljs-number">1</span>, upper_window=<span class="hljs-number">1</span>)</span><br></pre></td></tr></tbody></table></figure>
-<p>只需 add_country_holidays 一条语句就可以启用预定义的美国节假日。</p>
-<figure class="highlight plaintext hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plot_forecast(model, sp500_data, periods=60, historic_predictions=False, highlight_steps_ahead=60)</span><br></pre></td></tr></tbody></table></figure>
+<p>只需 <code>add_country_holidays</code>
+一条语句就可以启用预定义的美国节假日。</p>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plot_forecast(model, sp500_data, periods=<span class="hljs-number">60</span>, historic_predictions=<span class="hljs-literal">False</span>, highlight_steps_ahead=<span class="hljs-number">60</span>)</span><br></pre></td></tr></tbody></table></figure>
 <h3 id="预测验证集-3">预测验证集</h3>
 <p><img src="/zh/2023/docker-neuralprophet/pred_holiday.png"></p>
 <h3 id="模块归因-3">模块归因</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fig_components = model.plot_components(forecast)</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/pred_holiday_comp.png"></p>
 <h3 id="仅预测未来-3">仅预测未来</h3>
+<figure class="highlight python hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">future = model.make_future_dataframe(df_sp500, periods=<span class="hljs-number">60</span>, n_historic_predictions=<span class="hljs-literal">False</span>)</span><br><span class="line">forecast = model.predict(future)</span><br><span class="line">fig = model.plot(forecast)</span><br><span class="line">fig.show()</span><br></pre></td></tr></tbody></table></figure>
 <p><img src="/zh/2023/docker-neuralprophet/pred_holiday_no_hist.png"></p>
 <link rel="stylesheet" href="/css/bilicard.css" type="text/css"></body></html>
     
